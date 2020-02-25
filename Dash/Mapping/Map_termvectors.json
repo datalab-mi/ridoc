@@ -1,0 +1,113 @@
+{
+    "settings": {
+        "index" : {
+            "analysis" : {
+                "filter" : {
+                    "french_elision": {
+                    "type":  "elision",
+                    "articles": [
+                      "l", "m", "t", "qu", "n", "s",
+                      "j", "d", "c", "jusqu", "quoiqu",
+                      "lorsqu", "puisqu"
+            ]
+        },
+                    "french_stop": { 
+                      "type":       "stop",
+                      "stopwords":  "_french_" 
+                    },
+                    "french_keywords": { 
+                      "type":       "keyword_marker",
+                      "keywords":   ["Exemple"] 
+                    },
+                    "french_stemmer": { 
+                      "type":       "stemmer",
+                      "language":   "light_french"
+                    },
+                    "synonym_igpn" : {
+                        "type" : "synonym"
+
+                                }
+                            }
+           ,
+                  "analyzer": {
+                    "rebuilt_french_text": {
+                      "tokenizer":  "standard",
+                      "filter": [
+                        "lowercase",
+                        "french_elision",
+                        "synonym_igpn",
+                        "french_elision",
+                        "lowercase",
+                        "french_stop",
+                        "french_keywords",
+                        "french_stemmer"
+                      ]
+                    },
+                    "rebuilt_french_query": {
+                      "tokenizer":  "standard",
+                      "filter": [
+                        "lowercase",
+                        "french_elision",
+                        "synonym_igpn",
+                        "french_elision",
+                        "lowercase",
+                        "french_stop",
+                        "french_keywords",
+                        "french_stemmer"
+                      ]
+                    }
+                  }
+                
+        }
+    }
+}, 
+    "mappings":{
+    "properties": {
+      "DOMAINE": {
+        "type": "text",
+        "analyzer" : "rebuilt_french_text",
+        "search_analyzer" : "rebuilt_french_query",
+        "term_vector" : "with_positions_offsets_payloads"
+      },
+      "Date": {
+        "type": "text"
+      },
+      "Liens": {
+        "type": "text",
+        "analyzer" : "rebuilt_french_text",
+          "search_analyzer" : "rebuilt_french_query",
+          "term_vector" : "with_positions_offsets_payloads"
+      },
+      "Mots clés": {
+        "type": "text",
+        "analyzer" : "rebuilt_french_text",
+        "search_analyzer" : "rebuilt_french_query",
+        "term_vector" : "with_positions_offsets_payloads"
+      },
+      "Pièces jointes": {
+        "type": "text",
+        "analyzer" : "rebuilt_french_text",
+          "search_analyzer" : "rebuilt_french_query",
+          "term_vector" : "with_positions_offsets_payloads"
+      },
+      "Question": {
+        "type": "text",
+        "analyzer" : "rebuilt_french_text",
+          "search_analyzer" : "rebuilt_french_query",
+          "term_vector" : "with_positions_offsets_payloads"
+      },
+      "Réponse": {
+        "type": "text",
+        "analyzer" : "rebuilt_french_text",
+          "search_analyzer" : "rebuilt_french_query",
+          "term_vector" : "with_positions_offsets_payloads"
+      },
+      "TITRE": {
+        "type": "text",
+        "analyzer" : "rebuilt_french_text",
+        "search_analyzer" : "rebuilt_french_query",
+        "term_vector" : "with_positions_offsets_payloads"
+      }
+    }
+  }
+}
