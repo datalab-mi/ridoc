@@ -1,7 +1,5 @@
 virtualenv
 .git
-**/Data/**
-**/Glossaire/**
 **/__pycache__
 *.odt
 *.pdf
