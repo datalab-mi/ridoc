@@ -33,7 +33,7 @@ logger.setLevel(logging.INFO)
 formatter = logging.Formatter(u'%(asctime)s :: %(levelname)s :: %(message)s')
 #Création de notre Handler
 file_handler = RotatingFileHandler(Log_path_recherche, 'a', 10000, backupCount=10 , encoding = 'utf-8')
-file_handler.setLevel(logging.DEBUG)    
+file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 #%%
@@ -57,4 +57,3 @@ auth = dash_auth.BasicAuth(
     VALID_USERNAME_PASSWORD_PAIRS
 )
 app.config.suppress_callback_exceptions = True
-

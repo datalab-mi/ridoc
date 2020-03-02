@@ -18,4 +18,4 @@ application = DispatcherMiddleware(flask_app, {
 })
 
 if __name__ == '__main__':
-    run_simple(Dash_host, int(Dash_port), application , use_reloader = False , use_debugger = True)  
+    run_simple(Dash_host, int(Dash_port), application , use_reloader = False , use_debugger = True)
