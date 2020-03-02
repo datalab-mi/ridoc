@@ -5,4 +5,4 @@ virtualenv
 *.pdf
 *.log*
 *.pyc
-
+venv
