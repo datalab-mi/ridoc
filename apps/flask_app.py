@@ -9,7 +9,8 @@ from apps.app_admin import logger as logger_admin
 load_dotenv()
 
 
-home = os.getenv('HOME')
+#home = os.getenv('HOME')
+home = os.getcwd()
 Odt_Files_Directory = home + environ.get('Odt_Files_Directory')
 Chemin_message = home + environ.get('Message_accueil')
 Chemin_titre_Message = home + environ.get('Titre_Message_accueil')
