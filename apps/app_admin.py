@@ -28,7 +28,8 @@ load_dotenv()
 
 
 # Variables d'environement
-home = os.getenv('HOME')
+#home = os.getenv('HOME')
+home = os.getcwd()
 #  Chemin d'enregistrement des logs
 Log_path_admin = home + environ.get('Log_path_admin')
 Log_path_recherche_admin = home + environ.get('Log_path_recherche_admin')

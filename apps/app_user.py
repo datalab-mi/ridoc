@@ -23,7 +23,8 @@ from logging.handlers import RotatingFileHandler
 #-----------------------------------------------------------
 
 #Variables d'environement
-home = os.getenv('HOME')
+#home = os.getenv('HOME')
+home = os.getcwd()
 #  L'adresse des fichiers Odt
 Odt_Files_Directory = home + environ.get('Odt_Files_Directory')
 #  Nom de l'index dans lequel on fait la recherhce
