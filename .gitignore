@@ -3,6 +3,7 @@ virtualenv
 **/__pycache__
 *.odt
 *.pdf
-*.log*
+*.log
 *.pyc
 venv
+.env

@@ -50,11 +50,11 @@ Chemin_expression = home + environ.get('Chemin_expression')
 #  L'adresse de la liste d'expression (temporaire) affiché à l'utilisateur
 Chemin_expression_enregistre = home + environ.get('Chemin_expression_enregistre')
 #  L'adresse de la liste des mots clefs avec un seul mot affiché à l'utilisateur (temporaire)
-Chemin_one_word_expression_enregitre = home + environ.get('One_word_keyword_non_analyzed_enregistre')
+#Chemin_one_word_expression_enregitre = home + environ.get('One_word_keyword_non_analyzed_enregistre')
 #  L'adresse de la liste des mots clefs avec un seul mot affiché à l'utilisateur 
-Chemin_one_word_expression = home + environ.get('One_word_keyword_non_analyzed')
+#Chemin_one_word_expression = home + environ.get('One_word_keyword_non_analyzed')
 #  L'adresse de la liste des mots clefs avec un seul mot analysé
-Chemin_one_word_expression_analyzed = home + environ.get('One_word_keyword_analyzed')
+#Chemin_one_word_expression_analyzed = home + environ.get('One_word_keyword_analyzed')
 
 # %%
 # On établie une connexion avec le serveur Elastic
@@ -81,10 +81,10 @@ def request(req , nom_index ,  path_liste_expression_metier = path_list_expressi
   file.close()
   liste_expression_metier = content.split('\n')[:-1]
 
-  file = open(Chemin_one_word_expression_analyzed , 'r')
-  content = file.read()
-  file.close()
-  liste_keyword = content.split('\n')[:-1]
+  #file = open(Chemin_one_word_expression_analyzed , 'r')
+  #content = file.read()
+  #file.close()
+  #liste_keyword = content.split('\n')[:-1]
 
   file = open(Chemin_Glossaire , 'r', encoding="utf8")
   Liste_glossaire = file.read()
@@ -445,22 +445,22 @@ def changement_structure_expression():
     del(New_content)
     file.close()
 
-    file = open(Chemin_one_word_expression_enregitre, 'r', encoding='utf-8')
-    New_content = file.read()
-    file.close()
+    #file = open(Chemin_one_word_expression_enregitre, 'r', encoding='utf-8')
+    #New_content = file.read()
+    #file.close()
 
-    file = open(Chemin_one_word_expression, 'w', encoding='utf-8')
-    file.write(New_content)
-    del(New_content)
-    file.close()
+    #file = open(Chemin_one_word_expression, 'w', encoding='utf-8')
+    #file.write(New_content)
+    #del(New_content)
+    #file.close()
 
     file = open(path_list_expression_metier , "w")
     file.write(analyzed_keywords)
     file.close()
 
-    file = open(Chemin_one_word_expression_analyzed, "w", encoding='utf-8')
-    file.write(analyzed_one_word_keyword)
-    file.close()
+    #file = open(Chemin_one_word_expression_analyzed, "w", encoding='utf-8')
+    #file.write(analyzed_one_word_keyword)
+    #file.close()
 
   except elasticsearch.exceptions.RequestError as e:
     indices.create(index = nom_index , body = Map_old)
