@@ -19,7 +19,7 @@ load_dotenv()
 home = os.getenv("HOME")
 
 Chemin_Glossaire = home + environ.get('Chemin_Glossaire')
-Chemin_Dictionnaire = home + environ.get('Chemin_Dictionnaire')
+#Chemin_Dictionnaire = home + environ.get('Chemin_Dictionnaire')
 Mapping_Directory = home + environ.get('Mapping_Directory')
 Json_Files_directory = home + environ.get('Json_Files_directory')
 Odt_Files_Directory = home + environ.get('Odt_Files_Directory')
