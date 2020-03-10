@@ -19,8 +19,8 @@ services:
         soft: -1
         hard: -1
     # mem_limit: %MM
-    volumes:
-      - ${ES_DATA}/node1:/usr/share/elasticsearch/data
+    #volumes:
+    #  - ${ES_DATA}/node1:/usr/share/elasticsearch/data
     # ports:
     #   - 9200:9200
 
