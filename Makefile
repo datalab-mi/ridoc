@@ -22,6 +22,10 @@ export ES_VERSION = 7.5.0
 export API_PATH = deces
 export ES_PROXY_PATH = /${API_PATH}/api/v0/search
 
+# BACKEND dir
+export BACKEND=${APP_PATH}/backend
+export BACKEND_PORT=8080
+
 # this is usefull with most python apps in dev mode because if stdout is
 # buffered logs do not shows in realtime
 PYTHONUNBUFFERED=1
@@ -78,4 +82,25 @@ elasticsearch: network vm_max
 elasticsearch-stop:
 	@echo docker-compose down matchID elasticsearch
 	@if [ -f "${DC_FILE}-elasticsearch-huge.yml" ]; then ${DC} -f ${DC_FILE}-elasticsearch-huge.yml down;fi
+
+
+# backend
+
+# development mode
+backend-dev:
+	@echo docker-compose up backend for dev
+	@export EXEC_ENV=development;\
+		${DC} -f ${DC_FILE}.yml up --build -d --force-recreate 2>&1 | grep -v orphan
+
+backend-dev-stop:
+	@export EXEC_ENV=development; ${DC} -f ${DC_FILE}.yml down --remove-orphan
+
+# production mode
+backend-start:
+	@echo docker-compose up backend for production ${VERSION}
+	@export EXEC_ENV=production; ${DC} -f ${DC_FILE}.yml up --build -d 2>&1 | grep -v orphan
+
+backend-stop:
+	@echo docker-compose down backend for production ${VERSION}
+	@export EXEC_ENV=production; ${DC} -f ${DC_FILE}.yml down  --remove-orphan
 
