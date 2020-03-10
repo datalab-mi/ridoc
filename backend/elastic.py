@@ -20,7 +20,8 @@ from copy import deepcopy
 
 #%%
 #On commence par emporter les variables d'environement
-home = os.getenv('HOME')
+#home = os.getenv('HOME')
+home = os.getcwd()
 
 # L'adresse du fichier glossaire des acronymes (celui qui est utilisé dans l'indexation)
 Chemin_Glossaire = home + environ.get('Chemin_Glossaire')
