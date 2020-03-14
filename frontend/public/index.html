@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr" class="has-navbar-fixed-top">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#000000" />
+		<link rel="manifest" href="/manifest.json" />
+
+		<title>Moteur de recherche des documents</title>
+		<meta name="description" content="Moteur de recherche des documents" />
+		<link rel="canonical" href="https://deces.matchid.io" />
+		<link rel='stylesheet' href='/global.css'>
+		<link rel='stylesheet' href='/build/bundle.css'>
+		<script defer src='/build/bundle.js'></script>
+		<script>
+			setTimeout(function(){
+			  var tmp = document.getElementById("infoNotWorking")
+			  if (tmp) {
+				tmp.style.display = "block";
+			  }
+			}, 5000);
+		</script>
+		<style>
+		#infoNotWorking {
+			text-align: center;
+			font-size: 1em;
+			display: none;
+		}
+		</style>
+	</head>
+
+<body>
+	<noscript>
+			<h1>Moteur de recherche des documents</h1>
+      Moteur de recherche documentaire
+
+	</noscript>
+	<div id="infoNotWorking">
+		Si vous voyez ce message, c'est que que votre navigateur est incompatible, ou bien que la connexion a posé
+		problème.
+		<br>
+		Les navigateurs supportés sont : Edge >= 17, Chrome >= 55, Firefox >= 52, Safari >=10.1, Opera >= 42
+	</div>
+</body>
+</html>
