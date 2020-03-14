@@ -8,3 +8,10 @@ virtualenv
 venv
 .env
 artifacts
+Data
+.mypy_cache
+*.xlsx
+
+# production
+frontend/public/build
+bundle.*
