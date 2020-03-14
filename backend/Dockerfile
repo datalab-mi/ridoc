@@ -22,4 +22,5 @@ WORKDIR /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # run our application
-CMD [ "python3", "run.py" ]
+#CMD [ "python3", "run.py" ]
+CMD [ "python3", "webapp/app.py" ]

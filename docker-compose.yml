@@ -11,15 +11,20 @@ services:
         no_proxy: ${no_proxy}
     image: browser-backend:latest
     container_name: ${DC_PREFIX}-backend
-    #environment:
-    #  - http_proxy
-    #  - https_proxy
-    #  - no_proxy
     volumes:
       - ${BACKEND}/:/app/
-    ports:
-      # - 8080:${BACKEND_PORT}
-      - 5000:5000
+    expose:
+      - ${BACKEND_PORT}
+    environment:
+      BACKEND_PORT: ${BACKEND_PORT}
+  tika:
+    image: logicalspark/docker-tikaserver
+    expose:
+      - "9998"
+    environment:
+      - http_proxy
+      - https_proxy
+      - no_proxy
 
 networks:
   default:

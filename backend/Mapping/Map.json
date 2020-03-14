@@ -1,156 +1,84 @@
 {
-    "settings": {
-        "index" : {
-            "analysis" : {
-                "filter" : {
-                    "french_elision": {
-                    "type":  "elision",
-                    "articles": [
-                      "l", "m", "t", "qu", "n", "s",
-                      "j", "d", "c", "jusqu", "quoiqu",
-                      "lorsqu", "puisqu"
+  "settings": {
+    "index" : {
+      "highlight":{
+      },
+      "analysis" : {
+        "filter" : {
+          "french_elision": {
+            "type":  "elision",
+            "articles": [
+              "l", "m", "t", "qu", "n", "s",
+              "j", "d", "c", "jusqu", "quoiqu",
+              "lorsqu", "puisqu"
             ]
-        },
-                    "french_stop": { 
-                      "type":       "stop",
-                      "stopwords":  "_french_" 
-                    },
-                    "french_keywords": { 
-                      "type":       "keyword_marker",
-                      "keywords":   ["Exemple"] 
-                    },
-                    "french_stemmer": { 
-                      "type":       "stemmer",
-                      "language":   "light_french"
-                    },
-                    "synonym_igpn" : {
-                        "type" : "synonym"
+          },
+          "french_stop": { 
+            "type":       "stop",
+            "stopwords":  "_french_" 
+          },
+          "french_keywords": { 
+            "type":       "keyword_marker",
+            "keywords":   ["Exemple"] 
+          },
+          "french_stemmer": { 
+            "type":       "stemmer",
+            "language":   "light_french"
+          }
+          }
+          ,
+          "analyzer": {
+            "auteur_analyzer" : {
+              "tokenizer" : "standard" , 
+              "filter" : "lowercase"},
+              "rebuilt_french_text": {
+                "tokenizer":  "standard",
+                "filter": [
+                  "lowercase",
+                  "french_elision",
+                  "french_elision",
+                  "lowercase",
+                  "french_stop",
+                  "french_keywords",
+                  "french_stemmer"
+                ]
+              },
+              "rebuilt_french_query": {
+                "tokenizer":  "standard",
+                "filter": [
+                  "lowercase",
+                  "french_elision",
+                  "french_elision",
+                  "lowercase",
+                  "french_stop",
+                  "french_keywords",
+                  "french_stemmer"
+                ]
+              }
+          }
 
-                                },
-                    "synonym_dictionnaire" : {  
-                        "type" : "synonym"
-
-                                }
-                            }
-           ,
-                  "analyzer": {
-                    "rebuilt_french_text": {
-                      "tokenizer":  "standard",
-                      "filter": [
-                        "french_elision",
-                        "synonym_dictionnaire",
-                        "synonym_igpn",
-                        "french_elision",
-                        "lowercase",
-                        "french_stop",
-                        "french_keywords",
-                        "french_stemmer"
-                      ]
-                    },
-                    "rebuilt_french_query": {
-                      "tokenizer":  "standard",
-                      "filter": [
-                        "french_elision",
-                        "synonym_igpn",
-                        "french_elision",
-                        "lowercase",
-                        "french_stop",
-                        "french_keywords",
-                        "french_stemmer"
-                      ]
-                    }
-                  }
-                
-        }
+      }
     }
-}, 
-    "mappings":{
+  }, 
+  "mappings":{
     "properties": {
-      "DOMAINE": {
+      "CORPS": {
         "type": "text",
         "analyzer" : "rebuilt_french_text",
-          "search_analyzer" : "rebuilt_french_query",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
+        "search_analyzer" : "rebuilt_french_query"
+      },
+      "Titre": {
+        "type": "text",
+        "analyzer" : "rebuilt_french_text",
+        "search_analyzer" : "rebuilt_french_query"
       },
       "Date": {
-        "type": "text",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
+        "type" : "date" , 
+        "format" : "yyyy-MM-dd" 
       },
-      "Liens": {
-        "type": "text",
-        "analyzer" : "rebuilt_french_text",
-          "search_analyzer" : "rebuilt_french_query",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
-      },
-      "Mots clés": {
-        "type": "text",
-        "analyzer" : "rebuilt_french_text",
-          "search_analyzer" : "rebuilt_french_query",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
-      },
-      "Pièces jointes": {
-        "type": "text",
-        "analyzer" : "rebuilt_french_text",
-          "search_analyzer" : "rebuilt_french_query",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
-      },
-      "Question": {
-        "type": "text",
-        "analyzer" : "rebuilt_french_text",
-          "search_analyzer" : "rebuilt_french_query",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
-      },
-      "Réponse": {
-        "type": "text",
-        "analyzer" : "rebuilt_french_text",
-          "search_analyzer" : "rebuilt_french_query",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
-      },
-      "TITRE": {
-        "type": "text",
-        "analyzer" : "rebuilt_french_text",
-        "search_analyzer" : "rebuilt_french_query",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
+      "Auteurs" : {
+        "type" : "text",
+        "analyzer" : "auteur_analyzer"
       }
     }
   }
