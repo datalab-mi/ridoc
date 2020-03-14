@@ -1,12 +1,10 @@
-"""
-                          Fichier de backend pour gérer les requettes elasticsearch
-"""
-#%%
+"""Fichier de backend pour gérer les requettes elasticsearch"""
+
 import elasticsearch
 from elasticsearch import Elasticsearch
 import os
 import base64
-from convertisseur import convertisseur_Odt_Json
+from convertisseur import convertisseur_Odt_Json, convertisseur_odt_txt, save_json
 import json
 import logging
 import datetime
@@ -20,7 +18,6 @@ from copy import deepcopy
 
 #%%
 #On commence par emporter les variables d'environement
-#home = os.getenv('HOME')
 home = os.getcwd()
 
 # L'adresse du fichier glossaire des acronymes (celui qui est utilisé dans l'indexation)
@@ -61,190 +58,221 @@ Chemin_one_word_expression_analyzed = home + environ.get('One_word_keyword_analy
 # On établie une connexion avec le serveur Elastic
 es = Elasticsearch([{'host': str(elastic_host), 'port': str(elastic_port)}])
 indices = elasticsearch.client.IndicesClient(es)
-# %%
-def request(req , nom_index ,  path_liste_expression_metier = path_list_expression_metier):
-  """
-    Fonction qui permet de faire la recherche Elastic dans notre index
-    Arguments:
-      nom_index : Le nom de l'index où on effectue la recherche
-      req : la requête entrèe par l'utilisateur
-      path_liste_expression_metier : Le lien pour la liste des expressions clés analysée
-    Output:
-      Dictionnaire des résultats de la recherche
-"""
 
-  #Je noramlise la requête
-  req = unicodedata.normalize('NFKC' , str(req))
-  #On récupère la liste des expressions
-
-  file = open(path_liste_expression_metier , 'r')
-  content = file.read()
-  file.close()
-  liste_expression_metier = content.split('\n')[:-1]
-
-  file = open(Chemin_one_word_expression_analyzed , 'r')
-  content = file.read()
-  file.close()
-  liste_keyword = content.split('\n')[:-1]
-
-  file = open(Chemin_Glossaire , 'r', encoding="utf8")
-  Liste_glossaire = file.read()
-  Liste_glossaire = str(Liste_glossaire)
-  file.close()
-  Liste_glossaire = Liste_glossaire.split('\n')
-  
-  try:
-    Liste_glossaire.remove('')
-  except:
-    pass
-
-  Dic_abrev = {x.split('=>')[0].strip() : x.split('=>')[1].replace(',', '').strip() for x in Liste_glossaire}
-
-  List_acronymes_request = []  # Liste pour la signification des expressions
-  List_acro_request = []  #Liste pour les acronymes
-
-  for keyword in Dic_abrev.keys():
-    if keyword.lower() in map(lambda x: x.lower() , req.split(' ')):
-      List_acronymes_request.append(Dic_abrev[keyword])
-      List_acro_request.append(keyword)
-  New_req = deepcopy(req)
-  
-  for i in range (len(List_acronymes_request)):
-    New_req += ' ' + List_acronymes_request[i]
-  
-  #Au début on va analyser la requête
-  analyse = indices.analyze(body = {'analyzer':"french", "text": New_req})
-  L = [analyse["tokens"][i]['token'] for i in range(len(analyse["tokens"]))]
-  
-  analyse2 = indices.analyze(body = {'analyzer':"french", "text": req})
-  L2 = [analyse2["tokens"][i]['token'] for i in range(len(analyse2["tokens"]))]
-  lenght_of_request = len(L2)
-
-  s = " ".join(L)
-  request_expression = []
-  request_key_one_word = []
-  for expression in liste_expression_metier:
-    if expression in s and expression.replace(' ', '').replace('-' ,'').replace('_' , '') not in request_expression:
-      request_expression.append(expression.replace(' ', '').replace('-' ,'').replace('_' , ''))
-      s = s.lstrip(expression).strip()
-  
-  for key_one_word in liste_keyword:
-    if key_one_word in s and key_one_word not in request_key_one_word:
-      request_key_one_word.append(key_one_word)  
-  #Ensuite on construit notre dictionnaire de la requête
-  today = str(date.today())
-  year = today.split('-')[0]
-  
-  request = { "query": { "bool": {
-      "must": [
-          {
-        "multi_match": {
-          "query": unicodedata.normalize('NFKC' , str(req)) ,
-          "fields": ['DOMAINE', "Question", "Réponse", "TITRE", "Mots clés"],
-          'type': "cross_fields"
-          # "analyze_wildcard": False
-        }
-      },
-      {
-        "multi_match": {
-          "query": unicodedata.normalize('NFKC' , str(req)) ,
-          "fields": ['DOMAINE non stemmed', "Question non stemmed", "Réponse non stemmed", "TITRE non stemmed", "Mots clés non stemmed"],
-          'type': "cross_fields"
-          # "analyze_wildcard": False
-        }
-      },
-      # {
-      #   "simple_query_string":{
-      #   "query": unicodedata.normalize('NFKC' , str(req)) ,
-      #   "fields" : ["all_text"]
-      # }
-      # }
-    ],
-    "filter": [],
-    "should": [],
-    "must_not": []
-  }
-  },
-  "highlight" : {
-    "fragment_size" : 150,
-    "number_of_fragments" : 3,
-    "order" : "score",
-    "boundary_scanner" : "sentence",
-    "boundary_scanner_locale" : "fr-FR",
-    "fields":{
-      "Réponse":{}
+def simple_request(nom_index):
+    request = {
+        "query": {
+            "match_all" : {}
+            }
     }
-  }
-  }
-  for key in request_key_one_word:
-    request['query']['bool']["should"].append({'match' : {
-      "Mots clés analysés": {
-        "query": key,
-        "boost": 1
-      }
-    }})
-  for key in request_expression:
-    print(key)
-    request['query']['bool']["should"].append({"match":{
-                                                                        'Mots clés analysés' :{
-                                                                            "query" : key,
-                                                                            "boost" : 3
 
-                                                                          } 
-                                                                }     
-                                                })
-    request['query']['bool']["should"].append({"match":{
-                                                                        'TITRE' :{
-                                                                            "query" : key,
-                                                                            "boost" : 3
+    #D = es.search(index=str(nom_index), size=15, body=request)
+    D = es.search(index=str(nom_index_prop), size=15, body=request)
+    return D['hits']['hits']
 
-                                                                          } 
-                                                                }     
-                                                })
-    request['query']['bool']["should"].append({"match": {
-                                                           "Réponse": {
-                                                               "query": key,
-                                                               "boost": 1.5
-                                                           }
-                                                       }
-            })
-  request['query']['bool']["should"].append({"constant_score": {
-                                                          "filter": {
-                                                              "match": {
-                                                                  "Date": {
-                                                                    "query": year
-                                                                }
-                                                          }
-                                                          } , 
-                                                          "boost": 1
+def request(req , nom_index ,  path_liste_expression_metier = path_list_expression_metier):
+    """Fonction qui permet de faire la recherche Elastic dans notre index
+
+    Args:
+        nom_index : Le nom de l'index où on effectue la recherche
+        req : la requête entrèe par l'utilisateur
+        path_liste_expression_metier : Le lien pour la liste des expressions clés analysée
+    Output:
+        Dictionnaire des résultats de la recherche
+    """
+
+    #Je noramlise la requête
+    req = unicodedata.normalize('NFKC' , str(req))
+    #On récupère la liste des expressions
+
+    file = open(path_liste_expression_metier , 'r')
+    content = file.read()
+    file.close()
+    liste_expression_metier = content.split('\n')[:-1]
+
+    file = open(Chemin_one_word_expression_analyzed , 'r')
+    content = file.read()
+    file.close()
+    liste_keyword = content.split('\n')[:-1]
+
+    file = open(Chemin_Glossaire , 'r', encoding="utf8")
+    Liste_glossaire = file.read()
+    Liste_glossaire = str(Liste_glossaire)
+    file.close()
+    Liste_glossaire = Liste_glossaire.split('\n')
+
+    try:
+        Liste_glossaire.remove('')
+    except:
+        pass
+
+    Dic_abrev = {x.split('=>')[0].strip() : x.split('=>')[1].replace(',', '').strip() for x in Liste_glossaire}
+
+    List_acronymes_request = []  # Liste pour la signification des expressions
+    List_acro_request = []  #Liste pour les acronymes
+
+    for keyword in Dic_abrev.keys():
+        if keyword.lower() in map(lambda x: x.lower() , req.split(' ')):
+            List_acronymes_request.append(Dic_abrev[keyword])
+            List_acro_request.append(keyword)
+    New_req = deepcopy(req)
+
+    for i in range (len(List_acronymes_request)):
+        New_req += ' ' + List_acronymes_request[i]
+
+    #Au début on va analyser la requête
+    analyse = indices.analyze(body = {'analyzer':"french", "text": New_req})
+    L = [analyse["tokens"][i]['token'] for i in range(len(analyse["tokens"]))]
+
+    analyse2 = indices.analyze(body = {'analyzer':"french", "text": req})
+    L2 = [analyse2["tokens"][i]['token'] for i in range(len(analyse2["tokens"]))]
+    lenght_of_request = len(L2)
+
+    s = " ".join(L)
+    request_expression = []
+    request_key_one_word = []
+    for expression in liste_expression_metier:
+        if expression in s and expression.replace(' ', '').replace('-' ,'').replace('_' , '') not in request_expression:
+            request_expression.append(expression.replace(' ', '').replace('-' ,'').replace('_' , ''))
+            s = s.lstrip(expression).strip()
+    
+    for key_one_word in liste_keyword:
+        if key_one_word in s and key_one_word not in request_key_one_word:
+            request_key_one_word.append(key_one_word)  
+    #Ensuite on construit notre dictionnaire de la requête
+    today = str(date.today())
+    year = today.split('-')[0]
+    
+    request = {
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "multi_match": {
+                            "query": unicodedata.normalize('NFKC', str(req)),
+                            "fields": ['DOMAINE', "Question", "Réponse", "TITRE", "Mots clés"],
+                            'type': "cross_fields"
+                            # "analyze_wildcard": False
+                        }
+                    },
+                    {
+                        "multi_match": {
+                            "query": unicodedata.normalize('NFKC', str(req)),
+                            "fields": ['DOMAINE non stemmed', "Question non stemmed", "Réponse non stemmed", "TITRE non stemmed", "Mots clés non stemmed"],
+                            'type': "cross_fields"
+                            # "analyze_wildcard": False
+                        }
+                    },
+                    # {
+                    #   "simple_query_string":{
+                    #   "query": unicodedata.normalize('NFKC' , str(req)) ,
+                    #   "fields" : ["all_text"]
+                    # }
+                    # }
+                ],
+                "filter": [],
+                "should": [],
+                "must_not": []
+            }
+        },
+        "highlight": {
+            "fragment_size": 150,
+            "number_of_fragments": 3,
+            "order": "score",
+            "boundary_scanner": "sentence",
+            "boundary_scanner_locale": "fr-FR",
+            "fields": {
+                "Réponse": {}
+            }
+        }
+    }
+
+    for key in request_key_one_word:
+        request['query']['bool']["should"].append({'match' : {
+            "Mots clés analysés": {
+                "query": key,
+                "boost": 1
+                }
             }})
-  for key in List_acro_request:
-    #Boucle sur la liste des acronymes
-    request['query']['bool']["should"].append({"match": {
-      "Mots clés analysés": {
-        "analyzer": "french",
-        "query": key,
-        "boost": 2
-      }
-    }})
-    request['query']['bool']["should"].append({"match": {
-      "TITRE": {
-        "analyzer": "french",
-        "query": key,
-        "boost": 2
-      }
-    }})
-    request['query']['bool']["should"].append({"match": {
-      "Réponse": {
-        "analyzer": "french",
-        "query": key,
-        "boost": 1
-      }
-    }})
-  D = es.search(index=str(nom_index), size=15, body=request)
+    for key in request_expression:
+      print(key)
+      request['query']['bool']["should"].append(
+          {
+              "match": {
+                  'Mots clés analysés': {
+                      "query": key,
+                      "boost": 3
+                  }
+              }
+          })
+      request['query']['bool']["should"].append(
+          {
+              "match": {
+                  'TITRE': {
+                      "query": key,
+                      "boost": 3
 
-  return D['hits']['hits'] , lenght_of_request 
-#%%
+                  }
+              }
+          })
+      request['query']['bool']["should"].append(
+          {
+              "match": {
+                  "Réponse": {
+                      "query": key,
+                      "boost": 1.5
+                  }
+              }
+          })
+    request['query']['bool']["should"].append(
+        {
+            "constant_score": {
+                "filter": {
+                    "match": {
+                        "Date": {
+                            "query": year
+                        }
+                    }
+                },
+                "boost": 1
+            }
+        })
+    for key in List_acro_request:
+      #Boucle sur la liste des acronymes
+      request['query']['bool']["should"].append(
+          {
+              "match": {
+                  "Mots clés analysés": {
+                      "analyzer": "french",
+                      "query": key,
+                      "boost": 2
+                  }
+              }
+          })
+      request['query']['bool']["should"].append(
+          {
+              "match": {
+                  "TITRE": {
+                      "analyzer": "french",
+                      "query": key,
+                      "boost": 2
+                  }
+              }
+          })
+      request['query']['bool']["should"].append(
+          {
+              "match": {
+                  "Réponse": {
+                      "analyzer": "french",
+                      "query": key,
+                      "boost": 1
+                  }
+              }
+          })
+    D = es.search(index=str(nom_index), size=15, body=request)
+    return D['hits']['hits'] , lenght_of_request
+
+
 def corriger(req , nom_index):
   """
     Fonction qui permet de corriger la requête de l'utilisateur 
@@ -268,7 +296,7 @@ def corriger(req , nom_index):
   for i in range (len(list(D['suggest']['mytermsuggester'][0]['options']))):
     L.append(D['suggest']['mytermsuggester'][0]['options'][i]['text'])
   return L
-#%%
+
 def Synonymes(Map , Liste_glossaire , Liste_expression):
 
   """
@@ -296,7 +324,7 @@ def Synonymes(Map , Liste_glossaire , Liste_expression):
   #Map_1['mappings']['properties']['TITRE non stemmed']["boost"] = 3
   #Map_1['mappings']['properties']['Mots clés non stemmed']["boost"] = 1.5
   return Map_1
-#%%
+
 def add_syn(acronyme, meaning, Syn_Path = Chemin_Glossaire):
 
   """
@@ -602,83 +630,85 @@ def changement_structure():
       es.index(index=nom_index , body=content , id = name)
       logging.info('On vient de charger le fichier %s' %filename)
   return Message  
-#%%
-def upload_docs(name_document):
- 
-  """ 
-  Fonction permettant la création de l'index s'il n'est pas déja crée, La conversion des docs odt en Json l'enregistrement de ces Json et leur indexation
-   Arguments:
-     
-     name_document: Le nom du document à uploader
-     Les sections   
+
+
+def upload_docs(path_doc: str):
+    """ Fonction permettant la création de l'index s'il n'est pas déja crée, La conversion des docs odt en Json l'enregistrement de ces Json et leur indexation
+
+   Args:
+     path_doc: Le nom du document à uploader
+
    Output:
-   
      Document indéxé
-     Erreur si une erreur intervient dans le process 
-  
-"""
+     Erreur si une erreur intervient dans le process
+    """
 
-  if not indices.exists(index = nom_index):   #On crèe l'index s'il n'est pas déja existant
-    f = open(Chemin_Glossaire , 'r', encoding="utf8")
-    Liste_glossaire =f.read()
-    Liste_glossaire = str(Liste_glossaire)
-    Liste_glossaire = Liste_glossaire.split('\n')
-    f.close()
-    
-    #On ajoute le glossaire des expressions métier
-    f = open(Chemin_list_expression , 'r', encoding="utf8")
-    Liste_expression =f.read()
-    Liste_expression = str(Liste_expression)
-    Liste_expression = Liste_expression.split('\n')
-    f.close()
-    Liste_expression = Liste_expression[:-1]
-    
-    #On crèe notre index
-    
-    with open(Mapping_Directory , 'r' , encoding = 'utf-8') as json_file:
-      Map = json.load(json_file)
-    Map = Synonymes(Map, Liste_glossaire , Liste_expression)
+    if not indices.exists(index = nom_index):   #On crèe l'index s'il n'est pas déja existant
+        f = open(Chemin_Glossaire , 'r', encoding="utf8")
+        Liste_glossaire =f.read()
+        Liste_glossaire = str(Liste_glossaire)
+        Liste_glossaire = Liste_glossaire.split('\n')
+        f.close()
 
-      
-    indices.create(index = nom_index , body = Map)
-  
-  
-  if name_document.endswith(".odt"):
-    T = convertisseur_Odt_Json(str(Odt_Files_Directory + name_document) , name_document)
-    if type(T) is int:  #Si le type de T est entier je sais qu'l y a eu une erreur dans la conversion dûe à de mauvais titres de section
-      logging.error('Une erreur a été détecté dans le document %s'% name_document)
-      return str('Error: Un problème a été détecté dans le document ' + name_document + 'Veuillez revoir le nom des différentes sections du document')
-    else:
-      f = open(str(Json_Files_directory + str(name_document.split('.')[0] + '.json')), encoding="utf-8")
-      docket_content = f.read()
-      f.close()
+        #On ajoute le glossaire des expressions métier
+        f = open(Chemin_list_expression , 'r', encoding="utf8")
+        Liste_expression =f.read()
+        Liste_expression = str(Liste_expression)
+        Liste_expression = Liste_expression.split('\n')
+        f.close()
+        Liste_expression = Liste_expression[:-1]
 
-      content = json.loads(docket_content)
+        #On crèe notre index
 
-      #Indexer le document automatiquement dans l'index de correction de fautes d'orthographe
-      es.index(index=nom_index_prop, id=name_document, body=content)
-      
-      keyword = content['Mots clés'][0].split('-')[1:]
-      s = ""
+        with open(Mapping_Directory , 'r' , encoding = 'utf-8') as json_file:
+            Map = json.load(json_file)
+            Map = Synonymes(Map, Liste_glossaire , Liste_expression)
 
-      for i in range(len(keyword)):
-        mot_clef = keyword[i].strip()
-        analyse = indices.analyze(body = {'analyzer':"french", "text": mot_clef})
-        L = [analyse["tokens"][i]['token'] for i in range(len(analyse["tokens"]))]
-        words = " ".join(L)
-        s += words.replace(' ' , '').replace('-', '').replace('_', '')
-        s += ', '
-      s = [s]
+        indices.create(index = nom_index , body = Map)
 
-      content['Mots clés analysés'] = s
-      #Uniquement pour le test
-      """
-      with open(name_document.split('.')[0]+'.json' , 'w' , encoding = 'utf-8') as file:
-        json.dump(content , file, ensure_ascii=False)
-      """
-      es.index(index = nom_index, body=content , id = name_document)
-      logging.info('On vient d\'uploader le document %s'% name_document)
-  else: #Le fichier ne se termine pas par un ".odt"
-    logging.error('Le document %s n\'est pas un ODT'% name_document )
-    return 'Error: Le document n\'est pas un odt'
-  return ('Le document {} a été téléchargé avec succès'.format(name_document)) #Message retouné pour un succès
+    if path_doc.endswith(".odt"):
+        output_name = 'docOdt.json'
+        #T = convertisseur_Odt_Json(path_doc , path_doc)
+        data = convertisseur_odt_txt(path_doc)
+        T = save_json(data, output_name)
+        if type(T) is int:  #Si le type de T est entier je sais qu'l y a eu une erreur dans la conversion dûe à de mauvais titres de section
+            logging.error('Une erreur a été détecté dans le document %s'% path_doc)
+            return str('Error: Un problème a été détecté dans le document ' + path_doc + 'Veuillez revoir le nom des différentes sections du document')
+        else:
+            f = open(os.path.join(str(Json_Files_directory), output_name), encoding="utf-8")
+            docket_content = f.read()
+            f.close()
+
+            content = json.loads(docket_content)
+            #Indexer le document automatiquement dans l'index de correction de fautes d'orthographe
+            base_name = os.path.basename(path_doc)
+            es.index(index=nom_index_prop, id=base_name, body=content)
+            logging.info('On vient d\'uploader le document {} dans {}'.format(base_name, nom_index_prop))
+
+
+            if 'Mots clés' in content:
+                keyword = content['Mots clés'][0].split('-')[1:]
+                s = ""
+
+                for i in range(len(keyword)):
+                    mot_clef = keyword[i].strip()
+                    analyse = indices.analyze(body = {'analyzer':"french", "text": mot_clef})
+                    L = [analyse["tokens"][i]['token'] for i in range(len(analyse["tokens"]))]
+                    words = " ".join(L)
+                    s += words.replace(' ' , '').replace('-', '').replace('_', '')
+                    s += ', '
+                s = [s]
+
+                content['Mots clés analysés'] = s
+                es.index(index = nom_index, id = base_name, body=content)
+                logging.info('On vient d\'uploader le document {} dans {}'.format(base_name, nom_index))
+    else: #Le fichier ne se termine pas par un ".odt"
+        logging.error('Le document %s n\'est pas un ODT'% path_doc )
+        return 'Error: Le document n\'est pas un odt'
+    return ('Le document {} a été téléchargé avec succès'.format(path_doc)) #Message retouné pour un succès
+
+if __name__ == '__main__':
+    path_doc = '/app/tests/doc.odt'
+    upload_docs(path_doc)
+    result = simple_request(nom_index)
+    print(result)
