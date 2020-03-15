@@ -3,42 +3,32 @@ version: '3.4'
 # this docker configuation is for dev use only
 
 services:
-  nginx-development:
-    #image: ${DOCKER_USERNAME}/${DC_PREFIX}-nginx-development:${APP_VERSION}
-    image: ${APP}-nginx-development:${APP_VERSION}
-    container_name: ${APP}-nginx-development
+  traefik:
+    image: ${APP}-traefik-${EXEC_ENV}:${APP_VERSION}
+    container_name: ${APP}-traefik-${EXEC_ENV}
     build:
-      context: ${NGINX}
-      target: development
+      context: ${TRAEFIK_PATH}
+      target: ${EXEC_ENV}
       dockerfile: Dockerfile
-      args:
-        app_name: ${APP}
-        app_ver: ${APP_VERSION}
-    depends_on:
-      - frontend-development
     environment:
-      - APP
-      - FRONTEND_DEV_HOST
-      - FRONTEND_DEV_PORT
-      - BACKEND_HOST
-      - BACKEND_PORT
-      - ES_PROXY_PATH
-      - ES_HOST
-      - ES_INDEX
-      - ES_PORT
-      - API_USER_LIMIT_RATE
-      - API_USER_BURST
-      - API_USER_SCOPE
-      - API_GLOBAL_LIMIT_RATE
-      - API_GLOBAL_BURST
-    volumes:
-      - ${NGINX}/default-dev.template:/etc/nginx/conf.d/default.template
-      - ${NGINX}/nginx-dev.template:/etc/nginx/nginx.template
-      - ${FRONTEND}/public:/usr/share/nginx/html
+      - TRAEFIK_LOG_LEVEL=${LOG_LEVEL}
+      - TRAEFIK_ENTRYPOINTS_http=true
+      - TRAEFIK_ENTRYPOINTS_http_ADDRESS=:80
+      - TRAEFIK_ENTRYPOINTS_https=true
+      - TRAEFIK_ENTRYPOINTS_https_ADDRESS=:443
+      - TRAEFIK_ENTRYPOINTS_livereload=true
+      - TRAEFIK_ENTRYPOINTS_livereload_ADDRESS=:35729
+      - TRAEFIK_PROVIDERS_DOCKER=true
+      - TRAEFIK_PROVIDERS_DOCKER_ENDPOINT=unix:///var/run/docker.sock
+      - TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT=false
     ports:
       - ${PORT}:80
-      - "35729:35729"
-    restart: always
+      - 443:443
+      - 35729:35729
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/acme.json:/acme.json
 
   frontend-development:
     build:
@@ -59,13 +49,12 @@ services:
         NPM_LATEST: ${NPM_LATEST}
         NPM_GIT: ${NPM_GIT}
         NPM_VERBOSE: ${NPM_VERBOSE}
-        FRONTEND_DEV_PORT: ${FRONTEND_DEV_PORT}
     #image: ${DOCKER_USERNAME}/${DC_PREFIX}-frontend-development:${APP_VERSION}
     image: ${APP}-frontend-development:${APP_VERSION}
     container_name: ${APP}-frontend-development
     environment:
       APP: ${APP}
-      PORT: ${FRONTEND_DEV_PORT}
+      PORT: 5000
       HOST: 0.0.0.0
       ES_PROXY_PATH: ${ES_PROXY_PATH}
     volumes:

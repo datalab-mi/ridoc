@@ -33,7 +33,6 @@ export BACKEND_HOST=backend
 # frontend dir
 export PORT=8084
 export FRONTEND := ${APP_PATH}/frontend
-export FRONTEND_DEV_PORT := ${PORT}
 export FRONTEND_DEV_HOST = frontend-development
 export FILE_FRONTEND_APP_VERSION = $(APP)-$(APP_VERSION)-frontend.tar.gz
 
@@ -45,6 +44,10 @@ export API_USER_BURST=20 nodelay
 export API_USER_SCOPE=http_x_forwarded_for
 export API_GLOBAL_LIMIT_RATE=20r/s
 export API_GLOBAL_BURST=200 nodelay
+
+# traefik
+export TRAEFIK_PATH=${APP_PATH}/traefik
+export LOG_LEVEL=DEBUG
 
 # this is usefull with most python apps in dev mode because if stdout is
 # buffered logs do not shows in realtime
@@ -65,13 +68,13 @@ up: venv
 	venv/bin/python3 run.py
 
 
-vm_max_count            := $(shell cat /etc/sysctl.conf | egrep vm.max_map_count\s*=\s*262144 && echo true)
-
-vm_max:
-ifeq ("$(vm_max_count)", "")
-	@echo updating vm.max_map_count $(vm_max_count) to 262144
-	sudo sysctl -w vm.max_map_count=262144
-endif
+#vm_max_count            := $(shell cat /etc/sysctl.conf | egrep vm.max_map_count\s*=\s*262144 && echo true)
+#
+#vm_max:
+#ifeq ("$(vm_max_count)", "")
+#	@echo updating vm.max_map_count $(vm_max_count) to 262144
+#	sudo sysctl -w vm.max_map_count=262144
+#endif
 
 #############
 #  Network  #
@@ -86,7 +89,8 @@ network:
 
 # Elasticsearch
 
-elasticsearch: network vm_max
+elasticsearch: network
+	# vm_max
 	@echo docker-compose up elasticsearch with ${ES_NODES} nodes
 	@cat ${DC_FILE}-elasticsearch.yml | sed "s/%M/${ES_MEM}/g" > ${DC_FILE}-elasticsearch-huge.yml
 	@(if [ ! -d ${ES_DATA}/node1 ]; then sudo mkdir -p ${ES_DATA}/node1 ; sudo chmod g+rw ${ES_DATA}/node1/.; sudo chgrp 1000 ${ES_DATA}/node1/.; fi)
@@ -103,6 +107,10 @@ elasticsearch-stop:
 	@echo docker-compose down matchID elasticsearch
 	@if [ -f "${DC_FILE}-elasticsearch-huge.yml" ]; then ${DC} -f ${DC_FILE}-elasticsearch-huge.yml down;fi
 
+# traefik
+
+traefik/acme.json:
+	touch traefik/acme.json
 
 # backend
 
@@ -137,21 +145,21 @@ frontend-start:
 	${DC} -f ${DC_FILE}.yml up -d
 	@timeout=${NGINX_TIMEOUT} ; ret=1 ; until [ "$$timeout" -le 0 -o "$$ret" -eq "0"  ] ; do (curl -s --fail -XGET localhost:${PORT} > /dev/null) ; ret=$$? ; if [ "$$ret" -ne "0" ] ; then echo "waiting for nginx to start $$timeout" ; fi ; ((timeout--)); sleep 1 ; done ; exit $$ret
 
-frontend-dev:
+frontend-dev: traefik/acme.json
 ifneq "$(commit)" "$(lastcommit)"
 	@echo docker-compose up ${APP} frontend for dev after new commit ${APP_VERSION}
-	${DC} -f ${DC_FILE}-dev-frontend.yml up --build -d
+	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-dev-frontend.yml up --build -d
 	@echo "${commit}" > ${FRONTEND}/.lastcommit
 else
 	@echo docker-compose up ${APP} frontend for dev
-	${DC} -f  ${DC_FILE}-dev-frontend.yml up -d
+	@export EXEC_ENV=dev; ${DC} -f  ${DC_FILE}-dev-frontend.yml up -d --build
 endif
 
 frontend-dev-stop:
-	${DC} -f ${DC_FILE}-dev-frontend.yml down
+	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-dev-frontend.yml down
 
 frontend-stop:
-	${DC} -f ${DC_FILE}.yml down
+	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down
 
 ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION):
 	( cd ${FRONTEND} && tar -zcvf $(FILE_FRONTEND_APP_VERSION) --exclude ${APP}.tar.gz \
@@ -165,7 +173,7 @@ frontend-check-build:
 
 frontend-build-dist: ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION) frontend-check-build
 	@echo building ${APP} frontend in ${FRONTEND}
-	${DC} -f $(DC_FILE)-build.yml build $(DC_BUILD_ARGS)
+	@export EXEC_ENV=prod; ${DC} -f $(DC_FILE)-build.yml build $(DC_BUILD_ARGS)
 
 dev: network frontend-stop frontend-dev
 

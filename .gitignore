@@ -15,3 +15,4 @@ Data
 # production
 frontend/public/build
 bundle.*
+acme.json

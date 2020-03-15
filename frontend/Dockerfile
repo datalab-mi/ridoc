@@ -70,12 +70,23 @@ ARG MIRROR_DEBIAN
 ARG app_path
 ARG app_name
 ARG app_ver
-ARG FRONTEND_DEV_PORT
 
 VOLUME /$app_path/src
 VOLUME /$app_path/public
 
-EXPOSE ${FRONTEND_DEV_PORT}
+EXPOSE 5000
+EXPOSE 35729
+
+LABEL traefik.enable="true"
+LABEL traefik.http.routers.nodejs.rule="Host(`localhost`)"
+LABEL traefik.http.routers.nodejs.entrypoints="http"
+LABEL traefik.http.routers.nodejs.service="svc_nodejs"
+LABEL traefik.http.services.svc_nodejs.loadbalancer.server.port="5000"
+
+LABEL traefik.http.routers.livereload.rule="Host(`localhost`)"
+LABEL traefik.http.routers.livereload.entrypoints="livereload"
+LABEL traefik.http.routers.livereload.service="svc_livereload"
+LABEL traefik.http.services.svc_livereload.loadbalancer.server.port="35729"
 
 CMD ["npm", "run", "dev"]
 
