@@ -9,8 +9,8 @@ services:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
         no_proxy: ${no_proxy}
-    image: browser-backend:latest
-    container_name: ${DC_PREFIX}-backend
+    image: ${APP}-backend-${EXEC_ENV}:${APP_VERSION}
+    container_name: ${APP}-backend-${EXEC_ENV}
     volumes:
       - ${BACKEND}/:/app/
     expose:
@@ -19,6 +19,7 @@ services:
       BACKEND_PORT: ${BACKEND_PORT}
   tika:
     image: logicalspark/docker-tikaserver
+    container_name: ${DC_PREFIX}-tika
     expose:
       - "9998"
     environment:

@@ -57,17 +57,6 @@ dummy		    := $(shell touch artifacts)
 include ./artifacts
 export
 
-.env:
-	cp .env.sample .env
-
-venv:
-	python3 -m venv venv;
-	venv/bin/pip3 install -U -r requirements.txt;
-
-up: venv
-	venv/bin/python3 run.py
-
-
 #vm_max_count            := $(shell cat /etc/sysctl.conf | egrep vm.max_map_count\s*=\s*262144 && echo true)
 #
 #vm_max:
@@ -115,22 +104,25 @@ traefik/acme.json:
 # backend
 
 # development mode
-backend-dev:
+backend/.env:
+	cp backend/.env.sample backend/.env
+
+backend-dev: backend/.env
 	@echo docker-compose up backend for dev
 	#@export ${DC} -f ${DC_FILE}.yml up -d --build --force-recreate 2>&1 | grep -v orphan
-	${DC} -f ${DC_FILE}.yml up -d --build --force-recreate
+	@export EXEC_ENV=dev;${DC} -f ${DC_FILE}.yml up -d --build --force-recreate
 
 backend-dev-stop:
-	@export EXEC_ENV=development; ${DC} -f ${DC_FILE}.yml down --remove-orphan
+	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down #--remove-orphan
 
 # production mode
-backend-start:
+backend-start: backend/.env
 	@echo docker-compose up backend for production ${VERSION}
-	@export EXEC_ENV=production; ${DC} -f ${DC_FILE}.yml up --build -d 2>&1 | grep -v orphan
+	@export EXEC_ENV=prod; ${DC} -f ${DC_FILE}.yml up --build -d 2>&1 | grep -v orphan
 
 backend-stop:
 	@echo docker-compose down backend for production ${VERSION}
-	@export EXEC_ENV=production; ${DC} -f ${DC_FILE}.yml down  --remove-orphan
+	@export EXEC_ENV=prod; ${DC} -f ${DC_FILE}.yml down  --remove-orphan
 
 test:
 	$(DC) -f ${DC_FILE}.yml exec backend pytest tests/

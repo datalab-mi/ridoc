@@ -18,6 +18,9 @@ def api_request():
     d = simple_request(nom_index)
     return json.dumps(d)
 
+@app.route('/api/v1/healthcheck')
+def healthcheck():
+    return json.dumps({"status": "ok"})
 
 if __name__ == '__main__':
     app.run(
