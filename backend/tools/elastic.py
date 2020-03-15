@@ -4,7 +4,7 @@ import elasticsearch
 from elasticsearch import Elasticsearch
 import os
 import base64
-from convertisseur import convertisseur_Odt_Json, convertisseur_odt_txt, save_json
+from convertisseur import convertisseur_odt_txt, convertisseur_pdf_txt, save_json
 import json
 import logging
 import datetime
@@ -644,30 +644,31 @@ def upload_docs(path_doc: str):
     """
 
     if not indices.exists(index = nom_index):   #On crèe l'index s'il n'est pas déja existant
-        f = open(Chemin_Glossaire , 'r', encoding="utf8")
-        Liste_glossaire =f.read()
-        Liste_glossaire = str(Liste_glossaire)
-        Liste_glossaire = Liste_glossaire.split('\n')
-        f.close()
+        #f = open(Chemin_Glossaire , 'r', encoding="utf8")
+        #Liste_glossaire =f.read()
+        #Liste_glossaire = str(Liste_glossaire)
+        #Liste_glossaire = Liste_glossaire.split('\n')
+        #f.close()
 
-        #On ajoute le glossaire des expressions métier
-        f = open(Chemin_list_expression , 'r', encoding="utf8")
-        Liste_expression =f.read()
-        Liste_expression = str(Liste_expression)
-        Liste_expression = Liste_expression.split('\n')
-        f.close()
-        Liste_expression = Liste_expression[:-1]
+        ##On ajoute le glossaire des expressions métier
+        #f = open(Chemin_list_expression , 'r', encoding="utf8")
+        #Liste_expression =f.read()
+        #Liste_expression = str(Liste_expression)
+        #Liste_expression = Liste_expression.split('\n')
+        #f.close()
+        #Liste_expression = Liste_expression[:-1]
 
         #On crèe notre index
-
         with open(Mapping_Directory , 'r' , encoding = 'utf-8') as json_file:
             Map = json.load(json_file)
-            Map = Synonymes(Map, Liste_glossaire , Liste_expression)
+            #Map = Synonymes(Map, Liste_glossaire , Liste_expression)
 
         indices.create(index = nom_index , body = Map)
 
     if path_doc.endswith(".odt"):
-        output_name = 'docOdt.json'
+        base_name = os.path.basename(path_doc)
+        filename, file_extension = os.path.splitext(base_name)
+        output_name = '{}.json'.format(filename)
         #T = convertisseur_Odt_Json(path_doc , path_doc)
         data = convertisseur_odt_txt(path_doc)
         T = save_json(data, output_name)
@@ -681,7 +682,6 @@ def upload_docs(path_doc: str):
 
             content = json.loads(docket_content)
             #Indexer le document automatiquement dans l'index de correction de fautes d'orthographe
-            base_name = os.path.basename(path_doc)
             es.index(index=nom_index_prop, id=base_name, body=content)
             logging.info('On vient d\'uploader le document {} dans {}'.format(base_name, nom_index_prop))
 
@@ -702,13 +702,39 @@ def upload_docs(path_doc: str):
                 content['Mots clés analysés'] = s
                 es.index(index = nom_index, id = base_name, body=content)
                 logging.info('On vient d\'uploader le document {} dans {}'.format(base_name, nom_index))
+    if path_doc.endswith(".pdf"):
+        txt = convertisseur_pdf_txt(path_doc)
+        name = 'doc name'
+        Titre = 'doc titre'
+        Date = 'doc date'
+        Auteurs = 'doc auteur 1'
+        data = dict(Titre=Titre, Date=Date,Auteurs=Auteurs)
+        data['Corps'] = txt
+
+        base_name = os.path.basename(path_doc)
+        print("BASEname", base_name)
+        filename, file_extension = os.path.splitext(base_name)
+        output_name = '{}.json'.format(filename)
+        T = save_json(data, output_name)
+        if type(T) is int:  #Si le type de T est entier je sais qu'l y a eu une erreur dans la conversion dûe à de mauvais titres de section
+            logging.error('Une erreur a été détecté dans le document %s'% path_doc)
+            return str('Error: Un problème a été détecté dans le document ' + path_doc + 'Veuillez revoir le nom des différentes sections du document')
+        else:
+            f = open(os.path.join(str(Json_Files_directory), output_name), encoding="utf-8")
+            docket_content = f.read()
+            f.close()
+
+            content = json.loads(docket_content)
+            #Indexer le document automatiquement dans l'index de correction de fautes d'orthographe
+            print(content)
+            es.index(index=nom_index_prop, id=base_name, body=content)
+            logging.info('On vient d\'uploader le document {} dans {}'.format(base_name, nom_index_prop))
     else: #Le fichier ne se termine pas par un ".odt"
         logging.error('Le document %s n\'est pas un ODT'% path_doc )
         return 'Error: Le document n\'est pas un odt'
     return ('Le document {} a été téléchargé avec succès'.format(path_doc)) #Message retouné pour un succès
 
 if __name__ == '__main__':
-    path_doc = '/app/tests/doc.odt'
+    path_doc = '/app/tests/doc.pdf'
     upload_docs(path_doc)
     result = simple_request(nom_index)
-    print(result)
