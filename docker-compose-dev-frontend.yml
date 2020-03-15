@@ -34,7 +34,7 @@ services:
     build:
       context: ${FRONTEND}
       dockerfile: Dockerfile
-      target: development
+      target: dev
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}

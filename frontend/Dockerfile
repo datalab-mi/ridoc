@@ -60,7 +60,7 @@ RUN if [ -z "${NPM_VERBOSE}" ]; then\
 ################################
 # Step 2: "development" target #
 ################################
-FROM base as development
+FROM base as dev
 ARG http_proxy
 ARG https_proxy
 ARG no_proxy
