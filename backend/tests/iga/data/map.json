@@ -1,0 +1,87 @@
+{
+
+  "settings": {
+    "index" : {
+      "highlight":{
+      },
+      "analysis": {
+        "char_filter":{
+          "my_char_filter":{
+            "type":"mapping"
+          }
+        },
+        "filter": {
+          "french_elision": {
+            "type": "elision",
+            "articles_case": true,
+            "articles": ["l", "m", "t", "qu", "n", "s", "j", "d", "c", "jusqu", "quoiqu", "lorsqu", "puisqu"]
+          },
+          "french_synonym": {
+            "type": "synonym",
+            "ignore_case": true,
+            "expand": true,
+            "synonyms": [
+              "salade, laitue",
+              "mayo, mayonnaise",
+              "grille, toaste"
+            ]
+          },
+          "french_stemmer": {
+            "type": "stemmer",
+            "language": "light_french"
+          },
+          "french_stop": {
+            "type":       "stop",
+            "stopwords":  "_french_"
+          },
+          "glossary" : {
+            "type" : "synonym"
+          }
+        },
+        "analyzer": {
+          "auteur_analyzer" : {
+            "tokenizer" : "standard" ,
+            "filter" : "lowercase"},
+          "french": {
+            "char_filter":[
+              "my_char_filter"
+            ],
+            "tokenizer": "icu_tokenizer",
+            "filter": [
+              "french_elision",
+              "glossary",
+              "icu_folding",
+              "french_synonym",
+              "french_stop",
+              "french_stemmer"
+            ]
+          }
+
+      }
+  }
+  }
+
+},
+    "mappings":{
+    "properties": {
+      "content": {
+        "type": "text",
+        "analyzer" : "french",
+          "search_analyzer" : "french"
+      },
+      "title": {
+        "type": "text",
+        "analyzer" : "french",
+          "search_analyzer" : "french"
+      },
+      "date": {
+        "type" : "date" ,
+        "format" : "yyyy-MM-dd"
+      },
+    "author" : {
+      "type" : "text",
+      "analyzer" : "auteur_analyzer"
+    }
+    }
+  }
+}

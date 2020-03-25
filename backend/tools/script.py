@@ -10,88 +10,130 @@ import pandas as pd
 from tika import parser
 from elastic import Synonymes
 import numpy as np
+from shutil import copyfile
 
-
+from converter import pdf2json
 #home = os.getenv('HOME')
 home = os.getcwd()
-Chemin_Glossaire = home + environ.get('Chemin_Glossaire')
-Mapping_Directory = home + environ.get('Mapping_Directory')
-Json_Files_directory = home + environ.get('Json_Files_directory')
-Pdf_Files_Directory = home + environ.get('Pdf_Files_Directory')
-nom_index = environ.get('Nom_index')
+
 elastic_host = environ.get('Elastic_host')
 elastic_port = environ.get('Elastic_port')
-Chemin_list_expression = home + environ.get('Chemin_list_expression')
 
-#%%
-#On établie une connexion avec le serveur Elastic
+GLOSSARY_PATH =  environ.get('Chemin_Glossaire')
+EXPRESSION_PATH = environ.get('Chemin_list_expression')
+MAPPING_DIR = environ.get('Mapping_Directory')
+
+USER_DATA = '/data'
+ES_DATA = '/usr/share/elasticsearch/data/extra/test'
+
+GLOSSARY_FILE = 'glossaire.txt'
+EXPRESSION_FILE = 'expression.txt'
+MAPPING_FILE = 'map.json'
+
+NOM_INDEX = 'iga'
+# Connection avec le serveur Elastic
 es = Elasticsearch([{'host': str(elastic_host), 'port': str(elastic_port)}])
 indices = elasticsearch.client.IndicesClient(es)
 #%%
 
-data = pd.read_excel('METADATA.xlsx')
-data.set_index('Unnamed: 0' , inplace = True)
 
-if not indices.exists(index = nom_index):   #On crèe l'index s'il n'est pas déja existant
-    f = open(Chemin_Glossaire , 'r', encoding="utf8")
-    Liste_glossaire =f.read()
-    f.close()
-    Liste_glossaire = str(Liste_glossaire)
-    Liste_glossaire = Liste_glossaire.split('\n')
+def create_index(nom_index,
+            user_data,
+            es_data,
+            mapping_file,
+            glossary_file=None,
+            expression_file=None):
 
-    f = open(Chemin_list_expression , 'r', encoding="utf8")
-    Liste_expression =f.read()
-    Liste_expression = str(Liste_expression)
-    Liste_expression = Liste_expression.split('\n')
-    f.close()
-    Liste_expression = Liste_expression[:-1]
+    with open(os.path.join(user_data, mapping_file) , 'r' , encoding = 'utf-8') as json_file:
+        map = json.load(json_file)
 
-    with open(Mapping_Directory , 'r' , encoding = 'utf-8') as json_file:
-        Map = json.load(json_file)
-    Map = Synonymes(Map, Liste_glossaire , Liste_expression)
+    if glossary_file:
+        print('Use glossary file %s'%glossary_file)
+        # Copy glossary and experssion file to elastic search mount volume
+        copyfile(os.path.join(user_data, glossary_file),
+                os.path.join(es_data, glossary_file))
+        map['settings']["index"]["analysis"]["filter"]["glossary"].update(
+                {"synonyms_path" : os.path.join(es_data, glossary_file)})
 
-    print("INDEX")
-    print(nom_index)
-    print(Map)
+    if expression_file:
+        print('Use expresion file %s'%expression_file)
+        copyfile(os.path.join(user_data, expression_file),
+                os.path.join(es_data, expression_file))
+        map["settings"]["index"]["analysis"]['char_filter']["my_char_filter"].update(
+                {'mappings_path' : os.path.join(es_data, expression_file)})
 
-    indices.create(index = nom_index , body = Map)
+    print(map)
+    with open(os.path.join(es_data, mapping_file), 'w') as outfile:
+        json.dump(map, outfile)
 
-for name_document in os.listdir(Pdf_Files_Directory):
-    if name_document.endswith(".pdf"):
-        try:
-            directory = Pdf_Files_Directory + name_document
-            print("FILE:", directory)
-            file_data = parser.from_file(directory,"http://tika:9998/")
-            print("data", file_data)
-            text = file_data['content']
-            if len(text)>1000:
-                text=text.replace(u'\xa0', u' ')
-                text=text.replace(u'\n' , u' ')
-                text=text.replace(u'\xa0', u' ')
-                text=text.replace(u'\n' , u' ')
-                Sections = ['CORPS']
-                d = collections.defaultdict()
-                d[Sections[0]] = text
+    es.indices.delete(index=nom_index, ignore=[400, 404])
+    # create index
+    es.indices.create(index = nom_index, body=map)
 
-                try:
-                    d['Titre'] = str(np.array(data['titre'][data['filename'] == name_document])[0])
-                    d['Date'] = str(int(np.array(data['annee2'][data['filename'] == name_document])[0])) + "-05-31"
-                    d['Auteurs'] = str(np.array(data['nomaut1'][data['filename'] == name_document])[0])
-                except:
-                    print('pass')
-                    continue
-                with open(str(str(Json_Files_directory) + name_document.split('.')[0] + '.json') , 'w', encoding='utf-8') as f:
-                    json.dump(d, f, ensure_ascii=False)
-                f = open(str(Json_Files_directory + str(name_document.split('.')[0] + '.json')), encoding="utf-8")
-                docket_content = f.read()
-                es.index(index = nom_index, body=json.loads(docket_content) , id = name_document)
-                f.close()
-                print('On vient d\'uploader le document %s'% name_document)
 
-            else:
-                print("Pas Upload du doc" , name_document)
-        except Exception as e:
-            print(e)
-            break
-            print('Pas d\'upload')
+def inject_documents(nom_index, user_data, pdf_path, json_path,
+            metada_file=None):
 
+    no_match = 0
+    os.makedirs(os.path.join(user_data, json_path), exist_ok=True)
+
+    if metada_file:
+        meta_df = pd.read_excel(metada_file)
+        #meta_df.set_index('Unnamed: 0' , inplace = True)
+
+    for name_document in os.listdir(os.path.join(user_data, pdf_path)):
+        if name_document.endswith(".pdf"):
+            try:
+                path_document = os.path.join(user_data, pdf_path, name_document)
+                print('Read %s'%path_document)
+                data = pdf2json(path_document)
+
+                if metada_file:
+                    meta = meta_df.loc[meta_df['file'] == name_document, :]
+
+                    if not meta.empty:
+
+                        #data['titre'] = str(meta['titre'].values[0])
+                        #data['Date'] = "%d-01-01"%meta['annee2'].values[0].astype(int)
+                        #data['Auteurs'] = str(meta['nomaut1'].values[0])
+                        meta = meta.iloc[0]
+                        meta['date'] = meta['date'].strftime('%Y-%m-%d')
+                        data.update(meta)
+                    else:
+                        no_match += 1
+                        continue
+
+                with open(os.path.join(user_data, json_path, name_document.replace('.pdf','.json')) , 'w', encoding='utf-8') as f:
+                    json.dump(data, f, ensure_ascii=False)
+
+                es.index(index = nom_index, body=data , id = name_document)
+                print('Document %s just uploaded'% name_document)
+
+            except Exception as e:
+                print(e)
+                #break
+                print(20*'*')
+                print('Error, cannot upload %s'%name_document)
+                print(20*'*')
+
+    print("There is %s documents without metadata match"%no_match)
+if __name__ == '__main__':
+
+    NOM_INDEX = 'prod'
+    USER_DATA = '/data/user'
+    ES_DATA = '/usr/share/elasticsearch/data/extra'
+
+    GLOSSARY_FILE = 'glossaire.txt'
+    EXPRESSION_FILE = 'syn_expressions_metier.txt'
+    MAPPING_FILE = 'map.json'
+    METADATA_FILE = 'METADATA.xlsx'
+
+    PDF_DIR = 'Data_Pdf'
+    JSON_DIR = 'Data_Json'
+
+    create_index(NOM_INDEX, USER_DATA, ES_DATA, MAPPING_FILE,
+                GLOSSARY_FILE,
+                EXPRESSION_FILE)
+
+    inject_documents(NOM_INDEX, USER_DATA, PDF_DIR, JSON_DIR,
+            metada_file = METADATA_FILE)

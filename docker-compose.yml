@@ -13,6 +13,8 @@ services:
     container_name: ${APP}-backend-${EXEC_ENV}
     volumes:
       - ${BACKEND}/:/app/
+      - ${DATA_PATH}:/data/user
+      - ${ES_DATA}/extra:/usr/share/elasticsearch/data/extra
     expose:
       - ${BACKEND_PORT}
     environment:

@@ -17,8 +17,9 @@ export ES_TIMEOUT = 60
 export ES_INDEX = deces
 export ES_DATA = ${APP_PATH}/esdata
 export ES_NODES = 1
-export ES_MEM = 1024m
-export ES_VERSION = 7.5.0
+export ES_MEM = 2g
+export ES_VERSION = 7.4.0
+
 export API_PATH = deces
 export ES_PROXY_PATH = /${API_PATH}/api/v0/search
 
@@ -82,7 +83,7 @@ elasticsearch: network
 	# vm_max
 	@echo docker-compose up elasticsearch with ${ES_NODES} nodes
 	@cat ${DC_FILE}-elasticsearch.yml | sed "s/%M/${ES_MEM}/g" > ${DC_FILE}-elasticsearch-huge.yml
-	@(if [ ! -d ${ES_DATA}/node1 ]; then sudo mkdir -p ${ES_DATA}/node1 ; sudo chmod g+rw ${ES_DATA}/node1/.; sudo chgrp 1000 ${ES_DATA}/node1/.; fi)
+	@(if [ ! -d ${ES_DATA}/node1 ]; then sudo mkdir -p ${ES_DATA}/node1 ; sudo chmod g+rwx ${ES_DATA}/node1; sudo chgrp 0 ${ES_DATA}/node1; fi)
 	@(i=$(ES_NODES); while [ $${i} -gt 1 ]; \
 		do \
 			if [ ! -d ${ES_DATA}/node$$i ]; then (echo ${ES_DATA}/node$$i && sudo mkdir -p ${ES_DATA}/node$$i && sudo chmod g+rw ${ES_DATA}/node$$i/. && sudo chgrp 1000 ${ES_DATA}/node$$i/.); fi; \
@@ -93,9 +94,16 @@ elasticsearch: network
 	${DC} -f ${DC_FILE}-elasticsearch-huge.yml up -d
 
 elasticsearch-stop:
-	@echo docker-compose down matchID elasticsearch
+	@echo docker-compose down elasticsearch
 	@if [ -f "${DC_FILE}-elasticsearch-huge.yml" ]; then ${DC} -f ${DC_FILE}-elasticsearch-huge.yml down;fi
 
+# kibana
+
+kibana: network
+	${DC} -f ${DC_FILE}-kibana.yml up -d
+
+kibana-exec:
+	$(DC) -f ${DC_FILE}-kibana.yml exec kibana bash
 # traefik
 
 traefik/acme.json:
@@ -123,6 +131,15 @@ backend-start: backend/.env
 backend-stop:
 	@echo docker-compose down backend for production ${VERSION}
 	@export EXEC_ENV=prod; ${DC} -f ${DC_FILE}.yml down  --remove-orphan
+
+backend-exec:
+	$(DC) -f ${DC_FILE}.yml exec backend bash
+
+##############
+#Test backend#
+##############
+download-data:
+	git clone https://github.com/victorjourne/IGA-BF.git && cd IGA-BF && make run base_path=$(BACKEND)/tests/iga/data/pdf
 
 test:
 	$(DC) -f ${DC_FILE}.yml exec backend pytest tests/
@@ -168,4 +185,3 @@ frontend-build-dist: ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION) frontend-check-bui
 	@export EXEC_ENV=prod; ${DC} -f $(DC_FILE)-build.yml build $(DC_BUILD_ARGS)
 
 dev: network frontend-stop frontend-dev
-

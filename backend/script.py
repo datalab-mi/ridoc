@@ -13,10 +13,10 @@ import numpy as np
 
 
 #home = os.getenv('HOME')
-home = os.getcwd()
-Chemin_Glossaire = home + environ.get('Chemin_Glossaire')
+
+Chemin_Glossaire = environ.get('Chemin_Glossaire')
 Mapping_Directory = home + environ.get('Mapping_Directory')
-Json_Files_directory = home + environ.get('Json_Files_directory')
+JSON_FILES_DIRECTORY = home + environ.get('JSON_FILES_DIRECTORY')
 Pdf_Files_Directory = home + environ.get('Pdf_Files_Directory')
 nom_index = environ.get('Nom_index')
 elastic_host = environ.get('Elastic_host')
@@ -76,9 +76,9 @@ for name_document in os.listdir(Pdf_Files_Directory):
                 except:
                     print('pass')
                     continue
-                with open(str(str(Json_Files_directory) + name_document.split('.')[0] + '.json') , 'w', encoding='utf-8') as f:
+                with open(str(str(JSON_FILES_DIRECTORY) + name_document.split('.')[0] + '.json') , 'w', encoding='utf-8') as f:
                     json.dump(d, f, ensure_ascii=False)
-                f = open(str(Json_Files_directory + str(name_document.split('.')[0] + '.json')), encoding="utf-8")
+                f = open(str(JSON_FILES_DIRECTORY + str(name_document.split('.')[0] + '.json')), encoding="utf-8")
                 docket_content = f.read()
                 es.index(index = nom_index, body=json.loads(docket_content) , id = name_document)
                 f.close()
@@ -90,4 +90,3 @@ for name_document in os.listdir(Pdf_Files_Directory):
             print(e)
             break
             print('Pas d\'upload')
-

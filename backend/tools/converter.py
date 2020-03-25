@@ -7,15 +7,15 @@ from odf.opendocument import load
 from tika import parser
 from os import environ
 from dotenv import load_dotenv
-
+import re
 load_dotenv()
 
 # Les variables d'environement
 home = os.getcwd()
-Json_Files_directory = home + environ.get('Json_Files_directory')
+JSON_FILES_DIRECTORY = home + environ.get('JSON_FILES_DIRECTORY')
 
 
-def convertisseur_odt_txt(path: str) -> str:
+def odt2json(path: str, sections: list = []) -> dict:
     """ Fonction qui permet la conversion des Json en Odt elle prend en argument:
 
     Args:
@@ -23,6 +23,9 @@ def convertisseur_odt_txt(path: str) -> str:
     Returns:
         text: text
     """
+
+    sections = ['TITRE' , 'DOMAINE' , 'Mots clés' , 'Date' , 'Question' , 'Réponse' , 'Pièces jointes' , 'Liens' , 'Références']
+
     doc = load(path)
     #J'ai accés aux élélments du document
     allparas = doc.getElementsByType(text.P)
@@ -40,9 +43,8 @@ def convertisseur_odt_txt(path: str) -> str:
         L[i] = L[i].replace(u'\xa0', u' ') #J'enlève les \xa0
         L[i] = L[i].replace(u'\n' , u' ') #J'enlève les \n
     # convert and store all values
-    sections = ['TITRE' , 'DOMAINE' , 'Mots clés' , 'Date' , 'Question' , 'Réponse' , 'Pièces jointes' , 'Liens' , 'Références']
 
-    d = dict(Corps=" ".join(L))
+    d = dict(content=" ".join(L))
     check = 0
     for x in L:
         y = x.split(':')
@@ -54,10 +56,10 @@ def convertisseur_odt_txt(path: str) -> str:
     return d
 
 
-def convertisseur_pdf_txt(path: str) -> str:
+def pdf2json(path: str, sections: list = []) -> dict:
     """
-    Fonction qui permet la conversion des Pdf en Jso et prend en argument:
-
+    Fonction qui permet la conversion des Pdf en json et prend en argument:
+    Les sections du document ne sont pas encore supportées.
     Args:
         path : le chemin du fichier en question
     Returns:
@@ -66,19 +68,28 @@ def convertisseur_pdf_txt(path: str) -> str:
     try:
         file_data = parser.from_file(path,"http://tika:9998/")
         data = file_data['content']
-        data=data.replace(u'\xa0', u' ')
-        data=data.replace(u'\n' , u' ')
-        data=data.replace(u'\xa0', u' ')
-        data=data.replace(u'\n' , u' ')
-        return data
+        data = data.replace(u'\xa0', u' ')
+        data = data.replace(u'\n' , u' ')
+        data = data.replace(u'\xa0', u' ')
+        data = data.replace(u'\n' , u' ')
+        data = re.sub(' +', ' ', data)
+        data = data.strip()
+
     except Exception as e:
         print(e)
-        return 0
+        data = ""
+
+
+    return {"content" : data}
+
+
+
+
 
 def save_json(data, json_path: str):
-    if not os.path.exists(Json_Files_directory):
-        os.makedirs(Json_Files_directory)
-    with open(os.path.join(str(Json_Files_directory),  json_path) , 'w', encoding='utf-8') as f:
+    if not os.path.exists(JSON_FILES_DIRECTORY):
+        os.makedirs(JSON_FILES_DIRECTORY)
+    with open(os.path.join(str(JSON_FILES_DIRECTORY),  json_path) , 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False)
     return 'OK'
 

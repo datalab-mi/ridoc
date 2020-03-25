@@ -4,7 +4,7 @@ import elasticsearch
 from elasticsearch import Elasticsearch
 import os
 import base64
-from convertisseur import convertisseur_odt_txt, convertisseur_pdf_txt, save_json
+from converter import pdf2json, odt2json, save_json
 import json
 import logging
 import datetime
@@ -22,12 +22,12 @@ home = os.getcwd()
 
 # L'adresse du fichier glossaire des acronymes (celui qui est utilisé dans l'indexation)
 Chemin_Glossaire = home + environ.get('Chemin_Glossaire')
-#  L'adresse du ficher glossaire des acronymes temporaire 
+#  L'adresse du ficher glossaire des acronymes temporaire
 Chemin_Glossaire_enregistre = home + environ.get('Chemin_Glossaire_enregistre')
 #  L'adresse du Mapping
 Mapping_Directory = home + environ.get('Mapping_Directory')
 #  L'adresse des fichiers Json
-Json_Files_directory = home + environ.get('Json_Files_directory')
+JSON_FILES_DIRECTORY = home + environ.get('JSON_FILES_DIRECTORY')
 #  L'adresse des fichiers Odt
 Odt_Files_Directory = home + environ.get('Odt_Files_Directory')
 #  Nom de l'index dans lequel on fait la recherhce
@@ -49,7 +49,7 @@ Chemin_expression = home + environ.get('Chemin_expression')
 Chemin_expression_enregistre = home + environ.get('Chemin_expression_enregistre')
 #  L'adresse de la liste des mots clefs avec un seul mot affiché à l'utilisateur (temporaire)
 #Chemin_one_word_expression_enregitre = home + environ.get('One_word_keyword_non_analyzed_enregistre')
-#  L'adresse de la liste des mots clefs avec un seul mot affiché à l'utilisateur 
+#  L'adresse de la liste des mots clefs avec un seul mot affiché à l'utilisateur
 #Chemin_one_word_expression = home + environ.get('One_word_keyword_non_analyzed')
 #  L'adresse de la liste des mots clefs avec un seul mot analysé
 Chemin_one_word_expression_analyzed = home + environ.get('One_word_keyword_analyzed')
@@ -135,14 +135,14 @@ def request(req , nom_index ,  path_liste_expression_metier = path_list_expressi
         if expression in s and expression.replace(' ', '').replace('-' ,'').replace('_' , '') not in request_expression:
             request_expression.append(expression.replace(' ', '').replace('-' ,'').replace('_' , ''))
             s = s.lstrip(expression).strip()
-    
+
     for key_one_word in liste_keyword:
         if key_one_word in s and key_one_word not in request_key_one_word:
-            request_key_one_word.append(key_one_word)  
+            request_key_one_word.append(key_one_word)
     #Ensuite on construit notre dictionnaire de la requête
     today = str(date.today())
     year = today.split('-')[0]
-    
+
     request = {
         "query": {
             "bool": {
@@ -275,32 +275,32 @@ def request(req , nom_index ,  path_liste_expression_metier = path_list_expressi
 
 def corriger(req , nom_index):
   """
-    Fonction qui permet de corriger la requête de l'utilisateur 
+    Fonction qui permet de corriger la requête de l'utilisateur
     Arguments:
       nom_index : Le nom de l'index où on effectue la recherche des mots
       req : la requête entrèe par l'utilisateur
     Output:
       Liste des suggestions de correction
 """
-  D = es.search(index = nom_index , body = { 
-  "suggest" : { 
-   "mytermsuggester" : { 
-      "text" : req, 
-      "phrase" : { 
-         "field" : "Réponse" 
-       } 
-    } 
-  } 
+  D = es.search(index = nom_index , body = {
+  "suggest" : {
+   "mytermsuggester" : {
+      "text" : req,
+      "phrase" : {
+         "field" : "Réponse"
+       }
+    }
+  }
   })
   L = []
   for i in range (len(list(D['suggest']['mytermsuggester'][0]['options']))):
     L.append(D['suggest']['mytermsuggester'][0]['options'][i]['text'])
   return L
 
-def Synonymes(Map , Liste_glossaire , Liste_expression):
+def Synonymes(map , Liste_glossaire , Liste_expression):
 
   """
-  Fonction qui insère la liste des acronymes dans le Mapping 
+  Fonction qui insère la liste des acronymes dans le Mapping
   & gère le boosting des section
   Arguments:
     Map: Le Mapping sans la liste des synonymes
@@ -312,8 +312,8 @@ def Synonymes(Map , Liste_glossaire , Liste_expression):
 
   Map_1 = deepcopy(Map)
   Map_1['settings']["index"]["analysis"]["filter"]["french_elision"]["article_case"] = True #Cette igne est ajoutée car le lecteur de fichier JSON considère tout comme une chaine de caractère
-  #Map_1['settings']["index"]["analysis"]["filter"]["synonym_igpn"]["synonyms"] = Liste_glossaire
-  #Map_1["settings"]["index"]["analysis"]['char_filter']["my_char_filter"]['mappings'] = Liste_expression
+  Map_1['settings']["index"]["analysis"]["filter"]["synonym_igpn"]["synonyms"] = Liste_glossaire
+  Map_1["settings"]["index"]["analysis"]['char_filter']["my_char_filter"]['mappings'] = Liste_expression
   #Map_1["settings"]["index"]["similarity"]["my_similarity"]["discount_overlaps"] = True
 
   #Map_1['mappings']['properties']['Question']["boost"] = 1
@@ -372,12 +372,12 @@ def changement_structure_expression():
       - "Les changements des expression métiers n'ont pas été appliqué à votre moteur de recherche. Veuillez régler le problème dans l\'acronyme suivant: ": Le problème de la réindexation vient de la liste fournit par l'utilisateur
 
       -  "Les changements des expression métiers n'ont pas été appliqué à votre moteur de recherche" : Un problème a été rencontré lors de la réindexation
-      
+
       -   "Une erreur inconnue s'est produite, veuillez réessayer plus tard." : une erreur inconnue s'est produite
 
 """
 #On ajoute le nouveau indice avec les nouveaux mappings
-   #On ajoute la Liste des Glossaires notre glossaire  
+   #On ajoute la Liste des Glossaires notre glossaire
   f = open(Chemin_Glossaire , 'r', encoding="utf8")
   Liste_glossaire_old =f.read()
   Liste_glossaire_old = str(Liste_glossaire_old)
@@ -389,7 +389,7 @@ def changement_structure_expression():
   Expressions = str(file.read())
   file.close()
   Expressions = Expressions.split('\n')
-  
+
   file = open(Chemin_one_word_expression_enregitre, 'r', encoding="utf-8")
   Keywords = str(file.read())
   file.close()
@@ -415,13 +415,13 @@ def changement_structure_expression():
     analysed2 = " ".join(L)
     list_expressions += expression + " => " + expression.strip() + ', ' + analysed.strip() + "\n"
     analyzed_keywords += analysed2.strip() + "\n"
-  
+
   for keyword in Keywords:
     analyse = indices.analyze(body={"analyzer": "french", "text": keyword})
     L = [analyse["tokens"][i]['token'] for i in range(len(analyse["tokens"]))]
     analysed = ''.join(L)
     analyzed_one_word_keyword += analysed.strip() + "\n"
-  
+
   file = open(Chemin_list_expression_enregistre , 'w' , encoding = "utf-8")
   file.write(list_expressions)
   file.close()
@@ -441,7 +441,7 @@ def changement_structure_expression():
   Liste_expression_old = Liste_expression_old.split('\n')
   Liste_expression_old = Liste_expression_old[:-1]
 
-  
+
   #On crèe notre index
       #On commence par enlever l'ancier index
   if indices.exists(index = nom_index):
@@ -451,11 +451,11 @@ def changement_structure_expression():
     Map_basic = json.load(json_file)
   Map = Synonymes(Map_basic, Liste_glossaire_old , Liste_expression)
   Map_old = Synonymes(Map_basic , Liste_glossaire_old , Liste_expression_old)
-  
+
   try:
     indices.create(index = nom_index , body = Map)
     Message = "Les changements des expressions clés ont été pris en compte"
-  
+
     file = open(Chemin_list_expression_enregistre , 'r' , encoding = 'utf8')
     New_content = file.read()
     file.close()
@@ -503,12 +503,12 @@ def changement_structure_expression():
     indices.create(index = nom_index , body = Map_old)
     Message = "Une erreur inconnue s'est produite, veuillez réessayer plus tard."
   #On met nos documents dans notre index
-  for filename in os.listdir(Json_Files_directory):
+  for filename in os.listdir(JSON_FILES_DIRECTORY):
     if filename.endswith(".json"):
-      f = open(str(Json_Files_directory + filename) , encoding = 'utf-8')
+      f = open(str(JSON_FILES_DIRECTORY + filename) , encoding = 'utf-8')
       docket_content = f.read()
       f.close()
-      
+
       content = json.loads(docket_content)
       keyword = content['Mots clés'][0].split('-')[1:]
       s = ""
@@ -523,11 +523,11 @@ def changement_structure_expression():
       s = [s]
 
       content['Mots clés analysés'] = s
-      
+
       name = str(filename.split('.')[0]) + '.odt'
       es.index(index=nom_index , body=content , id = name)
       logging.info('On vient de charger le fichier %s' %filename)
-  return Message    
+  return Message
 #%%
 def changement_structure():
 
@@ -536,13 +536,13 @@ def changement_structure():
   Output:
     Un message:
       - "Les changements du glossaire ont été pris en compte" : La réindexation est faite avec succès
-      
+
       - "Les changements du glossaire n'ont pas été appliqué à votre moteur de recherche. Veuillez régler le problème dans l\'acronyme suivant: ": Le problème de la réindexation vient de la liste fournit par l'utilisateur
 
       -  "Les changements du glossaire n'ont pas été appliqué à votre moteur de recherche" : Un problème a été rencontré lors de la réindexation
 """
 
-  
+
 #On ajoute le nouveau indice avec les nouveaux mappings
    #On ajoute la Liste des Glossaires notre glossaire
   f = open(Chemin_Glossaire_enregistre , 'r', encoding="utf8")
@@ -565,22 +565,22 @@ def changement_structure():
   Liste_expression = Liste_expression.split('\n')
   f.close()
   Liste_expression = Liste_expression[:-1]
-  
+
   #On crèe notre index
       #On commence par enlever l'ancier index
   if indices.exists(index = nom_index):
     indices.delete(index = nom_index)
     logging.info('On vient de supprimer l\'ancien index')
-  n = len(list(os.listdir(Json_Files_directory)))
+  n = len(list(os.listdir(JSON_FILES_DIRECTORY)))
   with open(Mapping_Directory , 'r' , encoding = 'utf-8') as json_file:
     Map_basic = json.load(json_file)
   Map = Synonymes(Map_basic, Liste_glossaire , Liste_expression)
   Map_old = Synonymes(Map_basic , Liste_glossaire_old , Liste_expression)
-  
+
   try:
     indices.create(index = nom_index , body = Map)
     Message = "Les changements du glossaire ont été pris en compte"
-    
+
     file = open(Chemin_Glossaire_enregistre , 'r' , encoding = 'utf8')
     New_content = file.read()
     file.close()
@@ -600,17 +600,17 @@ def changement_structure():
   except:
     indices.create(index = nom_index , body = Map_old)
     Message = "Une erreur inconnue s'est produite, veuillez réessayer plus tard."
- 
+
 
   #On met nos documents dans notre index
 
-  
-  for filename in os.listdir(Json_Files_directory):
+
+  for filename in os.listdir(JSON_FILES_DIRECTORY):
     if filename.endswith(".json"):
-      f = open(str(Json_Files_directory + filename) , encoding = 'utf-8')
+      f = open(str(JSON_FILES_DIRECTORY + filename) , encoding = 'utf-8')
       docket_content = f.read()
       f.close()
-      
+
       content = json.loads(docket_content)
       keyword = content['Mots clés'][0].split('-')[1:]
       s = ""
@@ -625,11 +625,11 @@ def changement_structure():
       s = [s]
 
       content['Mots clés analysés'] = s
-      
+
       name = str(filename.split('.')[0]) + '.odt'
       es.index(index=nom_index , body=content , id = name)
       logging.info('On vient de charger le fichier %s' %filename)
-  return Message  
+  return Message
 
 
 def upload_docs(path_doc: str):
@@ -676,7 +676,7 @@ def upload_docs(path_doc: str):
             logging.error('Une erreur a été détecté dans le document %s'% path_doc)
             return str('Error: Un problème a été détecté dans le document ' + path_doc + 'Veuillez revoir le nom des différentes sections du document')
         else:
-            f = open(os.path.join(str(Json_Files_directory), output_name), encoding="utf-8")
+            f = open(os.path.join(str(JSON_FILES_DIRECTORY), output_name), encoding="utf-8")
             docket_content = f.read()
             f.close()
 
@@ -720,7 +720,7 @@ def upload_docs(path_doc: str):
             logging.error('Une erreur a été détecté dans le document %s'% path_doc)
             return str('Error: Un problème a été détecté dans le document ' + path_doc + 'Veuillez revoir le nom des différentes sections du document')
         else:
-            f = open(os.path.join(str(Json_Files_directory), output_name), encoding="utf-8")
+            f = open(os.path.join(str(JSON_FILES_DIRECTORY), output_name), encoding="utf-8")
             docket_content = f.read()
             f.close()
 
