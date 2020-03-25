@@ -1,11 +1,11 @@
 """
-Interface Admin 
+Interface Admin
 """
 import dash
 import dash_auth
 import os
 import dash_core_components as dcc
-import dash_html_components as html 
+import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
 from dash.dependencies import Input, Output, State, ClientsideFunction
@@ -47,12 +47,12 @@ Chemin_one_word_keyword = home + environ.get('One_word_keyword_non_analyzed')
 Chemin_one_word_keyword_enregistre = home + environ.get('One_word_keyword_non_analyzed_enregistre')
 # L'adresse du fichier glossaire des acronymes (celui qui est utilisé dans l'indexation)
 Chemin_Glossaire = home + environ.get('Chemin_Glossaire')
-#  L'adresse du ficher glossaire des acronymes temporaire 
+#  L'adresse du ficher glossaire des acronymes temporaire
 Chemin_Glossaire_enregistre = home + environ.get('Chemin_Glossaire_enregistre')
 #  L'adresse du Mapping
 Mapping_Directory = home + environ.get('Mapping_Directory')
 #  L'adresse des fichiers Json
-Json_Files_directory = home + environ.get('Json_Files_directory')
+JSON_FILES_DIRECTORY = home + environ.get('JSON_FILES_DIRECTORY')
 #  L'adresse des fichiers Odt
 Odt_Files_Directory = home + environ.get('Odt_Files_Directory')
 #  Nom de l'index dans lequel on fait la recherhce
@@ -79,7 +79,7 @@ Chemin_expression_enregistre = home + environ.get('Chemin_expression_enregistre'
 # Construction des loggers
 
 # Construction d'un logger admin
-logging.basicConfig(filename=Log_path_admin, level=logging.INFO, 
+logging.basicConfig(filename=Log_path_admin, level=logging.INFO,
                     format=u'%(asctime)s %(levelname)s:%(message)s')
 # Contruction d'un logger recherche
 logger = logging.getLogger('My_New_Logger')
@@ -90,7 +90,7 @@ formatter = logging.Formatter(u'%(asctime)s :: %(levelname)s :: %(message)s')
 # Création de notre Handler
 file_handler = RotatingFileHandler(Log_path_recherche_admin, 'a',
                                    10000, backupCount=10, encoding='utf-8')
-file_handler.setLevel(logging.DEBUG)    
+file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 # -----------------------------------------------------
@@ -104,7 +104,7 @@ external_stylesheets = [
 
 # -----------------------------------------------------
 # L'application Dash
-app = dash.Dash(__name__, 
+app = dash.Dash(__name__,
                 external_stylesheets=external_stylesheets,
                 requests_pathname_prefix='/admin/')
 app.server.secret_key = 'Test'
@@ -124,7 +124,7 @@ auth = dash_auth.BasicAuth(
 s = 0       # s est une variable globale pour la barre de progression
 app.layout = html.Div(
     [
-        html.Div(id='none', children=[], style={'display': 'none'}), 
+        html.Div(id='none', children=[], style={'display': 'none'}),
         dcc.Tabs(id='tabs', value='Moteur de recherche', children=[
 
              dcc.Tab(label="Moteur de recherche", value='Moteur de recherche', children=[
@@ -135,7 +135,7 @@ app.layout = html.Div(
                                       placeholder='Ecrivez votre requête ici ...',
                                       value='',
                                       className = 'form-control form-control-sm mr-3 w-75'
-                                      ), 
+                                      ),
                     html.Button(id='button', className="fas fa-search")
 			], className="navbar navbar-expand-lg navbar-light bg-light"),
                 html.Div(
@@ -146,7 +146,7 @@ app.layout = html.Div(
                 )
             ]),
 
-             dcc.Tab(label="Changer le glossaire des acronymes", value="Changer le glossaire des acronymes", 
+             dcc.Tab(label="Changer le glossaire des acronymes", value="Changer le glossaire des acronymes",
                     children=[
                             html.Div(id="Ajouter-des-acronymes", children=[
                                 html.H1("Ajout des acronymes"),
@@ -245,13 +245,13 @@ app.layout = html.Div(
                     dcc.Upload(id='upload-data', children=
                         html.Div([
                             html.Button('Télécharger les nouvelles consultations', className="btn btn-primary", style={'width': '80%'})
-                            ],  
+                            ],
                             style={
                                 'width': '100%',
                                 'height': '60px',
                                 'textAlign': 'center'
                                 }
-                            ), 
+                            ),
                         multiple=True
                         )
                      ]
@@ -264,10 +264,10 @@ app.layout = html.Div(
                 html.Div(id='output-data-upload'),
                 html.Div(id="Chargement-pj", children=[
                     html.H1('Chargement d\'une nouvelle pièce jointe'),
-                    dcc.Upload(id='upload-pj', 
+                    dcc.Upload(id='upload-pj',
                         children=html.Div([
                             html.Button('Télécharger les nouvelles pièces jointes', className="btn btn-primary", style={'width': '80%'})
-                            ],  
+                            ],
                             style={
                                 'width': '100%',
                                 'height': '60px',
@@ -286,7 +286,7 @@ app.layout = html.Div(
                             dcc.Dropdown(id='select-data-to-del',
                                         multi=True)
                         ],
-                        style={'margin-top': 30}) , 
+                        style={'margin-top': 30}) ,
                     html.Button('Supprimer', id='del-data', className="btn btn-primary")
                     ]),
                 html.Div(id="Message_confiramtion_utilisateur_pj"),
@@ -299,7 +299,7 @@ app.layout = html.Div(
                             dcc.Dropdown(id='select-pj-to-del',
                                             multi=True)
                         ],
-                        style={'margin-top': 30}) , 
+                        style={'margin-top': 30}) ,
                         html.Button('Supprimer', id='del-pj', className="btn btn-primary")
                 ]),
                 html.Div(id="Message_confiramtion_utilisateur")
@@ -309,23 +309,23 @@ app.layout = html.Div(
                 html.Div(id="Changement-message-accueil", children=[
                         html.H1('Personnalisation de la page d\'accueil'),
                         html.H3('Modifiez le titre de votre message d\'accueil') ,
-                        dcc.Input(id="Titre_Message_d'accueil", style={"width": "50%"}),                                                                 
-                        html.H3('Modifiez le corps de votre message d\'accueil') , 
-                        dcc.Textarea(id="Message_d'accueil") , 
+                        dcc.Input(id="Titre_Message_d'accueil", style={"width": "50%"}),
+                        html.H3('Modifiez le corps de votre message d\'accueil') ,
+                        dcc.Textarea(id="Message_d'accueil") ,
                         html.Button("Appliquer", id="Changement_message_accueil", className="btn btn-primary") ,
                         html.Div(id="confirmation_changement")
                         ]
                     ),
                 html.H1('Mise à jour des seuils'),
                 html.Div(id="Changement de seuil", className="row", children=[
-                        html.Div([html.H4('Mise à jour du seuil de pertinence')], className="col") , 
+                        html.Div([html.H4('Mise à jour du seuil de pertinence')], className="col") ,
                         html.Div([dcc.Input(id = "slider_seuil")], className="col"),
                         html.Div([html.Button('Appliquer', id='changement_seuil', className="btn btn-primary")], className="col") ,
                         html.Div([html.H3(id='slider-output-container')], className="col")
                      ]),
                 html.Div(id="Changement de seuil_affichage", className="row", style = {'position': "relative", "top": "40px"},
                     children=[
-                        html.Div([html.H4('Mise à jour du seuil d\'affichage')], className="col"), 
+                        html.Div([html.H4('Mise à jour du seuil d\'affichage')], className="col"),
                         html.Div([dcc.Input(id = "slider_seuil_affichage")], className="col"),
                         html.Div([html.Button('Appliquer', id='changement_seuil_affichage', className="btn btn-primary")], className="col"),
                         html.Div([
@@ -353,7 +353,7 @@ def afficher_resultat_recherche(n_clicks ,  value):
     if n_clicks is None:
         #On ne fait rien si l'utilisateur ne clique pas
         raise PreventUpdate
-    
+
     #On importe l'information des deux seuils
     file = open(Chemin_seuil_affichage , 'r' , encoding = 'utf-8')
     seuil_affichage = float(file.read())
@@ -364,9 +364,9 @@ def afficher_resultat_recherche(n_clicks ,  value):
 
     #On ecrit dans le Log de recherche
     logger.info('Requête de l\'utilisateur :: %sOn vient de rechercher: %s',str(flask.session['uid']),str(value))
-    
+
     #On envoie la requête ElasticSearch
-    D, lenght = request(value, str(nom_index)) 
+    D, lenght = request(value, str(nom_index))
 
     # On collecte les résultats
     # On initialise Les listes des résultats
@@ -383,9 +383,9 @@ def afficher_resultat_recherche(n_clicks ,  value):
     #On remplie les listes des résultats
     for i in range(n):
         Titres.append(D[i]['_source']['TITRE'])
-        
+
         Ids.append(D[i]['_id'])
-        
+
         Questions.append(D[i]['_source']['Question'])
 
         refs = str(D[i]['_source']['Pièces jointes'][0])
@@ -414,15 +414,15 @@ def afficher_resultat_recherche(n_clicks ,  value):
             Réponses.append(D[i]['highlight']['Réponse'])
         except:
             Réponses.append([])
-        
+
         if lenght != 0:
             score_int=D[i]['_score']/lenght
             Scores.append(round(score_int,1))
-        else : 
+        else :
             Scores.append(0)
 
     # On ecrit les résultats de recherche
-    Bande = False  # Indique si la bande de pertinence a été affiché ou pas   
+    Bande = False  # Indique si la bande de pertinence a été affiché ou pas
     for j in range (len(Titres)):
         if Scores[j] < seuil_affichage:
             #Pour le seuil d'affichage
@@ -432,23 +432,23 @@ def afficher_resultat_recherche(n_clicks ,  value):
             div.append(html.Div([dcc.Markdown('''
                                     ### Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande.''' ,style = {"color" : "red" , "text-align" : "center"})],style = {"border-width" : "thin" , "border": "solid red"}))
             Bande = True
-        
+
         q = "`Score:" + str(Scores[j]) + "`" + "\n\n`Question` : " + str(Questions[j][0])+"\n"
-        
+
         q += "\n`Réponse` :"
         for relevent_sentence in Réponses[j]:
-            q += str(relevent_sentence) + r'\[...\] ' 
-        
+            q += str(relevent_sentence) + r'\[...\] '
+
         q += "\n \n`Pièces jointes`: \n\n"+str(References[j])
 
         q = q.replace('</em><em>' , '')
         q = q.replace('<em>' , '`')
-        q = q.replace('</em>' , '`')    
-        
+        q = q.replace('</em>' , '`')
+
         # Ajout de a réponse dans un Div
         div.append(html.Div([html.A(Titres[j][0], href = '/Documents/' +str(j) +'/'+ str(Ids[j]) , style = {"font-size" : "1.5em" , "font-weight" : "bold"}),
-        dcc.Markdown(q)] , style = {"border-width" : "1px 1px" , "border-bottom": "solid purple"}))     
-    
+        dcc.Markdown(q)] , style = {"border-width" : "1px 1px" , "border-bottom": "solid purple"}))
+
     if (len(div) == 0):
         # Le cas ou aucun résultat n'est affiché
         div.append(html.Div([dcc.Markdown('''
@@ -476,7 +476,7 @@ def afficher_propositions(n_clicks, value):
         div = []
         div.append(html.H1('Propositions de correction : ' , style = {"color" : "red",
                                                         "font-size" :"medium"}))
-        div.append(html.H3('Veuillez copier puis rechercher la suggestion qui vous semble pertinente'))                                                
+        div.append(html.H3('Veuillez copier puis rechercher la suggestion qui vous semble pertinente'))
         for i in range (len(L)):
             div.append(html.Div(L[i]))
         return div
@@ -505,7 +505,7 @@ def affichage_acronyme(n_clicks1):
         Liste_glossaire.remove('')
     except:
         pass
-    Liste_glossaire.sort()    
+    Liste_glossaire.sort()
     Liste_glossaire = "\n".join(Liste_glossaire)
     return Liste_glossaire
 
@@ -553,16 +553,16 @@ def ecrire_changement_acronymes(n_clicks , value):
         Inputs:
             n_clicks : Le clique de l'utilisateir sur SAUVEGARDER
             value: La valeur du glossaire changé
-        Output : 
+        Output :
             Le glossaire est mis à jour avec les nouvelles modifications faites par l'utilisateur
-"""    
+"""
     if n_clicks is None:
-        raise PreventUpdate    
+        raise PreventUpdate
 
     f = open(Chemin_Glossaire_enregistre , 'w', encoding="utf8")
     f.write(str(value))
     f.close()
-    
+
     logging.info('Le glossaire vient d\'être modifié')
     return
 @app.callback(
@@ -580,7 +580,7 @@ def reindexation(n_clicks):
     if n_clicks is None:
         raise PreventUpdate
 
-    logging.info('Réindexation')  
+    logging.info('Réindexation')
     Message = str(changement_structure())
 
     if Message == "Les changements du glossaire ont été pris en compte":
@@ -594,7 +594,7 @@ def reindexation(n_clicks):
     [Input('add_synonyme' , 'n_clicks') , Input('effectuer_changes' , 'n_clicks') , Input('reindex_changes' , 'n_clicks')]
 )
 def afficher_warning(n_clicks1 , n_clicks2 , n_clicks3):
-    
+
     """
     Callback pour afficher le message d'alerte si l'utilisateur a effectué des changments
     sur le glossaire des acronymes sans les appliquer au moteur de recherche.
@@ -612,10 +612,10 @@ def afficher_warning(n_clicks1 , n_clicks2 , n_clicks3):
     file2.close()
 
     if Enregistre.strip() == Index.strip():
-        return 
+        return
     else:
         return dcc.Markdown('''
-                    ##### **Attention** :  vous avez fait des changements et vous ne les avez pas appliqué au moteur de recherche. Pour les appliquer veuillez cliquer sur le bouton **Appliquer**. Attention cette opération peut prendre un peu de temps. 
+                    ##### **Attention** :  vous avez fait des changements et vous ne les avez pas appliqué au moteur de recherche. Pour les appliquer veuillez cliquer sur le bouton **Appliquer**. Attention cette opération peut prendre un peu de temps.
                     ''' , style = {"text-align" : "center"})
 #--------------------------------------------------------------- Callbacks pour l'onglet Changer les expressions métier ---------------------------------
 
@@ -638,7 +638,7 @@ def affichage_expression(n_clicks1):
     file = open(Chemin_one_word_keyword_enregistre , 'r' , encoding="utf8")
     Liste_one_word_keyword = file.read()
     file.close()
-    
+
     Liste_expression = str(Liste_expression).lower()
     Liste_expression = Liste_expression.split('\n')
     try:
@@ -652,7 +652,7 @@ def affichage_expression(n_clicks1):
         Liste_one_word_keyword.remove('')
     except:
         pass
-    
+
     Liste_expression = Liste_expression + Liste_one_word_keyword
     Liste_expression.sort()
     Liste_expression = "\n".join(Liste_expression)
@@ -676,9 +676,9 @@ def ajout_expresion(n_clicks , value_expression):
         raise PreventUpdate
     value_expression = value_expression.strip()
     test = value_expression.split(' ')  #Cette variable permet de tester si c'est un mot-clef ou expression clés
-    
+
     if len(test) > 1:
-        # Si c'est une expression clés  
+        # Si c'est une expression clés
         f = open(Chemin_expression_enregistre, 'r', encoding="utf8")
         Liste_expression =f.read()
         Liste_expression = str(Liste_expression).lower()
@@ -712,11 +712,11 @@ def ecrire_changement_expression(n_clicks , value):
         Inputs:
             n_clicks : Le clique de l'utilisateir sur SAUVEGARDER
             value: La valeur de la liste changé
-        Output : 
+        Output :
             Les deux fichers sont mis à jour avec les nouvelles modifications faites par l'utilisateur
-    """    
+    """
     if n_clicks is None:
-        raise PreventUpdate   
+        raise PreventUpdate
     Liste_mots = value.split('\n')
     Liste_mots = list(map(lambda x: x.strip(), Liste_mots))
     try:
@@ -751,7 +751,7 @@ def reindexation_expression(n_clicks):
     """
     if n_clicks is None:
         raise PreventUpdate
-    logging.info('On vient de commencer la réindexation pour les expressions')  
+    logging.info('On vient de commencer la réindexation pour les expressions')
     Message = str(changement_structure_expression())
 
     if Message == "Les changements des expressions clés ont été pris en compte":
@@ -765,7 +765,7 @@ def reindexation_expression(n_clicks):
     [Input('add_expression' , 'n_clicks') , Input('effectuer_changes_expression' , 'n_clicks') , Input('reindex_changes_expression' , 'n_clicks')]
 )
 def afficher_warning_expression(n_clicks1 , n_clicks2 , n_clicks3):
-    
+
     """
     Callback pour afficher le message d'alerte si l'utilisateur a effectué des changments
     sans les appliquer au moteur de recherche.
@@ -794,7 +794,7 @@ def afficher_warning_expression(n_clicks1 , n_clicks2 , n_clicks3):
 
     if Enregistre.strip() != Index.strip() or Enregistre_1.strip() != Index_1.strip():
         return dcc.Markdown('''
-                        ##### **Attention** :  vous avez fait des changements et vous ne les avez pas appliqué au moteur de recherche. Pour les appliquer veuillez cliquer sur le bouton **Appliquer**. Attention cette opération peut prendre un peu de temps. 
+                        ##### **Attention** :  vous avez fait des changements et vous ne les avez pas appliqué au moteur de recherche. Pour les appliquer veuillez cliquer sur le bouton **Appliquer**. Attention cette opération peut prendre un peu de temps.
                     ''' ,
                     style={"text-align": "center"})
     else:
@@ -817,7 +817,7 @@ def save_file(name, content , where = Odt_Files_Directory):
     return
 
 @app.callback(Output('output-pj-upload' , "children"),
-            [Input('upload-pj' , 'filename'), 
+            [Input('upload-pj' , 'filename'),
             Input('upload-pj' , 'contents')])
 def upload_pj(uploaded_filenames, uploaded_file_contents):
 
@@ -825,7 +825,7 @@ def upload_pj(uploaded_filenames, uploaded_file_contents):
     Callback permettant d'enregistrer les pièces jointes dans le bon dossier.
         Inputs:
             upload_filenames : Liste de nom de fichier à traiter
-            uploaded_file_contentents : Liste d contenu de ces fichiers 
+            uploaded_file_contentents : Liste d contenu de ces fichiers
         Output:
             Les pièces jointes sont enregistrées dans le chemin: Chemin_PiecesJointes
     """
@@ -855,18 +855,18 @@ def upload_pj(uploaded_filenames, uploaded_file_contents):
               [Input('upload-data', 'filename'),
               Input('upload-data', 'contents')])
 def upload_consultations(uploaded_filenames, uploaded_file_contents):
-    
+
     """
     Callback permettant d'enregistrer les fichiers en ".odt", ".json" et de les indexer.
         Inputs:
             upload_filenames : Liste de nom de fichier à traiter
-            uploadedçfile_contentents : Liste de contenu de ces fichiers 
+            uploadedçfile_contentents : Liste de contenu de ces fichiers
         Ouput:
             Les consultation son en rengisté en Data_odt & Data_Json & indéxé
     """
 
     if uploaded_filenames is None:
-        raise PreventUpdate 
+        raise PreventUpdate
     global s
     div = []
     if uploaded_filenames is not None and uploaded_file_contents is not None:
@@ -883,7 +883,7 @@ def upload_consultations(uploaded_filenames, uploaded_file_contents):
                 if L.split(' ')[0] == 'Error:':
                     div.append(html.Div([L] , className="p-3 mb-2 bg-danger text-white"))
                 else:
-                    div.append(html.Div([L] , className="p-3 mb-2 bg-success text-white"))           
+                    div.append(html.Div([L] , className="p-3 mb-2 bg-success text-white"))
             return div
         else:
             name, data = uploaded_filenames, uploaded_file_contents
@@ -898,7 +898,7 @@ def advance_progress(n):
     return s
 
 @app.callback(Output("Message_confiramtion_utilisateur" , "children"),
-            [Input("del-data" , "n_clicks")] , 
+            [Input("del-data" , "n_clicks")] ,
             [State("select-data-to-del" , "value")])
 def supprimer_consultation(n_clicks , value):
 
@@ -913,18 +913,18 @@ def supprimer_consultation(n_clicks , value):
 
     if n_clicks is None or value is None:
         raise PreventUpdate
-    
+
     div = []
     for name in value:
         try:
-            
+
             os.remove(Odt_Files_Directory + name)
-            os.remove(Json_Files_directory + name.split('.')[0] + '.json')
+            os.remove(JSON_FILES_DIRECTORY + name.split('.')[0] + '.json')
 
             div.append(html.Div([html.H4('La consultation ' + name + ' a été supprimée avec succès')] , style = {"background-color" : "green"}))
         except:
             div.append(html.Div([html.H4('La consultation ' + name +' n\'a pas été supprimé, veuillez raffraichir cette page.')] , style = {"background-color" : "red"}))
-    changement_structure()  
+    changement_structure()
     return div
 
 
@@ -945,7 +945,7 @@ def update_consultation_names(n_clicks):
 
 
 @app.callback(Output("Message_confiramtion_utilisateur_pj" , "children"),
-            [Input("del-pj" , "n_clicks")] , 
+            [Input("del-pj" , "n_clicks")] ,
             [State("select-pj-to-del" , "value")])
 def supprimer_pj(n_clicks , value):
 
@@ -955,12 +955,12 @@ def supprimer_pj(n_clicks , value):
         n_clicks : Le clic de l'utilisateur sur le bouton Supprimer
         value : Le nom de la pièce jointe à supprimer
     Ouputs:
-        La pièce jointe est supprimée 
+        La pièce jointe est supprimée
     """
 
     if n_clicks is None or value is None:
         raise PreventUpdate
-    
+
     div = []
     for name in value:
         try:
@@ -973,7 +973,7 @@ def supprimer_pj(n_clicks , value):
 @app.callback(Output("select-pj-to-del" , "options"),
             [Input("del-pj" , "n_clicks")])
 def update_pj_names(n_clicks):
-    
+
     """
     Callback permettant de mettre à jour la liste déroulante des pièces jointes à supprimer
     Inputs:
@@ -984,7 +984,7 @@ def update_pj_names(n_clicks):
 
     return [{'label': str(x), 'value': str(x)} for x in os.listdir(Chemin_PiecesJointes)]
 #----------------------------------------------------------------------------------- Callbacks pour l'onglet paramètres généraux -----------------------------------------------
-@app.callback(Output("confirmation_changement" , "children"), 
+@app.callback(Output("confirmation_changement" , "children"),
 [Input('Changement_message_accueil' , "n_clicks")] ,
 [State('Message_d\'accueil' , "value") , State("Titre_Message_d'accueil" , "value")])
 def Changer_message_accueil(n_clicks , message , titre):
@@ -1011,7 +1011,7 @@ def Changer_message_accueil(n_clicks , message , titre):
 
     return " Votre message a été changé avec succès"
 
-@app.callback(Output('Message_d\'accueil' , "value"), 
+@app.callback(Output('Message_d\'accueil' , "value"),
 [Input('none', 'children')] )
 def afficher_message_accueil(n_clicks):
 
@@ -1028,7 +1028,7 @@ def afficher_message_accueil(n_clicks):
     file.close()
     return Message
 
-@app.callback(Output('Titre_Message_d\'accueil' , "value"), 
+@app.callback(Output('Titre_Message_d\'accueil' , "value"),
 [Input('none', 'children')] )
 def afficher_titre_message_accueil(n_clicks):
 
@@ -1039,7 +1039,7 @@ def afficher_titre_message_accueil(n_clicks):
     Outputs:
         Le titre du message d'accueil enregistré
     """
-    
+
     file = open(Chemin_titre_Message , 'r' , encoding = 'utf-8')
     Titre_Message = file.read()
     file.close()
@@ -1076,7 +1076,7 @@ def affichage_seuil(n_clicks):
     """
     Callback permettant l'affichage du seuil de pertinenece enregistré dans l'input.
     Inputs:
-        n_clicks: Le clic de l'utilisateur 
+        n_clicks: Le clic de l'utilisateur
     """
 
     file = open(Chemin_seuil , 'r')
@@ -1115,9 +1115,9 @@ def affichage_seuil(n_clicks ):
     """
     Callback permettant l'affichage du seuil d'affichage enregistré dans l'input.
     Inputs:
-        n_clicks: Le clic de l'utilisateur 
+        n_clicks: Le clic de l'utilisateur
     """
-    
+
     file = open(Chemin_seuil_affichage , 'r')
     seuil = float(file.read())
     file.close()

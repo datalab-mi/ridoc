@@ -8,8 +8,8 @@ from elastic import simple_request
 
 #  Nom de l'index dans lequel on fait la recherhce
 nom_index = environ.get('Nom_index')
-Dash_host = environ.get('Dash_host')
-Dash_port = environ.get('BACKEND_PORT')
+Dash_host = "localhost"#environ.get('Dash_host')
+Dash_port = 8000#environ.get('BACKEND_PORT')
 
 app = Flask(__name__)
 
@@ -26,6 +26,6 @@ if __name__ == '__main__':
     app.run(
             host=Dash_host,
             debug=True,
-            threaded=True,
+            threaded=False,
             port=int(Dash_port)
             )

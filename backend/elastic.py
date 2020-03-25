@@ -30,7 +30,7 @@ Chemin_Glossaire_enregistre = home + environ.get('Chemin_Glossaire_enregistre')
 #  L'adresse du Mapping
 Mapping_Directory = home + environ.get('Mapping_Directory')
 #  L'adresse des fichiers Json
-Json_Files_directory = home + environ.get('Json_Files_directory')
+JSON_FILES_DIRECTORY = home + environ.get('JSON_FILES_DIRECTORY')
 #  L'adresse des fichiers Odt
 Odt_Files_Directory = home + environ.get('Odt_Files_Directory')
 #  Nom de l'index dans lequel on fait la recherhce
@@ -475,9 +475,9 @@ def changement_structure_expression():
     indices.create(index = nom_index , body = Map_old)
     Message = "Une erreur inconnue s'est produite, veuillez réessayer plus tard."
   #On met nos documents dans notre index
-  for filename in os.listdir(Json_Files_directory):
+  for filename in os.listdir(JSON_FILES_DIRECTORY):
     if filename.endswith(".json"):
-      f = open(str(Json_Files_directory + filename) , encoding = 'utf-8')
+      f = open(str(JSON_FILES_DIRECTORY + filename) , encoding = 'utf-8')
       docket_content = f.read()
       f.close()
       
@@ -543,7 +543,7 @@ def changement_structure():
   if indices.exists(index = nom_index):
     indices.delete(index = nom_index)
     logging.info('On vient de supprimer l\'ancien index')
-  n = len(list(os.listdir(Json_Files_directory)))
+  n = len(list(os.listdir(JSON_FILES_DIRECTORY)))
   with open(Mapping_Directory , 'r' , encoding = 'utf-8') as json_file:
     Map_basic = json.load(json_file)
   Map = Synonymes(Map_basic, Liste_glossaire , Liste_expression)
@@ -577,9 +577,9 @@ def changement_structure():
   #On met nos documents dans notre index
 
   
-  for filename in os.listdir(Json_Files_directory):
+  for filename in os.listdir(JSON_FILES_DIRECTORY):
     if filename.endswith(".json"):
-      f = open(str(Json_Files_directory + filename) , encoding = 'utf-8')
+      f = open(str(JSON_FILES_DIRECTORY + filename) , encoding = 'utf-8')
       docket_content = f.read()
       f.close()
       
@@ -649,7 +649,7 @@ def upload_docs(name_document):
       logging.error('Une erreur a été détecté dans le document %s'% name_document)
       return str('Error: Un problème a été détecté dans le document ' + name_document + 'Veuillez revoir le nom des différentes sections du document')
     else:
-      f = open(str(Json_Files_directory + str(name_document.split('.')[0] + '.json')), encoding="utf-8")
+      f = open(str(JSON_FILES_DIRECTORY + str(name_document.split('.')[0] + '.json')), encoding="utf-8")
       docket_content = f.read()
       f.close()
 

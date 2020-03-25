@@ -29,6 +29,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/acme.json:/acme.json
+      - ${DATA_PATH}:/data
 
   frontend-development:
     build:

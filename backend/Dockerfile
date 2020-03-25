@@ -13,6 +13,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 5000
 
+# For debug purpose
+#RUN pip install -e .
+
 LABEL traefik.enable="true"
 LABEL traefik.http.routers.python.rule="PathPrefix(`/api/v1`)"
 LABEL traefik.http.routers.python.entrypoints="http"

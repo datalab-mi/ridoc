@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  kibana:
+    #image: docker.elastic.co/elasticsearch/elasticsearch-oss:${ES_VERSION}
+    container_name: ${DC_PREFIX}-kibana
+    image: docker.elastic.co/kibana/kibana:${ES_VERSION}
+    environment:
+      SERVER_NAME: kibana
+      ELASTICSEARCH_HOSTS: http://browser-elasticsearch:9200
+    external_links:
+      - browser_elasticsearch:elasticsearch
+    ports:
+      - "5601:5601"
+
+networks:
+  default:
+    external:
+      name: ${DC_NETWORK}

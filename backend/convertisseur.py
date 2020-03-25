@@ -21,7 +21,7 @@ home = os.getenv("HOME")
 Chemin_Glossaire = home + environ.get('Chemin_Glossaire')
 #Chemin_Dictionnaire = home + environ.get('Chemin_Dictionnaire')
 Mapping_Directory = home + environ.get('Mapping_Directory')
-Json_Files_directory = home + environ.get('Json_Files_directory')
+JSON_FILES_DIRECTORY = home + environ.get('JSON_FILES_DIRECTORY')
 Odt_Files_Directory = home + environ.get('Odt_Files_Directory')
 nom_index = environ.get('Nom_index')
 #%%
@@ -81,7 +81,7 @@ def convertisseur_Odt_Json(directory, name , sections = ['TITRE' , 'DOMAINE' , '
         #Je check s'il y a vraiment 8 sections comme ça j'enlève à la main tout ce qui n'est pas conforme
         return int(check)
         
-    with open(str(str(Json_Files_directory) + name.split('.')[0] + '.json') , 'w', encoding='utf-8') as f:
+    with open(str(str(JSON_FILES_DIRECTORY) + name.split('.')[0] + '.json') , 'w', encoding='utf-8') as f:
         json.dump(d, f, ensure_ascii=False)
     return 'Ok'
     
