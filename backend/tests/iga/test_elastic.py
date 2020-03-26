@@ -22,13 +22,14 @@ GLOSSARY_FILE = 'glossaire.txt'
 EXPRESSION_FILE = 'expression.txt'
 MAPPING_FILE = 'map.json'
 
+NOM_INDEX = 'iga'
+
 PDF_DIR = 'pdf'
 JSON_DIR = 'json'
 
 os.makedirs(ES_DATA, exist_ok=True)
 
 es = Elasticsearch([{'host': str(elastic_host), 'port': str(elastic_port)}])
-NOM_INDEX = 'iga'
 
 doc_guyane_eau = "les-bonnes-feuilles-IGA-eau-potable-en-guadeloupe.pdf"
 

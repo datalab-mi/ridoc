@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Fichier de backend pour gérer les requettes elasticsearch"""
 
 import elasticsearch
