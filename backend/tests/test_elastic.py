@@ -125,6 +125,6 @@ def test_inject_documents():
 
 
 if __name__ == '__main__':
-    #test_create_index()
-    #test_analyse_index()
+    test_create_index()
+    test_analyse_index()
     test_inject_documents()
