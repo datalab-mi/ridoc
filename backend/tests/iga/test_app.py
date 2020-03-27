@@ -19,6 +19,6 @@ def test_healthcheck(client, app):
     assert res.status_code == 200,res
 
     res = client.get("admin/cluster")
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
     print(res.body)
     assert res.status_code == 200,res

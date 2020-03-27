@@ -42,7 +42,7 @@
           "auteur_analyzer" : {
             "tokenizer" : "standard" ,
             "filter" : "lowercase"},
-          "french": {
+          "custom_french": {
             "char_filter":[
               "my_char_filter"
             ],
@@ -66,13 +66,13 @@
     "properties": {
       "content": {
         "type": "text",
-        "analyzer" : "french",
-          "search_analyzer" : "french"
+        "analyzer" : "custom_french",
+          "search_analyzer" : "custom_french"
       },
       "title": {
         "type": "text",
-        "analyzer" : "french",
-          "search_analyzer" : "french"
+        "analyzer" : "custom_french",
+          "search_analyzer" : "custom_french"
       },
       "date": {
         "type" : "date" ,

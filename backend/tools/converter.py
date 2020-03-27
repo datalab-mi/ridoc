@@ -6,14 +6,8 @@ from odf import text, teletype
 from odf.opendocument import load
 from tika import parser
 from os import environ
-from dotenv import load_dotenv
 import re
-load_dotenv()
-
-# Les variables d'environement
-home = os.getcwd()
-JSON_FILES_DIRECTORY = home + environ.get('JSON_FILES_DIRECTORY')
-
+from pathlib import Path
 
 def odt2json(path: str, sections: list = []) -> dict:
     """ Fonction qui permet la conversion des Json en Odt elle prend en argument:
@@ -82,16 +76,15 @@ def pdf2json(path: str, sections: list = []) -> dict:
 
     return {"content" : data}
 
+def save_json(data, json_file: str):
+    json_file = Path(json_file)
+    if not json_file.parent.exists():
+        json_file.parent.mkdir(parents=True, exist_ok=True)
 
-
-
-
-def save_json(data, json_path: str):
-    if not os.path.exists(JSON_FILES_DIRECTORY):
-        os.makedirs(JSON_FILES_DIRECTORY)
-    with open(os.path.join(str(JSON_FILES_DIRECTORY),  json_path) , 'w', encoding='utf-8') as f:
+    with open(json_file , 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False)
     return 'OK'
+
 
 if __name__ == '__main__':
     path = '/app/tests/doc.odt'
