@@ -80,7 +80,7 @@
       },
     "author" : {
       "type" : "text",
-      "analyzer" : "auteur_analyzer"
+        "analyzer" : "auteur_analyzer"
     }
     }
   }

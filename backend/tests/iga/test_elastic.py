@@ -10,6 +10,7 @@ from shutil import copyfile
 from tools.elastic import create_index, inject_documents, search
 from tools.converter import pdf2json
 
+import pytest
 #import pdb; pdb.set_trace()
 
 env_path = '/app/tests/iga/.env-iga'
@@ -33,12 +34,10 @@ es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
 
 doc_guyane_eau = "les-bonnes-feuilles-IGA-eau-potable-en-guadeloupe.pdf"
 
-
 def test_create_index():
     create_index(NOM_INDEX, USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, EXPRESSION_FILE )
 
-
-
+@pytest.mark.run(after='test_create_index')
 def test_inject_documents():
     metada_file = 'iga.xlsx'
     META_DIR = os.path.join(USER_DATA, PDF_DIR, metada_file)
@@ -48,6 +47,7 @@ def test_inject_documents():
     res = es.get(index=NOM_INDEX, id= doc_guyane_eau)
     assert len(str(res)) > 1000, res
 
+@pytest.mark.run(after='test_inject_documents')
 def test_analyse_index():
 
     # create elasticsearch index
@@ -76,10 +76,10 @@ def test_analyse_index():
     print(' '.join([token['token'] for token in res['tokens']]))
 
     assert 'Jusqu'not in  str(res['tokens'])
-    assert 'comisearchtpilo' in  str(res['tokens']), 'expresion not taken into account'
+    assert 'comitpilo' in  str(res['tokens']), 'expresion not taken into account'
 
     # § sensibilité au accents
-
+@pytest.mark.run(after='test_inject_documents')
 def test_search():
     glossary_file = Path(USER_DATA) / GLOSSARY_FILE
     expression_file = Path(USER_DATA) / 'analysed_expression.txt'
@@ -87,10 +87,13 @@ def test_search():
     req = 'travail illegal'
     #import pdb; pdb.set_trace()
     hits, length_req, bande = search(req, NOM_INDEX, str(glossary_file), str(expression_file))
-    print(hits, length_req, bande)
-    
+    #print(hits, length_req, bande)
+    assert  hits[0]['_id'] == 'BF2014-20-14072+Médecine+de+prévention.pdf', 'Found to result %s'%hits[0]['_id']
+    assert length_req == 2
+    assert not bande
+
 if __name__ == '__main__':
-    #test_create_index()
-    #test_inject_documents()
-    #test_analyse_index()
+    test_create_index()
+    test_inject_documents()
+    test_analyse_index()
     test_search()
