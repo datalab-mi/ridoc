@@ -9,6 +9,7 @@ services:
       dockerfile: ./elasticsearch/Dockerfile
       args:
         - http_proxy=${http_proxy}
+        - ES_VERSION=${ES_VERSION}
     environment:
       - cluster.name=matchid-cluster
       - bootstrap.memory_lock=true
@@ -23,7 +24,7 @@ services:
     volumes:
      - ${ES_DATA}/node1:/usr/share/elasticsearch/data
      - ${ES_DATA}/extra:/usr/share/elasticsearch/data/extra
-
+     #- ./elasticsearch/config:/usr/share/elasticsearch/config
      #- ${DATA_PATH}:/data
     ports:
        - "9200:9200"

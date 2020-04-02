@@ -4,6 +4,7 @@ import pytest
 
 from application import create_app
 
+NOM_INDEX = 'iga'
 
 @pytest.fixture
 def app():
@@ -16,3 +17,7 @@ def app():
 def client(app):
     """A test client for the app."""
     return app.test_client()
+
+@pytest.fixture
+def search_data():
+    return dict(index_name=NOM_INDEX, value='travail illegal')

@@ -34,16 +34,17 @@ def simple_request(nom_index):
     D = es.search(index=str(nom_index_prop), size=15, body=request)
     return D['hits']['hits']
 
-def search(req , index_name ,  glossary_file=None, expression_file=None):
-    """Fonction qui permet de faire la recherche Elastic dans notre index
-
+def build_query(req:str, index_name:str,
+        glossary_file=None, expression_file=None) -> dict:
+    """
+    Build the body of the query
     Args:
         index_name : Le nom de l'index où on effectue la recherche
         req : la requête entrèe par l'utilisateur
         expression_file : Le lien pour la liste des expressions clés analysée
         glossary_file : Fichier glossaire
-    Output:
-        Dictionnaire des résultats de la recherche
+    Returns:
+        dict
     """
     from_date, to_date, list_author = None, None, []
     # process gloassary
@@ -124,6 +125,7 @@ def search(req , index_name ,  glossary_file=None, expression_file=None):
                     }
                 }
 
+
     if len(req.strip()) > 0:
         body["query"]['bool']['must'].append({"simple_query_string": {
                                     "fields" : ["content" , "title"],
@@ -153,6 +155,33 @@ def search(req , index_name ,  glossary_file=None, expression_file=None):
         if len(author) > 0:
           body['query']['bool']["filter"].append({"match" :
                             {"author" : {"query" : author}}})
+
+    return body, lenght_of_request
+
+def search(req , index_name ,  glossary_file=None, expression_file=None):
+    """Fonction qui permet de faire la recherche Elastic dans notre index
+
+    Args:
+        index_name : Le nom de l'index où on effectue la recherche
+        req : la requête entrèe par l'utilisateur
+        expression_file : Le lien pour la liste des expressions clés analysée
+        glossary_file : Fichier glossaire
+    Output:
+        Dictionnaire des résultats de la recherche
+    """
+    T = False
+    Bande = False
+    """ all keyword???
+    Bande = False
+    for keyword in Liste_acronyme:
+        if keyword in analyzed:
+            T = True
+            break
+    """
+    body, lenght_of_request = build_query(req,
+                        index_name,
+                        glossary_file,
+                        expression_file)
 
     D = es.search(index = index_name,
                   body = body,

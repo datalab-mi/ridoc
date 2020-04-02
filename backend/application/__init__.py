@@ -1,6 +1,10 @@
 """Initialize app."""
 from flask import Flask
 
+from dotenv import load_dotenv
+
+env_path = '/app/tests/iga/.env-iga'
+load_dotenv(dotenv_path=env_path)
 
 def create_app():
     """Construct the core application."""
@@ -13,7 +17,10 @@ def create_app():
         # Import parts of our application
         from .admin import admin_routes
         from .user import user_routes
+        from .common import common_routes
+
         app.register_blueprint(admin_routes.admin_bp)
         app.register_blueprint(user_routes.user_bp)
+        app.register_blueprint(common_routes.common_bp)
 
         return app
