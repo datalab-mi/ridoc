@@ -11,6 +11,7 @@ import { ReactiveBase,
 } from '@appbaseio/reactivesearch';
 import "./App.css";
 import ExpandDiv from './ExpandDiv'
+import PdfViewer from './PdfViewer'
 
 const { ResultListWrapper } = ReactiveList;
 
@@ -97,15 +98,17 @@ class App extends React.Component {
             "boundary_scanner_locale" : "fr-FR"
       		},
       	})}
-        //customQuery={function(value,props){
-        //  return {query: {match:{content:'this is a test'}}}}}
-        />
 
-        <DataSearch
-        componentId="SearchFilterServer"
-        placeholder="Custom search for documents on server..."
-        customQuery={ServerQuery}
-        />
+      />
+
+        {/*
+          <DataSearch
+          componentId="SearchFilterServer"
+          placeholder="Custom search for documents on server..."
+          customQuery={ServerQuery}
+          />
+        */}
+
 
 
         <StateProvider
@@ -146,8 +149,15 @@ class App extends React.Component {
           {({ data }) => (
               <ResultListWrapper>
                   {
-                      data.map(item => (
-                          <ResultList key={item._id}>
+                      data.map(item => {
+                          // handle url
+                          let href=decodeURI(item._id).replace(/\+/g, " ")
+
+                          return (
+                          //href = decodeURI(item._id)
+                          //console.log(decodeURI(item._id))
+
+                          <ResultList key={item._id} href={`/pdfjs-2.3.200-dist/web/viewer.html?file=/user/pdf/${href}`}>
                               <ResultList.Content>
                                   <ResultList.Title
                                       dangerouslySetInnerHTML={{
@@ -167,7 +177,7 @@ class App extends React.Component {
                                   </div>
                               </ResultList.Content>
                           </ResultList>
-                      ))
+                      )})
                   }
               </ResultListWrapper>
           )}

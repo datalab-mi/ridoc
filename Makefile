@@ -1,6 +1,7 @@
 export APP = browser
 export APP_PATH := $(shell pwd)
 export APP_VERSION	:= 1.0
+export DATA_PATH = ${APP_PATH}/backend/tests/iga/data
 #export APP_VERSION	:= $(shell git describe --tags || cat VERSION )
 
 # docker compose
@@ -17,7 +18,7 @@ export ES_TIMEOUT = 60
 export ES_INDEX = deces
 export ES_DATA = ${APP_PATH}/esdata
 export ES_NODES = 1
-export ES_MEM = 2g
+export ES_MEM = 1024m
 export ES_VERSION = 7.4.0
 
 export API_PATH = deces
@@ -32,11 +33,11 @@ export BACKEND_PORT=5000
 export BACKEND_HOST=backend
 
 # frontend dir
-export PORT=8084
-export FRONTEND := ${APP_PATH}/frontend
+export FRONTEND_PORT=3000
+export FRONTEND = ${APP_PATH}/frontend
 export FRONTEND_DEV_HOST = frontend-development
 export FILE_FRONTEND_APP_VERSION = $(APP)-$(APP_VERSION)-frontend.tar.gz
-
+export PDFJS_VERSION=2.3.200
 # nginx
 export NGINX = ${APP_PATH}/nginx
 export NGINX_TIMEOUT = 30
@@ -150,23 +151,20 @@ test:
 #  Frontend  #
 ##############
 
-frontend-start:
-	@echo docker-compose up ${APP} frontend
-	${DC} -f ${DC_FILE}.yml up -d
-	@timeout=${NGINX_TIMEOUT} ; ret=1 ; until [ "$$timeout" -le 0 -o "$$ret" -eq "0"  ] ; do (curl -s --fail -XGET localhost:${PORT} > /dev/null) ; ret=$$? ; if [ "$$ret" -ne "0" ] ; then echo "waiting for nginx to start $$timeout" ; fi ; ((timeout--)); sleep 1 ; done ; exit $$ret
 
-frontend-dev: traefik/acme.json
-ifneq "$(commit)" "$(lastcommit)"
-	@echo docker-compose up ${APP} frontend for dev after new commit ${APP_VERSION}
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-dev-frontend.yml up --build -d
-	@echo "${commit}" > ${FRONTEND}/.lastcommit
-else
-	@echo docker-compose up ${APP} frontend for dev
-	@export EXEC_ENV=dev; ${DC} -f  ${DC_FILE}-dev-frontend.yml up -d --build
-endif
+frontend-dev:
+	@echo docker-compose run ${APP} frontend
+	@echo ${DATA_PATH}
+
+	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml up -d --build --force-recreate
+
+frontend-exec:
+	$(DC) -f ${DC_FILE}-frontend.yml exec frontend sh
+
+
 
 frontend-dev-stop:
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-dev-frontend.yml down
+	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml down
 
 frontend-stop:
 	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down

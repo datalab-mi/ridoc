@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+  frontend:
+    build:
+      context: ${FRONTEND}
+      dockerfile: Dockerfile
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+        no_proxy: ${no_proxy}
+        PDFJS_VERSION: ${PDFJS_VERSION}
+    stdin_open: true
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - SKIP_PREFLIGHT_CHECK=true
+
+    #image: ${APP}-frontend-${EXEC_ENV}:${APP_VERSION}
+    container_name: ${APP}-frontend-${EXEC_ENV}
+    volumes:
+      - ${FRONTEND}/:/app/
+      - ${DATA_PATH}:/app/public/user
+      - ${ES_DATA}/extra:/usr/share/elasticsearch/data/extra
+    ports:
+      - "${FRONTEND_PORT}:3000"
+
+networks:
+  default:
+    external:
+      name: ${DC_NETWORK}
