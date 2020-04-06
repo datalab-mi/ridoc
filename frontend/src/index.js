@@ -2,13 +2,27 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import { BrowserRouter } from 'react-router-dom'
+import {PdfViewer, Child} from './PdfViewer';
+
+import { BrowserRouter, Route, Router, Switch} from 'react-router-dom'
 import * as serviceWorker from './serviceWorker';
+
+
+
+
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+        <Switch>
+
+          <Route exact path="/">
+            <App />
+          </Route>
+
+          <Route path="/viewer/:id" children={<Child />}/>
+
+        </Switch>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
