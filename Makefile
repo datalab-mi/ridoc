@@ -148,6 +148,13 @@ test:
 
 
 ##############
+#  NGINX     #
+##############
+
+nginx: network
+	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-nginx.yml up -d --build --force-recreate
+
+##############
 #  Frontend  #
 ##############
 

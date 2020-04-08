@@ -10,11 +10,9 @@ import { BrowserRouter, Route, Router, Switch} from 'react-router-dom'
 import * as serviceWorker from './serviceWorker';
 
 
-
-
-
 ReactDOM.render(
   <React.StrictMode>
+
     <BrowserRouter>
         <Switch>
 
