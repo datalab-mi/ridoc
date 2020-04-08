@@ -16,9 +16,6 @@ client = Elasticsearch([{'host': str(elastic_host), 'port': str(elastic_port)}])
 admin_bp = Blueprint('admin_bp', __name__,url_prefix='/admin')
 
 
-@admin_bp.route('/healthcheck', methods=['GET'])
-def healthcheck():
-    return json.dumps({"status": "ok"})
 
 @admin_bp.route('/cluster', methods=['GET'])
 def cluster():
