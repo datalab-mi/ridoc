@@ -2,7 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import {PdfViewer, Child} from './PdfViewer';
+import { PdfViewer, Child } from './PdfViewer';
+import NestedEditableDemo from './FileManager';
+import FilesUploadComponent from './UploadFiles';
 
 import { BrowserRouter, Route, Router, Switch} from 'react-router-dom'
 import * as serviceWorker from './serviceWorker';
@@ -20,7 +22,15 @@ ReactDOM.render(
             <App />
           </Route>
 
-          <Route path="/viewer/:id" children={<Child />}/>
+          <Route exact path="/browse">
+            <NestedEditableDemo />
+          </Route>
+
+          <Route exact path="/upload">
+          <FilesUploadComponent />
+        </Route>
+
+          <Route path="/view/:id" children={<Child />}/>
 
         </Switch>
     </BrowserRouter>

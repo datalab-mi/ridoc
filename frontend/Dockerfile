@@ -4,7 +4,7 @@ ARG PDFJS_VERSION
 # base image
 FROM node:12.2.0-alpine
 ENV PDFJS_VERSION "$PDFJS_VERSION"
-
+RUN apk --no-cache add curl
 # set working directory
 WORKDIR /app
 
