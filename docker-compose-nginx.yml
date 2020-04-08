@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  nginx:
+    build:
+      context: ${NGINX}
+      dockerfile: Dockerfile
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+        no_proxy: ${no_proxy}
+    container_name: ${APP}-nginx-${EXEC_ENV}
+    ports:
+      - "80:80"
+
+networks:
+  default:
+    external:
+      name: browser

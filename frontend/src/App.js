@@ -68,7 +68,7 @@ class App extends React.Component {
 
         <ReactiveBase
           app="iga"
-          url="http://localhost:9200"
+          url="http://localhost/elasticsearch"
         >
 
         <DataSearch
@@ -150,7 +150,7 @@ class App extends React.Component {
               <ResultListWrapper>
                   {
                       data.map(item => {
-                          // handle url
+                          // handle
                           let href=decodeURI(item._id).replace(/\+/g, " ")
 
                           return (

@@ -5,24 +5,27 @@ _Dépot boite à outils pour un mote._
  |_ elasticsearch : Fichiers de config pour *ElasticSearch*.<br />
  |_ backend : Serveur *Flask* et indexation de la base ouverte pour tester. [bonnes feuilles](https://www.interieur.gouv.fr/Publications/Rapports-de-l-IGA/Bonnes-Feuilles).<br />
  |_ frontend : Code source pour distribuer une interface utilisateur branché à ElasticSearch. Fourni un site statique en *React*.<br />
-
+ |_ La conf du 'reverse proxy' *nginx* qui permet d'éviter les requêtes cross-origin
 
 ## Prérequis
  - Installer Docker et Docker-Compose localement.
  - Installer Make.
  - Télécharger les données : `make download-data`
 
+### Nginx
+ -  Fabriquer l'image docker : `make nginx`. Lance le service nginx dans un docker. Seul le port 80 est exposé. Tester avec `http://localhost`
+
 ### Elasticsearch
  - Fabriquer l'image docker : `make elasticsearch`. Lance ES et crée un réseau docker.
- - Tester la base : `curl http://localhost:9200`
+ - Tester la base ayant une route nginx: `curl http://elasticsearch`
 
 ### Backend
-
  - Fabriquer l'image docker du backend : `make backend-dev`. Cela aura pour effet de lancer l'application Flask.
  - Rentrer dans le container : `make backend-exec`.
  - Lancer les tests unitaires, qui va indexer les données tests `pytest tests/iga`.
+ - Tester le back : `http://localhost/api/common/healthcheck`
+
 
 ### Frontend
-
   - Fabriquer l'image docker du frontend : `make frontend-dev`.
-  - Se rendre à curl http://localhost:3000
+  - Se rendre à curl http://localhost
