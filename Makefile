@@ -119,7 +119,7 @@ backend/.env:
 backend-dev: backend/.env
 	@echo docker-compose up backend for dev
 	#@export ${DC} -f ${DC_FILE}.yml up -d --build --force-recreate 2>&1 | grep -v orphan
-	@export EXEC_ENV=dev;${DC} -f ${DC_FILE}.yml up -d --build #--force-recreate
+	@export EXEC_ENV=dev;${DC} -f ${DC_FILE}.yml up -d  #--build --force-recreate
 
 
 backend-dev-stop:
