@@ -6,7 +6,7 @@ services:
     container_name: ${DC_PREFIX}-elasticsearch
     build:
       context: ./elasticsearch
-      dockerfile: ./elasticsearch/Dockerfile
+      dockerfile: Dockerfile
       args:
         - http_proxy=${http_proxy}
         - ES_VERSION=${ES_VERSION}
