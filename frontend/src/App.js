@@ -21,7 +21,7 @@ function ServerQuery(value, props){
   console.log(props)
 
   fetch("http://localhost:5000/common/build_query",{
-    method: "POST",
+    meth  od: "POST",
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',

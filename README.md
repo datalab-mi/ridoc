@@ -12,6 +12,8 @@ _Dépot boite à outils pour un mote._
  - Installer Make.
  - Télécharger les données : `make download-data`
 
+### Les micro-services
+
 ### Nginx
  -  Fabriquer l'image docker : `make nginx`. Lance le service nginx dans un docker. Seul le port 80 est exposé. Tester avec `http://localhost`
 
@@ -28,4 +30,7 @@ _Dépot boite à outils pour un mote._
 
 ### Frontend
   - Fabriquer l'image docker du frontend : `make frontend-dev`.
-  - Se rendre à curl http://localhost
+  - Se rendre à curl http://localhost (Le hot-reloading est configuré)
+
+### Kibana
+  - ...

@@ -2,12 +2,10 @@
 from flask import Flask
 import os
 from dotenv import load_dotenv
-from flask_cors import CORS
 
 def create_app():
     """Construct the core application."""
     app = Flask(__name__, instance_relative_config=False)
-    CORS(app)
 
     # Application Configuration
     app.config.from_object('config.Config')
