@@ -1,0 +1,16 @@
+name: basic-test-backend
+
+on:
+  push:
+    branches:
+      - feat/gihubaction
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Build the Docker image
+        run: make backend-dev
+      - name: test
+        run: make test
