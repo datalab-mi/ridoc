@@ -11,4 +11,6 @@ jobs:
       - name: Build the Docker image
         run: make backend-dev
       - name: test
+        env:
+          COMPOSE_INTERACTIVE_NO_CLI: 1
         run: make test
