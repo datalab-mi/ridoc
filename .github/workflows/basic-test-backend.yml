@@ -9,7 +9,9 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build the Docker image
-        run: make backend-dev
+        run: |
+          make backend-dev
+          make elasticsearch
       - name: test
         env:
           COMPOSE_INTERACTIVE_NO_CLI: 1
