@@ -144,7 +144,7 @@ download-data:
 	git clone https://github.com/victorjourne/IGA-BF.git && cd IGA-BF && make run base_path=$(BACKEND)/tests/iga/data/pdf
 
 test:
-	$(DC) -f ${DC_FILE}.yml exec backend pytest tests/iga/test_app.py::test_healthcheck
+	$(DC) -f ${DC_FILE}.yml exec -T backend pytest tests/iga/test_app.py::test_healthcheck
 
 
 ##############
