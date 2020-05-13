@@ -14,5 +14,5 @@ jobs:
           make elasticsearch
       - name: test
         env:
-          COMPOSE_INTERACTIVE_NO_CLI: 1
+          COMPOSE_INTERACTIVE_NO_CLI: 0
         run: make test
