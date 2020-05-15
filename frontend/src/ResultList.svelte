@@ -10,7 +10,7 @@
 
 <style>
 	.result-list {
-		width: 100%;
+		width: 90%;
 		border: 1px solid #aaa;
 		border-radius: 4px;
 		box-shadow: 2px 2px 8px rgba(255,0,0,1);
