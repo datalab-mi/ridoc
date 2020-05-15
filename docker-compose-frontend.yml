@@ -23,8 +23,9 @@ services:
       - ${DATA_PATH}:/app/public/user
       - ${ES_DATA}/extra:/usr/share/elasticsearch/data/extra
     ports:
-      - "${FRONTEND_PORT}:3000"
-
+      - "${FRONTEND_PORT}:5000"
+      - "35729:35729"
+      - "3572:3572"
 networks:
   default:
     external:
