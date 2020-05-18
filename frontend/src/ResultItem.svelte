@@ -2,13 +2,13 @@
 	export let _id;
 	export let _source;
 	export let highlight;
-	$: url = `/pdfjs-2.3.200-dist/web/viewer.html?file=/user/pdf/${_id.replace(/\+/g, " ")}`
+	$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${_id.replace(/\+/g, " ")}`
 </script>
 
 <section class='result-item'>
 
 
-<a href="{url}">
+<a href="{url}" target="_blank">
 <h2>{_source.title}</h2>
 </a>
 
