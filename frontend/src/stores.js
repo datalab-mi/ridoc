@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 
+// auth: https://www.toptal.com/front-end/svelte-framework-guide
 export const searchInput = writable({
   fullText: {
       value: "",
@@ -7,3 +8,5 @@ export const searchInput = writable({
       }
     }
     )
+
+export const index_name = writable('iga')

@@ -18,7 +18,15 @@ from shutil import copyfile
 import pandas as pd
 from tools.converter import pdf2json, save_json
 
-#%%
+
+def empty_tree(pth: Path):
+    for child in pth.iterdir():
+        if child.is_file():
+            child.unlink()
+        else:
+            empty_tree(child)
+
+
 #On établit une connection
 es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
 indices = elasticsearch.client.IndicesClient(es)
@@ -177,15 +185,25 @@ def search(req , index_name ,  glossary_file=None, expression_file=None):
             T = True
             break
     """
-    body, lenght_of_request = build_query(req,
-                        index_name,
-                        glossary_file,
-                        expression_file)
+    if req != '':
+        body, lenght_of_request = build_query(req,
+                            index_name,
+                            glossary_file,
+                            expression_file)
 
-    D = es.search(index = index_name,
-                  body = body,
-                  size = 10)
-
+        D = es.search(index = index_name,
+                      body = body,
+                      size = 10)
+    else:
+        lenght_of_request = None
+        D = es.search(index = index_name,
+                      body = {
+                            "query": {
+                                "match_all": {}
+                            }
+                        },
+                    size = int(10000)
+                    )
     try: #This try is for the case where no match is found
         if not T and D['hits']['hits'][0]["_score"]/lenght_of_request < seuil: #The first filter then the second filter
           Bande = True
@@ -261,52 +279,56 @@ def create_index(nom_index,
 
 
 def inject_documents(nom_index, user_data, pdf_path, json_path,
-            metada_file=None):
+            meta_path=None):
 
     no_match = 0
-    os.makedirs(os.path.join(user_data, json_path), exist_ok=True)
 
-    if metada_file:
-        meta_df = pd.read_excel(metada_file)
-        #meta_df.set_index('Unnamed: 0' , inplace = True)
+    (Path(user_data) / json_path).mkdir(parents=True, exist_ok=True)
+    # empty it in case
+    empty_tree(Path(user_data) / json_path)
 
-    for name_document in os.listdir(os.path.join(user_data, pdf_path)):
-        if name_document.endswith(".pdf"):
-            try:
-                path_document = os.path.join(user_data, pdf_path, name_document)
-                print('Read %s'%path_document)
-                data = pdf2json(path_document)
+    for path_document in (Path(user_data) / pdf_path).glob('**/*.pdf'):
+        try:
+            #path_document = pdf_path / filename
+            print('Read %s'%str(path_document))
 
-                if metada_file:
-                    meta = meta_df.loc[meta_df['file'] == name_document, :]
+            index_file(path_document.name, nom_index, user_data, pdf_path, json_path,
+                        meta_path)
+            print('Document %s just uploaded'% path_document)
 
-                    if not meta.empty:
-
-                        #data['titre'] = str(meta['titre'].values[0])
-                        #data['Date'] = "%d-01-01"%meta['annee2'].values[0].astype(int)
-                        #data['Auteurs'] = str(meta['nomaut1'].values[0])
-                        meta = meta.iloc[0]
-                        meta['date'] = meta['date'].strftime('%Y-%m-%d')
-                        data.update(meta)
-                    else:
-                        no_match += 1
-                        continue
-
-                #with open(os.path.join(user_data, json_path, name_document.replace('.pdf','.json')) , 'w', encoding='utf-8') as f:
-                #    json.dump(data, f, ensure_ascii=False)
-                save_json(data, os.path.join(user_data, json_path, name_document.replace('.pdf','.json')))
-                es.index(index = nom_index, body=data , id = name_document)
-                print('Document %s just uploaded'% name_document)
-
-            except Exception as e:
-                print(e)
-                #break
-                print(20*'*')
-                print('Error, cannot upload %s'%name_document)
-                print(20*'*')
+        except Exception as e:
+            no_match += 1
+            print(e)
+            #break
+            print(20*'*')
+            print('Error, cannot upload %s'%path_document)
+            print(20*'*')
 
     print("There is %s documents without metadata match"%no_match)
 
+def index_file(filename, nom_index, user_data, pdf_path, json_path,
+            meta_path):
+    """
+    Index json file to elastic with metadata
+    Todo : substitue this function in inject_document
+    """
+    path_file = Path(user_data) / pdf_path / filename
+    data = pdf2json(str(path_file))
+
+    path_meta =  Path(user_data) / meta_path / filename
+    path_json =  Path(user_data) / json_path / filename
+    path_meta = path_meta.with_suffix('').with_suffix('.json') # replace extension
+    path_json = path_json.with_suffix('').with_suffix('.json') # replace extension
+
+    if path_meta.exists():
+        with open(path_meta, 'r' , encoding = 'utf-8') as json_file:
+            meta = json.load(json_file)
+            data.update(meta)
+
+    save_json(data, path_json)
+
+    es.index(index = nom_index, body=data , id = filename)
+    return data
 if __name__ == '__main__':
 
     NOM_INDEX = 'prod'

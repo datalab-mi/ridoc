@@ -7,7 +7,7 @@ import elasticsearch
 from elasticsearch import Elasticsearch
 from shutil import copyfile
 
-from tools.elastic import create_index, inject_documents, search
+from tools.elastic import create_index, inject_documents, search, index_file
 from tools.converter import pdf2json
 
 import pytest
@@ -27,6 +27,7 @@ MAPPING_FILE =  os.getenv('MAPPING_FILE')
 
 PDF_DIR = os.getenv('PDF_DIR')
 JSON_DIR = os.getenv('JSON_DIR')
+META_DIR =  os.getenv('META_DIR')
 
 os.makedirs(ES_DATA, exist_ok=True)
 
@@ -39,10 +40,8 @@ def test_create_index():
 
 @pytest.mark.run(after='test_create_index')
 def test_inject_documents():
-    metada_file = 'iga.xlsx'
-    META_DIR = os.path.join(USER_DATA, PDF_DIR, metada_file)
     inject_documents(NOM_INDEX, USER_DATA, PDF_DIR, JSON_DIR,
-                metada_file = META_DIR)
+                meta_path = META_DIR)
 
     res = es.get(index=NOM_INDEX, id= doc_guyane_eau)
     assert len(str(res)) > 1000, res
@@ -92,6 +91,15 @@ def test_search():
     assert length_req == 1, length_req
     assert not bande
 
+def test_index_file(index_name, pdf_file):
+    """
+    Index ignit_pnigitis inside USER_DATA
+    """
+    PDF_DIR = ''
+    JSON_DIR = ''
+    META_DIR = ''
+    data = index_file(str(pdf_file), index_name, USER_DATA, PDF_DIR, JSON_DIR, META_DIR)
+    assert data == {'content': '', 'date': '2020-07-17', 'author': 'babar', 'title': 'Celeste', 'file': 'ignit_pnigitis.pdf'}
 """
 def test_reindex(client, app, es, dummy_index):
     # test reindex after a change of synonym data

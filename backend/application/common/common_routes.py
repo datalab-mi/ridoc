@@ -7,6 +7,7 @@ from flask import Blueprint, render_template, request, make_response, abort, jso
 from flask import current_app as app
 
 from tools.elastic import search as elastic_search
+from tools.elastic import index_file as elastic_index_file
 from tools.elastic import build_query as elastic_build_query
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','md'}
@@ -47,9 +48,34 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@common_bp.route("/upload", methods=["POST"])
-def upload_file():
-    if request.method == 'POST':
+
+@common_bp.route("/<filename>", methods=["PUT","DELETE"])
+def upload_file(filename: str):
+
+    path_file = Path(app.config['USER_DATA']) / app.config['PDF_DIR'] / filename
+    path_meta = Path(app.config['USER_DATA']) / app.config['META_DIR'] / filename
+    path_json = Path(app.config['USER_DATA']) / app.config['JSON_DIR'] / filename
+
+    path_meta = path_meta.with_suffix('').with_suffix('.json') # replace extension
+    path_json = path_json.with_suffix('').with_suffix('.json') # replace extension
+
+
+    if request.method == 'DELETE':
+        if path_file.exists():
+            path_file.unlink()
+            path_meta.unlink(missing_ok=True)
+            path_json.unlink(missing_ok=True)
+            return make_response(jsonify(sucess=True), 204)
+
+        else:
+            return make_response(jsonify(sucess=False), 404)
+
+    elif request.method == 'PUT':
+        if path_file.exists():
+            status = 200
+        else:
+            status = 201
+
         # check if the post request has the file part
         print(request.files)
         if 'file' not in request.files:
@@ -58,21 +84,39 @@ def upload_file():
         file = request.files['file']
         # if user does not select file, browser also
         # submit an empty part without filename
-        if file.filename == '':
-            print('no filename')
+        if file.filename =='' or file.filename != filename:
             abort(500)
-        if file and allowed_file(file.filename):
-            filename = file.filename
-            path = Path(app.config['USER_DATA']) / filename
-            print(path)
-            file.save(path)
-            return jsonify(success=True)
+        if file and allowed_file(filename):
+            # save file
+            print(path_file)
+            file.save(path_file)
+            # save meta
+            path_meta = path_meta.with_suffix('').with_suffix('.json') # replace extension
+            with open(path_meta , 'w', encoding='utf-8') as f:
+                json.dump(request.form, f, ensure_ascii=False)
+
+            return  make_response(jsonify(sucess=True), status)
 
         else:
             abort(500)
 
 
+@common_bp.route("/index/<index_name>/<filename>", methods=["GET"])
+def index_file(index_name: str, filename: str):
+    #index_name = request.args.get('index_name',None)
+    #filename = request.args.get('filename',None)
 
+    if not index_name or not filename:
+        print('Missing keys')
+        return abort(500)
+
+    elastic_index_file(filename, index_name,
+                app.config['USER_DATA'],
+                app.config['PDF_DIR'],
+                app.config['JSON_DIR'],
+                app.config['META_DIR'])
+
+    return jsonify(success=True)
 
 @common_bp.route('/build_query', methods=['POST','OPTIONS'])
 def build_query():
@@ -111,7 +155,7 @@ def search():
     content = request.get_json(force=True)
     user_entry = content.get('value', None)
     index_name = content.get('index_name', None)
-    if not user_entry or not index_name:
+    if  not index_name:
         return
 
     GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
