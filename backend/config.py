@@ -33,5 +33,7 @@ class Config:
     EXPRESSION_FILE = getenv('EXPRESSION_FILE')
     PDF_DIR = getenv('PDF_DIR')
     JSON_DIR = getenv('JSON_DIR')
+    META_DIR = getenv('META_DIR')
+
     print('Read config')
     pass

@@ -75,6 +75,11 @@
             ]
         }
       }
+    },
+    "index": {
+      "blocks": {
+        "read_only_allow_delete": "false"
+      }
     }
   },
   "mappings":{

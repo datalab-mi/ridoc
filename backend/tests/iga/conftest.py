@@ -1,11 +1,15 @@
 import os
 import pytest
+from pathlib import Path
 
 from elasticsearch import Elasticsearch
 
 from application import create_app
 
 NOM_INDEX = 'iga'
+
+USER_DATA = 'tests/iga/data'
+filename = 'ignit_pnigitis'
 
 @pytest.fixture
 def app():
@@ -60,3 +64,17 @@ def dummy_index():
               }
             }
         }
+
+@pytest.fixture
+def form_to_upload():
+    yield dict(author= 'babar',
+                date= '2020-05-04',
+                file=(open(USER_DATA + '/' + filename + '.pdf', "rb"), filename) )
+
+@pytest.fixture
+def file_name():
+    return filename
+
+@pytest.fixture
+def index_name():
+    yield NOM_INDEX

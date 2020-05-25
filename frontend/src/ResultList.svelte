@@ -2,7 +2,9 @@
 	import { searchInput } from './stores.js';
 </script>
 
-<h1>La recherche est : {$searchInput.fullText.value}</h1>
+{#if $searchInput.fullText.value!=''}
+	<h1>La recherche est : {$searchInput.fullText.value}</h1>
+{/if}
 
 <div class='result-list'>
 <slot></slot>

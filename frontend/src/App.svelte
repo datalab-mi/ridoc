@@ -4,10 +4,10 @@
 	import ResultItem from './ResultItem.svelte';
 	import ResultList from './ResultList.svelte';
 	import SearchBar from './SearchBar.svelte';
+	import UploadFiles from './UploadFiles.svelte';
 
-	import { searchInput } from './stores.js';
+	import { searchInput, index_name } from './stores.js';
 
-	export let index_name
 	let promise = search();
 
 	async function search() {
@@ -16,7 +16,7 @@
 		const res = await fetch("http://localhost/api/common/search",{
                         method: "POST",
                         body: JSON.stringify({
-                               index_name: index_name,
+                               index_name: $index_name,
                                value: value
                              })
 													 });
@@ -31,17 +31,24 @@
 		}
 	}
 
-	function handleClick() {
+	function handleSearch() {
 		promise = search();
+	}
+
+	function handleUpload() {
+
 	}
 </script>
 
 <div>
 <SearchBar/>
 
-<button on:click={handleClick}>
+<button on:click={handleSearch}>
 	Rechercher
 </button>
+
+<UploadFiles />
+
 
 {#await promise}
 	<p>...Traitement de la requête</p>

@@ -19,7 +19,7 @@ export ES_INDEX = deces
 export ES_DATA = ${APP_PATH}/esdata
 export ES_NODES = 1
 export ES_MEM = 1024m
-export ES_VERSION = 7.4.0
+export ES_VERSION = 7.6.0
 
 export API_PATH = deces
 export ES_PROXY_PATH = /${API_PATH}/api/v0/search
@@ -98,6 +98,9 @@ elasticsearch-stop:
 	@echo docker-compose down elasticsearch
 	@if [ -f "${DC_FILE}-elasticsearch-huge.yml" ]; then ${DC} -f ${DC_FILE}-elasticsearch-huge.yml down;fi
 
+elasticsearch-exec:
+	$(DC) -f ${DC_FILE}-elasticsearch.yml exec elasticsearch bash
+
 # kibana
 
 kibana: network
@@ -119,7 +122,7 @@ backend/.env:
 backend-dev: backend/.env
 	@echo docker-compose up backend for dev
 	#@export ${DC} -f ${DC_FILE}.yml up -d --build --force-recreate 2>&1 | grep -v orphan
-	@export EXEC_ENV=dev;${DC} -f ${DC_FILE}.yml up -d  #--build --force-recreate
+	@export EXEC_ENV=dev;${DC} -f ${DC_FILE}.yml up -d --build #--force-recreate
 
 
 backend-dev-stop:
@@ -141,7 +144,7 @@ backend-exec:
 #Test backend#
 ##############
 download-data:
-	git clone https://github.com/victorjourne/IGA-BF.git && cd IGA-BF && make run base_path=$(BACKEND)/tests/iga/data/pdf
+	git clone https://github.com/victorjourne/IGA-BF.git && cd IGA-BF && make run base_path=$(BACKEND)/tests/iga/data
 
 test:
 	$(DC) -f ${DC_FILE}.yml exec backend pytest tests/
@@ -163,7 +166,7 @@ frontend-dev:
 	@echo docker-compose run ${APP} frontend
 	@echo ${DATA_PATH}
 
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml up -d --build --force-recreate
+	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml up -d # --build --force-recreate
 
 frontend-exec:
 	$(DC) -f ${DC_FILE}-frontend.yml exec frontend sh

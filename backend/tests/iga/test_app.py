@@ -51,6 +51,23 @@ def test_search(client, app, search_data):
 
 
 
-def test_upload_documents():
+def test_upload_file(client, app, form_to_upload):
 
-    assert True
+    with app.test_client() as c:
+        resp = c.post(
+            '/common/upload',
+            content_type = 'multipart/form-data',
+            data = form_to_upload)
+
+    assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
+
+def test_index_file(client, app, index_name, path_pdf):
+
+    with app.test_client() as c:
+        resp = c.get(
+            '/common/index?index_name={index_name}&filename={filename}'.format(
+            index_name=index_name,
+            filename=path_pdf
+            ))
+
+    assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
