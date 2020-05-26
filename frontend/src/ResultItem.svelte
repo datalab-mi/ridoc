@@ -1,4 +1,7 @@
 <script>
+	import { index_name } from './stores.js';
+	import { index } from './utils.js'
+
 	export let _id;
 	export let _source;
 	export let highlight = {'content':''};
@@ -7,14 +10,11 @@
 	$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
 
 	let promiseDelete = new Promise(()=>{});
+	let promiseIndex = new Promise(()=>{});
 
 	async function remove() {
-		//for (var i = 0; i < files.length; i++) {
-			//var file = files[i];
-		const res = await fetch(`http://localhost/api/common/${filename}`, {
-				method: 'DELETE'
-				});
-
+		const res = await fetch(`http://localhost/api/common/${filename}`,
+				{method: 'DELETE'});
 		if (res.ok || res.status == 404) {
 			return res.status
 		} else {
@@ -23,9 +23,15 @@
 		}
 	}
 
+
 	function handleDelete() {
 		console.log(`Delete ${_id.replace(/\+/g, " ")}`)
 		promiseDelete = remove()
+		promiseIndex = index( $index_name, filename, 'DELETE')
+	}
+
+	function handleUpdate() {
+		console.log(`Update ${_id.replace(/\+/g, " ")}`)
 	}
 </script>
 
@@ -43,12 +49,29 @@
 		SUPPRIMER
 	</button>
 
+	<button on:click={handleUpdate}>
+		MODIFIER
+	</button>
+
 	{#await promiseDelete}
 	{:then status}
 		{#if status == 204 }
-			<p style="color: green"> {filename} supprimé</p>
+			<p style="color: green"> Le fichier {filename} est supprimé</p>
 		{:else if status == 404 }
-			<p style="color: red" > {filename} pas trouvé</p>
+			<p style="color: red" > {filename} n'existe pas</p>
+		{:else}
+			<p>Status {status} non connu</p>
+		{/if}
+	{:catch error}
+		<p style="color: red">{error.message}</p>
+	{/await}
+
+	{#await promiseIndex}
+	{:then status}
+		{#if status == 200 }
+			<p style="color: green"> {filename} désindexé</p>
+		{:else if status == 404 }
+			<p style="color: red" > {filename} pas dans l'index</p>
 		{:else}
 			<p>Status {status} non connu</p>
 		{/if}

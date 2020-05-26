@@ -8,6 +8,7 @@ from flask import current_app as app
 
 from tools.elastic import search as elastic_search
 from tools.elastic import index_file as elastic_index_file
+from tools.elastic import delete_file as elastic_delete_file
 from tools.elastic import build_query as elastic_build_query
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','md'}
@@ -101,7 +102,7 @@ def upload_file(filename: str):
             abort(500)
 
 
-@common_bp.route("/index/<index_name>/<filename>", methods=["GET"])
+@common_bp.route("/<index_name>/_doc/<filename>", methods=["DELETE", "PUT"])
 def index_file(index_name: str, filename: str):
     #index_name = request.args.get('index_name',None)
     #filename = request.args.get('filename',None)
@@ -109,14 +110,19 @@ def index_file(index_name: str, filename: str):
     if not index_name or not filename:
         print('Missing keys')
         return abort(500)
+    if request.method == 'PUT':
+        res = elastic_index_file(filename, index_name,
+                    app.config['USER_DATA'],
+                    app.config['PDF_DIR'],
+                    app.config['JSON_DIR'],
+                    app.config['META_DIR'])
+        status = 201 if res['result'] == 'created' else 200 if res['result'] == 'updated' else 500
+        return make_response(res, status)
 
-    elastic_index_file(filename, index_name,
-                app.config['USER_DATA'],
-                app.config['PDF_DIR'],
-                app.config['JSON_DIR'],
-                app.config['META_DIR'])
+    elif request.method == 'DELETE':
+        status, res = elastic_delete_file(filename, index_name)
+        return make_response(res, status)
 
-    return jsonify(success=True)
 
 @common_bp.route('/build_query', methods=['POST','OPTIONS'])
 def build_query():
