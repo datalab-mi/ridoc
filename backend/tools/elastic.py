@@ -327,8 +327,19 @@ def index_file(filename, nom_index, user_data, pdf_path, json_path,
 
     save_json(data, path_json)
 
-    es.index(index = nom_index, body=data , id = filename)
-    return data
+    res = es.index(index = nom_index, body=data , id = filename)
+    return res
+
+def delete_file(filename, nom_index):
+    try:
+        res = es.delete(index = nom_index, id = filename)
+        return 200, res
+    except elasticsearch.exceptions.NotFoundError as e:
+        return e.status_code, e.info
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+        raise
+
 if __name__ == '__main__':
 
     NOM_INDEX = 'prod'

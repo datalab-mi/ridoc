@@ -124,7 +124,6 @@ backend-dev: backend/.env
 	#@export ${DC} -f ${DC_FILE}.yml up -d --build --force-recreate 2>&1 | grep -v orphan
 	@export EXEC_ENV=dev;${DC} -f ${DC_FILE}.yml up -d --build #--force-recreate
 
-
 backend-dev-stop:
 	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down #--remove-orphan
 
@@ -144,11 +143,15 @@ backend-exec:
 #Test backend#
 ##############
 download-data:
-	git clone https://github.com/victorjourne/IGA-BF.git && cd IGA-BF && make run base_path=$(BACKEND)/tests/iga/data
+	@echo configuring data downloader
+	git clone https://github.com/victorjourne/IGA-BF.git
+	make -C IGA-BF run base_path=$(BACKEND)/tests/iga/data
+
+clean:
+	@sudo rm -rf IGA-BF
 
 test:
 	$(DC) -f ${DC_FILE}.yml exec backend pytest tests/
-
 
 ##############
 #  NGINX     #
@@ -171,8 +174,6 @@ frontend-dev:
 frontend-exec:
 	$(DC) -f ${DC_FILE}-frontend.yml exec frontend sh
 
-
-
 frontend-dev-stop:
 	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml down
 
@@ -194,3 +195,7 @@ frontend-build-dist: ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION) frontend-check-bui
 	@export EXEC_ENV=prod; ${DC} -f $(DC_FILE)-build.yml build $(DC_BUILD_ARGS)
 
 dev: network frontend-stop frontend-dev
+
+up: frontend-dev backend-dev elasticsearch nginx
+
+down: frontend-dev-stop backend-dev-stop elasticsearch-stop nginx-stop

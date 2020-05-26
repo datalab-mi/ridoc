@@ -33,7 +33,6 @@ def index():
                  app.config['EXPRESSION_FILE'])
 
     # inject only json
-    metada_file = 'iga.xlsx'
     META_DIR = Path(app.config['USER_DATA']) / app.config['PDF_DIR'] / metada_file
 
     inject_documents(index_name,
