@@ -1,4 +1,5 @@
 <script>
+	import PutItem from './PutItem.svelte'
 	import { index_name } from './stores.js';
 	import { index, upload } from './utils.js'
 
@@ -12,10 +13,18 @@
 	let promiseDelete = new Promise(()=>{});
 	let promiseDeleteIndex = new Promise(()=>{});
 
-	let promiseUpload = new Promise(()=>{});
-	let promiseIndex = new Promise(()=>{});
+	let readonly = true;
+	let send = false;
+	let meta;
 
-	let readonly = true
+	$: {
+		meta = [
+			{'key': 'title' , 'value': _source.title},
+			{'key': 'author' , 'value': _source.author},
+			{'key': 'date' , 'value': _source.date},
+			]
+	}
+	const files = [{'name': _id.replace(/\+/g, " ")}]
 
 	async function remove() {
 		const res = await fetch(`http://localhost/api/common/${filename}`,
@@ -34,18 +43,9 @@
 		promiseDeleteIndex = index( $index_name, filename, 'DELETE')
 	}
 
-	async function handleSave() {
-		console.log(`Save ${_id.replace(/\+/g, " ")}`)
+	function handleSave() {
+		send = !send
 		readonly = !readonly
-		const meta = [
-			{'key': 'title' , 'value': _source.author},
-			{'key': 'author' , 'value': _source.author},
-			{'key': 'date' , 'value': _source.date},
-			]
-		const files = [{'name': _id}]
-
-		promiseUpload = await upload(meta, files)
-		promiseIndex = await index($index_name, files[0].name, 'PUT');
 	}
 </script>
 
@@ -66,23 +66,29 @@
 	<input type='text' bind:value={_source.date} readonly={readonly}/>
 	</label>
 
+	<button on:click="{window.open(url,'_blank')}">
+		CONSULTER
+	</button>
+
 	<button on:click={handleDelete}>
 		SUPPRIMER
 	</button>
 
-	{#if readonly}
-		<button on:click="{() => readonly = !readonly}">
+	{#if (readonly & send) }
+		<button on:click={handleSave}>
 			MODIFIER
 		</button>
-	{:else}
+		<PutItem meta={meta} files={files} />
+	{:else if (!readonly & !send) }
 		<button on:click={handleSave}>
 			SAUVER
 		</button>
+	{:else}
+		<button on:click="{() => readonly = !readonly}">
+			MODIFIER
+		</button>
 	{/if}
 
-	<button on:click="{window.open(url,'_blank')}">
-		CONSULTER
-	</button>
 
 	{#await promiseDelete}
 	{:then status}
@@ -111,31 +117,6 @@
 	{/await}
 
 
-	{#await promiseUpload}
-  {:then status}
-    {#if status == 201 }
-      <p style="color: green">{filename} crée</p>
-    {:else if status == 200 }
-      <p style="color: blue" >{filename} modifié</p>
-    {:else}
-      <p>Status {status} non connu</p>
-    {/if}
-  {:catch error}
-  	<p style="color: red">{error.message}</p>
-  {/await}
-
-  {#await promiseIndex}
-  {:then status}
-    {#if status == 201 }
-      <p style="color: green">{filename} indexé</p>
-    {:else if status == 200 }
-      <p style="color: blue" >{filename} modifié dans l'index</p>
-    {:else}
-      <p>Status {status} non connu</p>
-    {/if}
-  {:catch error}
-    <p style="color: red">{error.message}</p>
-  {/await}
 </section>
 
 <style>
