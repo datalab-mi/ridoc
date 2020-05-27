@@ -28,7 +28,7 @@
   let promiseUpload = new Promise(()=>{});
 
   async function handleUpload() {
-    promiseUpload = await upload(files, meta);
+    promiseUpload = await upload(meta, files);
     promiseIndex = await index($index_name, files[0].name, 'PUT');
   }
 
