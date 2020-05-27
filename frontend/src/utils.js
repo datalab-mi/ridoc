@@ -1,10 +1,10 @@
-async function upload(files, meta) {
+async function upload(meta, files) {
   //for (var i = 0; i < files.length; i++) {
     //var file = files[i];
   const formData = new FormData();
   const filename = files[0].name
-
   formData.append('file', files[0]);
+  
   meta.forEach(item => formData.append(item.key, item.value));
 
   const upload = await fetch(`http://localhost/api/common/${filename}`, {
@@ -20,14 +20,15 @@ async function upload(files, meta) {
   }
 }
 
-
 async function index(index_name, filename, method) {
     let statusOK;
+    // handle status of the http request
     if (method == 'PUT') {
       statusOK = (s) => s.status
     } else if (method == 'DELETE') {
       statusOK = (s) => (s.ok || s.status == 404)
     }
+    // Make the  http request
     const index = await fetch(`http://localhost/api/common/${index_name}/_doc/${filename}`,
       {method: method});
 		if (statusOK(index)) {

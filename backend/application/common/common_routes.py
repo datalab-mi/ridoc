@@ -77,29 +77,22 @@ def upload_file(filename: str):
         else:
             status = 201
 
-        # check if the post request has the file part
-        print(request.files)
-        if 'file' not in request.files:
-            print('no file')
-            return abort(500)
-        file = request.files['file']
+        # ? check if the post request has the file part ?
+        file = request.files.get('file', False)
         # if user does not select file, browser also
         # submit an empty part without filename
-        if file.filename =='' or file.filename != filename:
-            abort(500)
+
         if file and allowed_file(filename):
             # save file
-            print(path_file)
             file.save(path_file)
-            # save meta
-            path_meta = path_meta.with_suffix('').with_suffix('.json') # replace extension
-            with open(path_meta , 'w', encoding='utf-8') as f:
-                json.dump(request.form, f, ensure_ascii=False)
+        # save meta
+        with open(path_meta , 'w', encoding='utf-8') as f:
+            json.dump(request.form, f, ensure_ascii=False)
 
-            return  make_response(jsonify(sucess=True), status)
+        return  make_response(jsonify(sucess=True), status)
 
-        else:
-            abort(500)
+    else:
+        abort(500)
 
 
 @common_bp.route("/<index_name>/_doc/<filename>", methods=["DELETE", "PUT"])
