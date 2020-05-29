@@ -13,19 +13,20 @@ services:
     stdin_open: true
     environment:
       - NODE_ENV=development
-      - CHOKIDAR_USEPOLLING=true
       - SKIP_PREFLIGHT_CHECK=true
 
     #image: ${APP}-frontend-${EXEC_ENV}:${APP_VERSION}
     container_name: ${APP}-frontend-${EXEC_ENV}
     volumes:
-      - ${FRONTEND}/:/app/
+      - ${FRONTEND}/src:/app/src
       - ${DATA_PATH}:/app/public/user
       - ${ES_DATA}/extra:/usr/share/elasticsearch/data/extra
     ports:
-      - "${FRONTEND_PORT}:5000"
+      - "${FRONTEND_PORT}:3000"
       - "35729:35729"
       - "3572:3572"
+      - "10000:10000"
+
 networks:
   default:
     external:
