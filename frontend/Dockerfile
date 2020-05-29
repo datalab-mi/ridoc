@@ -2,14 +2,11 @@ ARG PDFJS_VERSION
 FROM node:12.2.0-alpine
 ENV PDFJS_VERSION "$PDFJS_VERSION"
 
+# For production, see https://github.com/mikenikles/sapper-on-cloud-run/blob/master/Dockerfile
 WORKDIR /app
-COPY package*.json  ./
-COPY src ./
-COPY rollup.config.js ./
-
+COPY . .
 RUN npm install
-
-EXPOSE 5000 35729 3572
+EXPOSE 3000
 
 # PDF VIEWER
 RUN wget "https://github.com/mozilla/pdf.js/releases/download/v2.3.200/pdfjs-2.3.200-dist.zip"

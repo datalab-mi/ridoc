@@ -166,10 +166,9 @@ nginx: network
 
 
 frontend-dev:
-	@echo docker-compose run ${APP} frontend
+	@echo docker-compose run ${APP} frontend --build
 	@echo ${DATA_PATH}
-
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml up -d # --build --force-recreate
+	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml up -d  --build --force-recreate
 
 frontend-exec:
 	$(DC) -f ${DC_FILE}-frontend.yml exec frontend sh
