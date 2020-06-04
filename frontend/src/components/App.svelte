@@ -4,7 +4,7 @@
 	import ResultItem from './ResultItem.svelte';
 	import ResultList from './ResultList.svelte';
 	import SearchBar from './SearchBar.svelte';
-	import UploadFiles from './NewItem.svelte';
+	import NewItem from './NewItem.svelte';
 
 	import { searchInput, index_name } from './stores.js';
 
@@ -47,7 +47,7 @@
 	Rechercher
 </button>
 
-<UploadFiles />
+<NewItem />
 
 
 {#await promise}

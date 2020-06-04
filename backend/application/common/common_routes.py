@@ -1,5 +1,6 @@
 import json, os
 from pathlib import Path  # python3 only
+import pandas as pd
 import glob
 import time
 
@@ -7,11 +8,7 @@ from flask import Blueprint, render_template, request, make_response, abort, jso
 from flask import current_app as app
 
 from tools.elastic import search as elastic_search
-from tools.elastic import index_file as elastic_index_file
-from tools.elastic import delete_file as elastic_delete_file
 from tools.elastic import build_query as elastic_build_query
-
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','md'}
 
 # Blueprint Configuration
 common_bp = Blueprint('common_bp', __name__,url_prefix='/common')
@@ -44,78 +41,6 @@ def list_files():
                               size=filename.stat().st_size * 1024/1000)) # k bytes to kB
 
     return jsonify(files)
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-@common_bp.route("/<filename>", methods=["PUT","DELETE"])
-def upload_file(filename: str):
-
-    path_file = Path(app.config['USER_DATA']) / app.config['PDF_DIR'] / filename
-    path_meta = Path(app.config['USER_DATA']) / app.config['META_DIR'] / filename
-    path_json = Path(app.config['USER_DATA']) / app.config['JSON_DIR'] / filename
-
-    path_meta = path_meta.with_suffix('').with_suffix('.json') # replace extension
-    path_json = path_json.with_suffix('').with_suffix('.json') # replace extension
-
-
-    if request.method == 'DELETE':
-        if path_file.exists():
-            path_file.unlink()
-            path_meta.unlink(missing_ok=True)
-            path_json.unlink(missing_ok=True)
-            return make_response(jsonify(sucess=True), 204)
-
-        else:
-            return make_response(jsonify(sucess=False), 404)
-
-    elif request.method == 'PUT':
-        if path_file.exists():
-            status = 200
-        else:
-            status = 201
-
-        # ? check if the post request has the file part ?
-        file = request.files.get('file', False)
-        # if user does not select file, browser also
-        # submit an empty part without filename
-
-        if file and allowed_file(filename):
-            # save file
-            file.save(path_file)
-        # save meta
-        with open(path_meta , 'w', encoding='utf-8') as f:
-            json.dump(request.form, f, ensure_ascii=False)
-
-        return  make_response(jsonify(sucess=True), status)
-
-    else:
-        abort(500)
-
-
-@common_bp.route("/<index_name>/_doc/<filename>", methods=["DELETE", "PUT"])
-def index_file(index_name: str, filename: str):
-    #index_name = request.args.get('index_name',None)
-    #filename = request.args.get('filename',None)
-
-    if not index_name or not filename:
-        print('Missing keys')
-        return abort(500)
-    if request.method == 'PUT':
-        res = elastic_index_file(filename, index_name,
-                    app.config['USER_DATA'],
-                    app.config['PDF_DIR'],
-                    app.config['JSON_DIR'],
-                    app.config['META_DIR'])
-        status = 201 if res['result'] == 'created' else 200 if res['result'] == 'updated' else 500
-        return make_response(res, status)
-
-    elif request.method == 'DELETE':
-        status, res = elastic_delete_file(filename, index_name)
-        return make_response(res, status)
-
 
 @common_bp.route('/build_query', methods=['POST','OPTIONS'])
 def build_query():
@@ -172,3 +97,19 @@ def search():
     seuil = 4.5
     seuil_affichage = 3.5
     return json.dumps(res)
+
+@common_bp.route('/synonym', methods=['GET'])
+def synonym():
+    glossary_file = Path(app.config['USER_DATA']) / app.config['GLOSSARY_FILE']
+    if glossary_file.exists():
+        with glossary_file.open() as f:
+            content = f.read()
+        if content:
+            gloassary_df = pd.read_csv(glossary_file, sep='=>',header=None, names=['value','key']);
+            list_glossary = [x.split('=>') for x in str(content).split(
+                                    '\n') if '=>' in x]
+            dic_dictionary = {key:value.replace('_','') for key,value in list_glossary}
+            return make_response(gloassary_df.to_json(orient='records'), 200)
+
+    # In the other cases
+    return make_response('', 204)

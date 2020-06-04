@@ -48,7 +48,7 @@
 	const files = [{'name': _id.replace(/\+/g, " ")}]
 
 	async function remove() {
-		const res = await fetch(`http://localhost/api/common/${filename}`,
+		const res = await fetch(`http://localhost/api/admin/${filename}`,
 				{method: 'DELETE'});
 		if (res.ok || res.status == 404) {
 			return res.status

@@ -1,14 +1,19 @@
 <script>
-	import { searchInput } from './stores.js';
+import { searchInput, searchResults, index_name } from '../components/stores.js';
+import ResultItem from '../components/ResultItem.svelte';
+
 </script>
 
-{#if $searchInput.fullText.value!=''}
-	<h1>La recherche est : {$searchInput.fullText.value}</h1>
-{/if}
 
-<div class='result-list'>
-<slot></slot>
-</div>
+{#if searchResults}
+	<div class='result-list'>
+
+	{#each $searchResults as item, i}
+		<ResultItem {...item}/>
+	{/each}
+	</div>
+
+{/if}
 
 <style>
 	.result-list {
