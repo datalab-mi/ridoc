@@ -5,7 +5,7 @@
 
     import { index_name } from './stores.js';
     import {upload, index } from  './utils.js'
-
+    const required = false;
     let files;
     let meta = [
               {
@@ -35,16 +35,23 @@
 
 </script>
 
-<BaseItem meta={meta}>
+<BaseItem meta={meta} required={required}>
 
 
   <div slot="button">
     <input id="fileUpload" type="file" bind:files>
 
     {#if files}
-        <button on:click="{() => send = !send}">Soumettre</button>
+      <button on:click="{() => send = !send}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
+        <span>SOUMETTRE</span>
+      </button>
     {:else}
-        <button disabled>Soumettre</button>
+      <button disabled class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
+        <span>SOUMETTRE</span>
+      </button>
+
     {/if}
 
     {#if send}

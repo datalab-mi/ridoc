@@ -3,5 +3,8 @@
 !/package.json
 !/package-lock.json
 !/rollup.config.js
+!/rollup.config.js
+!/postcss.config.js
+!/frontend/tailwind.config.js
 !/src
 !/static

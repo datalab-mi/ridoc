@@ -43,8 +43,8 @@
 <div>
 <SearchBar/>
 
-<button on:click={handleSearch}>
-	Rechercher
+<button on:click={handleSearch} class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+  Rechercher
 </button>
 
 <NewItem />

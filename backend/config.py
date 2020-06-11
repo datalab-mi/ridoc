@@ -31,6 +31,8 @@ class Config:
     MAPPING_FILE = getenv('MAPPING_FILE')
     GLOSSARY_FILE = getenv('GLOSSARY_FILE')
     EXPRESSION_FILE = getenv('EXPRESSION_FILE')
+    RAW_EXPRESSION_FILE = getenv('RAW_EXPRESSION_FILE')
+
     PDF_DIR = getenv('PDF_DIR')
     JSON_DIR = getenv('JSON_DIR')
     META_DIR = getenv('META_DIR')

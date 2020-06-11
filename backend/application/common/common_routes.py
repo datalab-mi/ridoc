@@ -100,16 +100,35 @@ def search():
 
 @common_bp.route('/synonym', methods=['GET'])
 def synonym():
-    glossary_file = Path(app.config['USER_DATA']) / app.config['GLOSSARY_FILE']
-    if glossary_file.exists():
-        with glossary_file.open() as f:
+    filename = request.args.get('filename', app.config['GLOSSARY_FILE'])
+    if filename == "glossary":
+        synonym_file = Path(app.config['USER_DATA']) / app.config['GLOSSARY_FILE']
+    elif filename == "expression":
+        synonym_file = Path(app.config['USER_DATA']) / app.config['EXPRESSION_FILE']
+    else:
+        synonym_file = Path(app.config['USER_DATA']) / filename
+
+    if synonym_file.exists():
+        with synonym_file.open() as f:
             content = f.read()
         if content:
-            gloassary_df = pd.read_csv(glossary_file, sep='=>',header=None, names=['value','key']);
-            list_glossary = [x.split('=>') for x in str(content).split(
-                                    '\n') if '=>' in x]
-            dic_dictionary = {key:value.replace('_','') for key,value in list_glossary}
-            return make_response(gloassary_df.to_json(orient='records'), 200)
+            synonym_df = pd.read_csv(synonym_file, sep=' => ',header=None, names=['value','key']);
+            #list_glossary = [x.split(' => ') for x in str(content).split(
+            #                        '\n') if '=>' in x]
+            #dic_dictionary = {key:value.replace('_','') for key,value in list_glossary}
+            return make_response(synonym_df.to_json(orient='records'), 200)
+
+    # In the other cases
+    return make_response('', 204)
+
+@common_bp.route('/expression', methods=['GET'])
+def expression():
+    expression_file = Path(app.config['USER_DATA']) / app.config['RAW_EXPRESSION_FILE']
+
+    if expression_file.exists():
+        expression_df = pd.read_csv(expression_file, header=None, names=['value']);
+        expression_df['key'] = expression_df.index
+        return make_response(expression_df.to_json(orient='records'), 200)
 
     # In the other cases
     return make_response('', 204)

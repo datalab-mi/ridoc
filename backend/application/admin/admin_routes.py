@@ -121,38 +121,44 @@ def index():
 
     return jsonify(success=True)
 
-@admin_bp.route("/synonym/<key>", methods=["DELETE", "PUT"])
-def synonym(key: str):
+@admin_bp.route("/expression/<key>", methods=["DELETE", "PUT"])
+def expression(key: str):
     body = request.get_json(force=True)
-
-    glossary_file = Path(app.config['USER_DATA']) / app.config['GLOSSARY_FILE']
-    if not body[0]['value'] or not body[1]['value']:
+    expression_file = Path(app.config['USER_DATA']) / app.config['RAW_EXPRESSION_FILE']
+    if 'value' not in body[0] or 'value' not in body[1]:
         print('Missing keys')
         return abort(500)
+    if key != body[0]['value']:
+        return abort(501)
 
-    if glossary_file.exists():
-        glossary_df = pd.read_csv(glossary_file, sep='=>',header=None, names=['value','key']);
-
+    if expression_file.exists():
+        expression_df = pd.read_csv(expression_file, header=None, names=['value']);
+        expression_df['key'] = range(len(expression_df))
+        expression_df['key'] = expression_df['key'].astype(str)
     else:
-        return abort(500)
+        return abort(502)
 
     if request.method == 'PUT':
-        if key in glossary_df['key'].tolist():
-            status = 200
-            glossary_df.loc[glossary_df['key'] == key, 'value'] = body[1]['value']
+        if key in expression_df['key'].tolist():
+            status = 200 # update
+            expression_df.loc[expression_df['key'] == key, 'value'] = body[1]['value']
         else:
-            status = 201
-            glossary_df = pd.concat([pd.DataFrame( {'key': key, 'value': body[1]['value']},index=[0]),
-                                    glossary_df],ignore_index=True)
-
-        content = []
-        for _, row in glossary_df.iterrows():
-            content += [row['value'] + '=>' + row['key']]
-        glossary_file.write_text('\n'.join(content))
-            #to_csv(glossary_file, sep=str('=>'),header=False, index=False, encoding='utf-8')
-        return make_response(glossary_df.to_json(orient='records'), status)
+            status = 201 # create
+            expression_df = pd.concat([pd.DataFrame({'key': key, 'value': body[1]['value']},index=[0]),
+                                    expression_df], ignore_index=True)
 
     elif request.method == 'DELETE':
-        return make_response(res, status)
-
-    return
+        if key in expression_df['key'].tolist():
+            status = 200
+            expression_df = expression_df[expression_df['key'] != key]
+        else:
+            status = 404
+    # Write synonym file
+    content = []
+    for _, row in expression_df.iterrows():
+        content += [row['value']]
+    expression_file.write_text('\n'.join(content))
+    expression_df['key'] = range(len(expression_df))
+    expression_df['key'] = expression_df['key'].astype(str)
+        #to_csv(glossary_file, sep=str('=>'),header=False, index=False, encoding='utf-8')
+    return make_response(expression_df.to_json(orient='records'), status)
