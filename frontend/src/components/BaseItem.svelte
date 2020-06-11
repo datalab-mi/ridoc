@@ -8,10 +8,13 @@
     export let cssClass = 'base';
 
     export let readonly = false;
+    export let required = true;
+
 </script>
 
 <section class="{cssClass}-item">
 
+  <div class="mb-4">
     {#each meta as {key, type, placeholder, value, innerHtml}, i }
       {#if key == "title"}
         <h2>
@@ -21,20 +24,28 @@
         <slot name="highlight">
         </slot>
 
+      <br>
       {:else if type == "text"}
         <label> {@html innerHtml}
           <input type='text' bind:value={value} {placeholder} {readonly}/>
         </label>
 
       {:else if type == "date"}
+        <br>
         <label> {@html innerHtml}
-          <input type='date' bind:value={value} {placeholder} {readonly}/>
+          {#if required}
+            <input type='date' bind:value={value} {placeholder} {readonly} required />
+          {:else}
+            <input type='date' bind:value={value} {placeholder} {readonly} />
+          {/if}
         </label>
       {/if}
     {/each}
+  </div>
 
-    <slot name="button">
-    </slot>
+  <slot name="button">
+  </slot>
+
 </section>
 
 <style>

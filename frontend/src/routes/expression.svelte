@@ -5,9 +5,9 @@
 <script>
 	import { onMount } from 'svelte';
 
-	import Synonym from '../components/synonym/Synonym.svelte';
+	import Synonym from '../components/expression/Expression.svelte';
 
 
 </script>
 
-<Synonym filename='glossary' />
+<Synonym filename='expression'/>

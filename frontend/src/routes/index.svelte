@@ -14,6 +14,6 @@
 
 <SearchBar/>
 
-<ResultList/>
-
 <UploadFiles />
+
+<ResultList/>

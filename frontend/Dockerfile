@@ -14,4 +14,7 @@ RUN mkdir -p public
 RUN unzip -d public pdfjs-2.3.200-dist.zip
 RUN rm pdfjs-2.3.200-dist.zip
 
+# tailwindcss
+RUN npm install tailwindcss postcss-cli --save-dev
+
 CMD [ "npm", "run","dev" ]
