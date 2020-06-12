@@ -1,10 +1,15 @@
 import os
-
 import pytest
+from pathlib import Path
+
+from elasticsearch import Elasticsearch
 
 from application import create_app
 
 NOM_INDEX = 'iga'
+
+USER_DATA = 'tests/iga/data'
+filename = 'ignit_pnigitis'
 
 @pytest.fixture
 def app():
@@ -21,3 +26,55 @@ def client(app):
 @pytest.fixture
 def search_data():
     return dict(index_name=NOM_INDEX, value='travail illegal')
+
+@pytest.fixture
+def es():
+    return Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
+
+@pytest.fixture
+def dummy_index():
+    return {
+          "settings": {
+            "analysis": {
+              "filter" : {
+                "my_synonym": {
+                  "type": "synonym",
+                  "synonyms": [
+                    "chat => lion"
+                      ]
+                  }
+            },
+              "analyzer": {
+                "my_analyzer": {
+                  "tokenizer": "standard",
+                  "filter": [
+                    "my_synonym"
+                    ]
+                  }
+                }
+            }
+          },
+          "mappings":{
+              "properties": {
+                 "content": {
+                    "type": "text",
+                    "analyzer" : "my_analyzer",
+                    "search_analyzer" : "my_analyzer"
+                }
+              }
+            }
+        }
+
+@pytest.fixture
+def form_to_upload():
+    yield dict(author= 'babar',
+                date= '2020-05-04',
+                file=(open(USER_DATA + '/' + filename + '.pdf', "rb"), filename) )
+
+@pytest.fixture
+def file_name():
+    return filename
+
+@pytest.fixture
+def index_name():
+    yield NOM_INDEX

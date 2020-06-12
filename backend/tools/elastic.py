@@ -18,7 +18,15 @@ from shutil import copyfile
 import pandas as pd
 from tools.converter import pdf2json, save_json
 
-#%%
+
+def empty_tree(pth: Path):
+    for child in pth.iterdir():
+        if child.is_file():
+            child.unlink()
+        else:
+            empty_tree(child)
+
+
 #On établit une connection
 es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
 indices = elasticsearch.client.IndicesClient(es)
@@ -48,7 +56,6 @@ def build_query(req:str, index_name:str,
     """
     from_date, to_date, list_author = None, None, []
     # process gloassary
-    #import pdb; pdb.set_trace()
     if glossary_file:
         with open(glossary_file, 'r') as f:
             content = f.read()
@@ -68,21 +75,21 @@ def build_query(req:str, index_name:str,
         # process expression
         with open(expression_file, 'r') as f:
             content = f.read()
-        list_expression = content.split('\n')[:-1] # last empty line
-
+        list_expression = [x.split('=>')[1] for x in content.split(
+                '\n')[:-1] if '=>' in x] # last empty line
+        list_expression = [x.replace('_','').strip() for x in list_expression]
     # TODO : process all keyword???
     # Liste_acronyme
 
     print(req)
     #Au début on va analyser la requête
 
-    body = {'analyzer':"french", "text": req}
+    body = {'analyzer':"my_analyzer", "text": req}
     analyse = indices.analyze(index= index_name, body = body)
 
-    L = [ananyse_tokens['token'] for ananyse_tokens in analyse["tokens"]]
-    print(L)
-    analyzed = " ".join(L)
-    lenght_of_request = len(L)
+    analyzed = [ananyse_tokens['token'] for ananyse_tokens in analyse["tokens"]]
+
+    lenght_of_request = len(analyzed)
 
     #------------------------Application du filtre 1 -----------------------------
     T = False
@@ -98,12 +105,10 @@ def build_query(req:str, index_name:str,
     req_expression = []
     for expression in list_expression:
         if expression in analyzed :
-            for r in ((' ', ''), ('-' ,''), ('_' , '')):
-                expression = expression.replace(*r)
-            if expression not in req_expression:
-                req_expression.append(expression)
-                print('req_expression :')
-                print(req_expression)
+            req_expression.append(expression)
+            print('req_expression :')
+            print(req_expression)
+    #import pdb; pdb.set_trace()
 
     body = { "query": {
                     "bool": {
@@ -114,6 +119,8 @@ def build_query(req:str, index_name:str,
                                 }
                         },
                     "highlight" : {
+                    "pre_tags" : ["<mark>"],
+                    "post_tags" : ["</mark>"],
                     "fragment_size" : 300,
                     "number_of_fragments" : 3,
                     "order" : "score",
@@ -178,15 +185,25 @@ def search(req , index_name ,  glossary_file=None, expression_file=None):
             T = True
             break
     """
-    body, lenght_of_request = build_query(req,
-                        index_name,
-                        glossary_file,
-                        expression_file)
+    if req != '':
+        body, lenght_of_request = build_query(req,
+                            index_name,
+                            glossary_file,
+                            expression_file)
 
-    D = es.search(index = index_name,
-                  body = body,
-                  size = 10)
-
+        D = es.search(index = index_name,
+                      body = body,
+                      size = 10)
+    else:
+        lenght_of_request = None
+        D = es.search(index = index_name,
+                      body = {
+                            "query": {
+                                "match_all": {}
+                            }
+                        },
+                    size = int(10000)
+                    )
     try: #This try is for the case where no match is found
         if not T and D['hits']['hits'][0]["_score"]/lenght_of_request < seuil: #The first filter then the second filter
           Bande = True
@@ -227,23 +244,30 @@ def create_index(nom_index,
             glossary_file=None,
             expression_file=None):
 
+
+    synonym_file = os.path.join(es_data, 'synonym.txt')
+    print(os.path.join(user_data, mapping_file))
     with open(os.path.join(user_data, mapping_file) , 'r' , encoding = 'utf-8') as json_file:
         map = json.load(json_file)
+    # Copy glossary and experssion file to elastic search mount volume
+    print(map)
 
-    if glossary_file:
-        print('Use glossary file %s'%glossary_file)
-        # Copy glossary and experssion file to elastic search mount volume
-        copyfile(os.path.join(user_data, glossary_file),
-                os.path.join(es_data, glossary_file))
-        map['settings']["index"]["analysis"]["filter"]["glossary"].update(
-                {"synonyms_path" : os.path.join(es_data, glossary_file)})
+    with open(synonym_file, 'w') as outfile:
+        if glossary_file:
+            print('Use glossary file %s'%glossary_file)
+            with open(os.path.join(user_data, glossary_file), 'r') as f1:
+                outfile.write(f1.read())
+        outfile.write('\n')
+        if expression_file:
+            print('Use expresion file %s'%expression_file)
+            with open(os.path.join(user_data, expression_file), 'r') as f2:
+                outfile.write(f2.read())
 
-    if expression_file:
-        print('Use expresion file %s'%expression_file)
-        copyfile(os.path.join(user_data, expression_file),
-                os.path.join(es_data, expression_file))
-        map["settings"]["index"]["analysis"]['char_filter']["my_char_filter"].update(
-                {'mappings_path' : os.path.join(es_data, expression_file)})
+        else:
+            outfile.write()
+
+    map['settings']["analysis"]["filter"]["synonym"].update(
+            {"synonyms_path" : os.path.join(es_data, synonym_file)})
 
     print(map)
     with open(os.path.join(es_data, mapping_file), 'w') as outfile:
@@ -255,51 +279,66 @@ def create_index(nom_index,
 
 
 def inject_documents(nom_index, user_data, pdf_path, json_path,
-            metada_file=None):
+            meta_path=None):
 
     no_match = 0
-    os.makedirs(os.path.join(user_data, json_path), exist_ok=True)
 
-    if metada_file:
-        meta_df = pd.read_excel(metada_file)
-        #meta_df.set_index('Unnamed: 0' , inplace = True)
+    (Path(user_data) / json_path).mkdir(parents=True, exist_ok=True)
+    # empty it in case
+    empty_tree(Path(user_data) / json_path)
 
-    for name_document in os.listdir(os.path.join(user_data, pdf_path)):
-        if name_document.endswith(".pdf"):
-            try:
-                path_document = os.path.join(user_data, pdf_path, name_document)
-                print('Read %s'%path_document)
-                data = pdf2json(path_document)
+    for path_document in (Path(user_data) / pdf_path).glob('**/*.pdf'):
+        try:
+            #path_document = pdf_path / filename
+            print('Read %s'%str(path_document))
 
-                if metada_file:
-                    meta = meta_df.loc[meta_df['file'] == name_document, :]
+            index_file(path_document.name, nom_index, user_data, pdf_path, json_path,
+                        meta_path)
+            print('Document %s just uploaded'% path_document)
 
-                    if not meta.empty:
-
-                        #data['titre'] = str(meta['titre'].values[0])
-                        #data['Date'] = "%d-01-01"%meta['annee2'].values[0].astype(int)
-                        #data['Auteurs'] = str(meta['nomaut1'].values[0])
-                        meta = meta.iloc[0]
-                        meta['date'] = meta['date'].strftime('%Y-%m-%d')
-                        data.update(meta)
-                    else:
-                        no_match += 1
-                        continue
-
-                #with open(os.path.join(user_data, json_path, name_document.replace('.pdf','.json')) , 'w', encoding='utf-8') as f:
-                #    json.dump(data, f, ensure_ascii=False)
-                save_json(data, os.path.join(user_data, json_path, name_document.replace('.pdf','.json')))
-                es.index(index = nom_index, body=data , id = name_document)
-                print('Document %s just uploaded'% name_document)
-
-            except Exception as e:
-                print(e)
-                #break
-                print(20*'*')
-                print('Error, cannot upload %s'%name_document)
-                print(20*'*')
+        except Exception as e:
+            no_match += 1
+            print(e)
+            #break
+            print(20*'*')
+            print('Error, cannot upload %s'%path_document)
+            print(20*'*')
 
     print("There is %s documents without metadata match"%no_match)
+
+def index_file(filename, nom_index, user_data, pdf_path, json_path,
+            meta_path):
+    """
+    Index json file to elastic with metadata
+    Todo : substitue this function in inject_document
+    """
+    path_file = Path(user_data) / pdf_path / filename
+    data = pdf2json(str(path_file))
+
+    path_meta =  Path(user_data) / meta_path / filename
+    path_json =  Path(user_data) / json_path / filename
+    path_meta = path_meta.with_suffix('').with_suffix('.json') # replace extension
+    path_json = path_json.with_suffix('').with_suffix('.json') # replace extension
+
+    if path_meta.exists():
+        with open(path_meta, 'r' , encoding = 'utf-8') as json_file:
+            meta = json.load(json_file)
+            data.update(meta)
+
+    save_json(data, path_json)
+
+    res = es.index(index = nom_index, body=data , id = filename)
+    return res
+
+def delete_file(filename, nom_index):
+    try:
+        res = es.delete(index = nom_index, id = filename)
+        return 200, res
+    except elasticsearch.exceptions.NotFoundError as e:
+        return e.status_code, e.info
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+        raise
 
 if __name__ == '__main__':
 

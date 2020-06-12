@@ -25,10 +25,15 @@ def test_healthcheck(client, app):
     print(res)
     assert res.status_code == 200,res
 
-    res = client.get("admin/cluster")
-    #import pdb; pdb.set_trace()
-    assert res.status_code == 200,res
+def test_index(client, app):
+    with app.test_client() as c:
+        resp = c.get(
+            '/admin/index',
+            content_type='application/json',
+            data = json.dumps({'index_name' : NOM_INDEX}))
 
+
+    assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
 
 def test_search(client, app, search_data):
     with app.test_client() as c:
@@ -44,4 +49,26 @@ def test_search(client, app, search_data):
 
     assert len(resp)>0, "No document found"
 
-    import pdb; pdb.set_trace()
+
+
+
+def test_upload_file(client, app, form_to_upload):
+
+    with app.test_client() as c:
+        resp = c.post(
+            '/common/upload',
+            content_type = 'multipart/form-data',
+            data = form_to_upload)
+
+    assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
+
+def test_index_file(client, app, index_name, path_pdf):
+
+    with app.test_client() as c:
+        resp = c.get(
+            '/common/index?index_name={index_name}&filename={filename}'.format(
+            index_name=index_name,
+            filename=path_pdf
+            ))
+
+    assert resp.status_code == 200, 'Status Code : %s'%resp.status_code

@@ -1,6 +1,6 @@
-"""Routes for logged-in account pages."""
 import json, os
 from pathlib import Path  # python3 only
+import pandas as pd
 import glob
 import time
 
@@ -9,11 +9,6 @@ from flask import current_app as app
 
 from tools.elastic import search as elastic_search
 from tools.elastic import build_query as elastic_build_query
-
-from elasticsearch import Elasticsearch
-es = Elasticsearch()
-
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','md'}
 
 # Blueprint Configuration
 common_bp = Blueprint('common_bp', __name__,url_prefix='/common')
@@ -47,92 +42,19 @@ def list_files():
 
     return jsonify(files)
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-@common_bp.route("/upload", methods=["POST"])
-def upload_file():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        print(request.files)
-        if 'file' not in request.files:
-            print('no file')
-            return abort(500)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit an empty part without filename
-        if file.filename == '':
-            print('no filename')
-            abort(500)
-        if file and allowed_file(file.filename):
-            filename = file.filename
-            path = Path(app.config['USER_DATA']) / filename
-            print(path)
-            file.save(path)
-            return jsonify(success=True)
-
-        else:
-            abort(500)
-
-
-# HANDLE CORS
-def _build_cors_prelight_response():
-    response = make_response()
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add('Access-Control-Allow-Headers', "*")
-    response.headers.add('Access-Control-Allow-Methods', "*")
-    return response
-
-def _corsify_actual_response(response):
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
-
-@common_bp.route('/index', methods=['GET'])
-def index():
-    return
-
 @common_bp.route('/build_query', methods=['POST','OPTIONS'])
 def build_query():
     """
     Build only the custom query.
     """
-    if request.method == "OPTIONS": # CORS preflight
-        return _build_cors_prelight_response()
-    elif request.method == "POST":
 
-        content = request.get_json(force=True)
-        index_name = content.get('index_name', None)
-        user_entry = content.get('value', None)
-        if not user_entry or not index_name:
-            print('Missing keys')
-            return json.dumps({})
-
-        GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
-        EXPRESSION_FILE = os.getenv('EXPRESSION_FILE')
-        USER_DATA = os.getenv('USER_DATA')
-
-        glossary_file = Path(USER_DATA) / GLOSSARY_FILE
-        expression_file = Path(USER_DATA) / 'analysed_expression.txt'
-
-        res = elastic_build_query(user_entry,
-                    index_name,
-                    glossary_file,
-                    expression_file)
-
-        seuil = 4.5
-        seuil_affichage = 3.5
-        print(10*"*")
-        print(res)
-        return _corsify_actual_response(jsonify(res))
-
-@common_bp.route('/search', methods=['POST'])
-def search():
-    content = request.json
-    user_entry = content.get('value', None)
+    content = request.get_json(force=True)
     index_name = content.get('index_name', None)
+    user_entry = content.get('value', None)
+    print(content)
     if not user_entry or not index_name:
-        return
+        print('Missing keys')
+        return json.dumps({})
 
     GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
     EXPRESSION_FILE = os.getenv('EXPRESSION_FILE')
@@ -140,6 +62,32 @@ def search():
 
     glossary_file = Path(USER_DATA) / GLOSSARY_FILE
     expression_file = Path(USER_DATA) / 'analysed_expression.txt'
+
+    res = elastic_build_query(user_entry,
+                index_name,
+                glossary_file,
+                expression_file)
+
+    seuil = 4.5
+    seuil_affichage = 3.5
+    print(10*"*")
+    print(res)
+    return jsonify(res)
+
+@common_bp.route('/search', methods=['POST'])
+def search():
+    content = request.get_json(force=True)
+    user_entry = content.get('value', None)
+    index_name = content.get('index_name', None)
+    if  not index_name:
+        return
+
+    GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
+    EXPRESSION_FILE = os.getenv('EXPRESSION_FILE')
+    USER_DATA = os.getenv('USER_DATA')
+
+    glossary_file = Path(USER_DATA) / GLOSSARY_FILE
+    expression_file = Path(USER_DATA) / EXPRESSION_FILE
 
     res = elastic_search(user_entry,
                 index_name,
@@ -149,3 +97,38 @@ def search():
     seuil = 4.5
     seuil_affichage = 3.5
     return json.dumps(res)
+
+@common_bp.route('/synonym', methods=['GET'])
+def synonym():
+    filename = request.args.get('filename', app.config['GLOSSARY_FILE'])
+    if filename == "glossary":
+        synonym_file = Path(app.config['USER_DATA']) / app.config['GLOSSARY_FILE']
+    elif filename == "expression":
+        synonym_file = Path(app.config['USER_DATA']) / app.config['EXPRESSION_FILE']
+    else:
+        synonym_file = Path(app.config['USER_DATA']) / filename
+
+    if synonym_file.exists():
+        with synonym_file.open() as f:
+            content = f.read()
+        if content:
+            synonym_df = pd.read_csv(synonym_file, sep=' => ',header=None, names=['value','key']);
+            #list_glossary = [x.split(' => ') for x in str(content).split(
+            #                        '\n') if '=>' in x]
+            #dic_dictionary = {key:value.replace('_','') for key,value in list_glossary}
+            return make_response(synonym_df.to_json(orient='records'), 200)
+
+    # In the other cases
+    return make_response('', 204)
+
+@common_bp.route('/expression', methods=['GET'])
+def expression():
+    expression_file = Path(app.config['USER_DATA']) / app.config['RAW_EXPRESSION_FILE']
+
+    if expression_file.exists():
+        expression_df = pd.read_csv(expression_file, header=None, names=['value']);
+        expression_df['key'] = expression_df.index
+        return make_response(expression_df.to_json(orient='records'), 200)
+
+    # In the other cases
+    return make_response('', 204)
