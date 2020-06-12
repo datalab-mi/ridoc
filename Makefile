@@ -19,7 +19,7 @@ export ES_INDEX = deces
 export ES_DATA = ${APP_PATH}/esdata
 export ES_NODES = 1
 export ES_MEM = 1024m
-export ES_VERSION = 7.4.0
+export ES_VERSION = 7.6.0
 
 export API_PATH = deces
 export ES_PROXY_PATH = /${API_PATH}/api/v0/search
@@ -98,6 +98,9 @@ elasticsearch-stop:
 	@echo docker-compose down elasticsearch
 	@if [ -f "${DC_FILE}-elasticsearch-huge.yml" ]; then ${DC} -f ${DC_FILE}-elasticsearch-huge.yml down;fi
 
+elasticsearch-exec:
+	$(DC) -f ${DC_FILE}-elasticsearch.yml exec elasticsearch bash
+
 # kibana
 
 kibana: network
@@ -119,8 +122,7 @@ backend/.env:
 backend-dev: network backend/.env
 	@echo docker-compose up backend for dev
 	#@export ${DC} -f ${DC_FILE}.yml up -d --build --force-recreate 2>&1 | grep -v orphan
-	@export EXEC_ENV=dev;${DC} -f ${DC_FILE}.yml up -d  #--build --force-recreate
-
+	@export EXEC_ENV=dev;${DC} -f ${DC_FILE}.yml up -d #--build #--force-recreate
 
 backend-dev-stop:
 	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down #--remove-orphan
@@ -141,11 +143,15 @@ backend-exec:
 #Test backend#
 ##############
 download-data:
-	git clone https://github.com/victorjourne/IGA-BF.git && cd IGA-BF && make run base_path=$(BACKEND)/tests/iga/data/pdf
+	@echo configuring data downloader
+	git clone https://github.com/victorjourne/IGA-BF.git
+	make -C IGA-BF run base_path=$(BACKEND)/tests/iga/data
+
+clean:
+	@sudo rm -rf IGA-BF
 
 test:
 	$(DC) -f ${DC_FILE}.yml exec -T backend pytest tests/iga/test_app.py::test_healthcheck
-
 
 ##############
 #  NGINX     #
@@ -160,15 +166,12 @@ nginx: network
 
 
 frontend-dev:
-	@echo docker-compose run ${APP} frontend
+	@echo docker-compose run ${APP} frontend #--build
 	@echo ${DATA_PATH}
-
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml up -d --build --force-recreate
-
+	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml up -d  #--build --force-recreate
+	$(DC) -f ${DC_FILE}-frontend.yml exec -d frontend npm run dev:tailwindcss
 frontend-exec:
 	$(DC) -f ${DC_FILE}-frontend.yml exec frontend sh
-
-
 
 frontend-dev-stop:
 	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml down
@@ -191,3 +194,7 @@ frontend-build-dist: ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION) frontend-check-bui
 	@export EXEC_ENV=prod; ${DC} -f $(DC_FILE)-build.yml build $(DC_BUILD_ARGS)
 
 dev: network frontend-stop frontend-dev
+
+up: frontend-dev backend-dev elasticsearch nginx
+
+down: frontend-dev-stop backend-dev-stop elasticsearch-stop nginx-stop

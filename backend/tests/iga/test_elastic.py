@@ -7,7 +7,7 @@ import elasticsearch
 from elasticsearch import Elasticsearch
 from shutil import copyfile
 
-from tools.elastic import create_index, inject_documents, search
+from tools.elastic import create_index, inject_documents, search, index_file
 from tools.converter import pdf2json
 
 import pytest
@@ -27,6 +27,7 @@ MAPPING_FILE =  os.getenv('MAPPING_FILE')
 
 PDF_DIR = os.getenv('PDF_DIR')
 JSON_DIR = os.getenv('JSON_DIR')
+META_DIR =  os.getenv('META_DIR')
 
 os.makedirs(ES_DATA, exist_ok=True)
 
@@ -39,10 +40,8 @@ def test_create_index():
 
 @pytest.mark.run(after='test_create_index')
 def test_inject_documents():
-    metada_file = 'iga.xlsx'
-    META_DIR = os.path.join(USER_DATA, PDF_DIR, metada_file)
     inject_documents(NOM_INDEX, USER_DATA, PDF_DIR, JSON_DIR,
-                metada_file = META_DIR)
+                meta_path = META_DIR)
 
     res = es.get(index=NOM_INDEX, id= doc_guyane_eau)
     assert len(str(res)) > 1000, res
@@ -55,19 +54,19 @@ def test_analyse_index():
     indices = elasticsearch.client.IndicesClient(es)
 
     body = {
-          "analyzer": "custom_french",
-          "text": "Sans la carte agent il est difficile de rentrer au MI"
+          "analyzer": "my_analyzer",
+          "text": "Sans sa carte national d'identité, il est difficile de rentrer au MI"
         }
 
     res = indices.analyze(index = NOM_INDEX, body=body)
     print(res)
     print(' '.join([token['token'] for token in res['tokens']]))
     list_synonym = [token['token'] for token in res['tokens'] if token['type'] == 'SYNONYM']
-    assert list_synonym == ['minister', 'interieu'], list_synonym
+    assert 'cni' in list_synonym, list_synonym
 
     body = {
-          "analyzer": "custom_french",
-          "text": "Jusqu'ici, je n'ai jamais été à un comité de pilotage de la DCRFPN"
+          "analyzer": "my_analyzer",
+          "text": "Jusqu'ici, les commandes publiques de la DCRFPN me sont inconnus"
         }
 
 
@@ -75,22 +74,67 @@ def test_analyse_index():
     print(res)
     print(' '.join([token['token'] for token in res['tokens']]))
 
-    assert 'Jusqu'not in  str(res['tokens'])
-    assert 'comitpilo' in  str(res['tokens']), 'expresion not taken into account'
+    assert 'Jusqu' not in  str(res['tokens'])
+    assert 'comandpubliqu' in  str(res['tokens']), 'expresion not taken into account'
 
     # § sensibilité au accents
 @pytest.mark.run(after='test_inject_documents')
 def test_search():
     glossary_file = Path(USER_DATA) / GLOSSARY_FILE
-    expression_file = Path(USER_DATA) / 'analysed_expression.txt'
+    expression_file = Path(USER_DATA) / EXPRESSION_FILE
 
     req = 'travail illegal'
     #import pdb; pdb.set_trace()
     hits, length_req, bande = search(req, NOM_INDEX, str(glossary_file), str(expression_file))
     #print(hits, length_req, bande)
     assert  hits[0]['_id'] == 'BF2014-20-14072+Médecine+de+prévention.pdf', 'Found to result %s'%hits[0]['_id']
-    assert length_req == 2
+    assert length_req == 1, length_req
     assert not bande
+
+def test_index_file(index_name, pdf_file):
+    """
+    Index ignit_pnigitis inside USER_DATA
+    """
+    PDF_DIR = ''
+    JSON_DIR = ''
+    META_DIR = ''
+    data = index_file(str(pdf_file), index_name, USER_DATA, PDF_DIR, JSON_DIR, META_DIR)
+    assert data == {'content': '', 'date': '2020-07-17', 'author': 'babar', 'title': 'Celeste', 'file': 'ignit_pnigitis.pdf'}
+"""
+def test_reindex(client, app, es, dummy_index):
+    # test reindex after a change of synonym data
+    # First test : change synonym analyser in index
+
+    # test with very basic index
+    es.indices.delete(index='dummy_index', ignore=[400, 404])
+    # create index
+    es.indices.create(index='dummy_index', body=dummy_index)
+    # index a document
+    name_document = 'babar'
+    data = {'content' : 'celeste aime le chat mais pas le chien'}
+    es.index(index = 'dummy_index', body=data , id = name_document)
+
+    # change index setting
+    dummy_index['settings']['analysis']['filter']['my_synonym']['synonyms'] += ["chien => loup"]
+
+    #es.indices.close(index='dummy_index')
+    #es.indices.put_settings(index='dummy_index',body=settings)
+    #es.indices.open(index='dummy_index')
+
+    es.indices.delete(index='dummy_index', ignore=[400, 404])
+    # create index
+    es.indices.create(index='dummy_index', body=dummy_index)
+    # search
+    request = {'query' : {'match_phrase': {'content': 'lion'}}}
+
+    res = es.search(index='dummy_index', body=request)
+    assert  res['hits']['hits'][0]['_id'] == 'babar', res
+    request = {'query' : {'match_phrase': {'content': 'lion'}}}
+    # search
+    request = {'query' : {'match_phrase': {'content': 'loup'}}}
+    res = es.search(index='dummy_index', body=request)
+    assert  res['hits']['hits'][0]['_id'] == 'babar', res
+"""
 
 if __name__ == '__main__':
     test_create_index()

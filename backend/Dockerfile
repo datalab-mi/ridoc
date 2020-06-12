@@ -1,7 +1,7 @@
 #######################
 # Step 1: Base target #
 #######################
-FROM python:3.7 as dev
+FROM python:3.8 as dev
 
 RUN mkdir -p /app
 
