@@ -119,7 +119,7 @@ traefik/acme.json:
 backend/.env:
 	cp backend/.env.sample backend/.env
 
-backend-dev: backend/.env
+backend-dev: network backend/.env
 	@echo docker-compose up backend for dev
 	#@export ${DC} -f ${DC_FILE}.yml up -d --build --force-recreate 2>&1 | grep -v orphan
 	@export EXEC_ENV=dev;${DC} -f ${DC_FILE}.yml up -d #--build #--force-recreate
@@ -151,7 +151,7 @@ clean:
 	@sudo rm -rf IGA-BF
 
 test:
-	$(DC) -f ${DC_FILE}.yml exec backend pytest tests/
+	$(DC) -f ${DC_FILE}.yml exec -T backend pytest tests/iga/test_app.py::test_healthcheck
 
 ##############
 #  NGINX     #

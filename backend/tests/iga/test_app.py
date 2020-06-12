@@ -32,6 +32,7 @@ def test_index(client, app):
             content_type='application/json',
             data = json.dumps({'index_name' : NOM_INDEX}))
 
+
     assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
 
 def test_search(client, app, search_data):
