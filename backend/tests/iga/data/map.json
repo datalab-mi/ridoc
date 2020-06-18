@@ -57,7 +57,13 @@
          "type": "pattern_replace",
          "pattern": "_(.*)_",
          "replacement" : "$1"
-       }
+       },
+       "my_beider_morse": {
+        "type": "phonetic",
+        "encoder": "beider_morse",
+        "replace": false,
+        "languageset": "french"
+      }
       },
       "analyzer": {
         "my_analyzer": {
@@ -73,6 +79,13 @@
             "synonym",
             "remove_artifact"
             ]
+        },
+        "phonetic_analyser": {
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "my_beider_morse"
+          ]
         }
       }
     },
@@ -87,8 +100,13 @@
        "content": {
           "type": "text",
           "analyzer" : "my_analyzer",
-            "search_analyzer" : "my_analyzer"
+          "search_analyzer" : "my_analyzer"
+        },
+        "author": {
+          "type": "text" ,
+          "analyzer" : "phonetic_analyser",
+          "search_analyzer" : "phonetic_analyser"
+        }
       }
-    }
   }
 }
