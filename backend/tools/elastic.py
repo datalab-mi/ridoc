@@ -43,7 +43,8 @@ def simple_request(nom_index):
     return D['hits']['hits']
 
 def build_query(req:str, index_name:str,
-        glossary_file=None, expression_file=None) -> dict:
+        glossary_file=None, expression_file=None,
+        from_date=None, to_date=None, author=None) -> dict:
     """
     Build the body of the query
     Args:
@@ -54,7 +55,6 @@ def build_query(req:str, index_name:str,
     Returns:
         dict
     """
-    from_date, to_date, list_author = None, None, []
     # process gloassary
     if glossary_file:
         with open(glossary_file, 'r') as f:
@@ -157,15 +157,18 @@ def build_query(req:str, index_name:str,
                                 {"date" : {"lte" : to_date}}
                                             })
 
-    for author in list_author:
-        author = author.strip()
-        if len(author) > 0:
-          body['query']['bool']["filter"].append({"match" :
-                            {"author" : {"query" : author}}})
 
+    if author:
+      body['query']['bool']["filter"].append({"match" :
+                        {"author" : {"query" : author}}})
+
+    print(body)
     return body, lenght_of_request
 
-def search(req , index_name ,  glossary_file=None, expression_file=None):
+def search(req, index_name,
+            glossary_file=None, expression_file=None,
+            from_date=None, to_date=None, author=None):
+
     """Fonction qui permet de faire la recherche Elastic dans notre index
 
     Args:
@@ -185,11 +188,12 @@ def search(req , index_name ,  glossary_file=None, expression_file=None):
             T = True
             break
     """
-    if req != '':
+    if (req != '') or from_date or to_date or author:
         body, lenght_of_request = build_query(req,
                             index_name,
                             glossary_file,
-                            expression_file)
+                            expression_file,
+                            from_date, to_date, author)
 
         D = es.search(index = index_name,
                       body = body,

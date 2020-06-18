@@ -144,7 +144,7 @@ backend-exec:
 ##############
 download-data:
 	@echo configuring data downloader
-	git clone https://github.com/victorjourne/IGA-BF.git
+	git clone -b feat/clean-authors https://github.com/victorjourne/IGA-BF.git
 	make -C IGA-BF run base_path=$(BACKEND)/tests/iga/data
 
 clean:

@@ -3,14 +3,17 @@
 
 	let promise =  new Promise(()=>{});
 
+	//let searchInputList = $searchInputObject.entries($searchInput)
+	//console.log(searchInputList)
+
 	async function search() {
-		let value = $searchInput.fullText.value
 
 		const res = await fetch("http://localhost/api/common/search",{
 												method: "POST",
 												body: JSON.stringify({
 															 index_name: $index_name,
-															 value: value
+															 content: $searchInput.content.value,
+															 author: $searchInput.author.value
 														 })
 													 });
 
@@ -38,21 +41,26 @@ promise = search();
 
 	<div class="flex mb-4">
 		<div class="w-2/3 px-2" >
-			<input type="search" bind:value={$searchInput.fullText.value}
-			       placeholder={$searchInput.fullText.placeholder}
+			<input type="search" bind:value={$searchInput.content.value}
+			       placeholder={$searchInput.content.placeholder}
 						  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
-			</div>
-			<div class="w-1/3 px-2" >
-				<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-					<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/></svg>
-					<span>Rechercher</span>
-				</button>
-			</div>
+
+			<input type="search" bind:value={$searchInput.author.value}
+			       placeholder={$searchInput.author.placeholder}
+						  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
+
+		</div>
+		<div class="w-1/3 px-2" >
+			<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+				<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/></svg>
+				<span>Rechercher</span>
+			</button>
+		</div>
 
 	</div>
 
-	{#if $searchInput.fullText.value!=''}
-		<h1>La recherche est : {$searchInput.fullText.value}</h1>
+	{#if $searchInput.content.value!=''}
+		<h1>La recherche est : {$searchInput.content.value}</h1>
 	{/if}
 
 	{#await promise}
