@@ -11,6 +11,7 @@ import ResultItem from '../components/ResultItem.svelte';
 	{#each $searchResults as item, i}
 		<ResultItem {...item}/>
 	{/each}
+
 	</div>
 
 {/if}

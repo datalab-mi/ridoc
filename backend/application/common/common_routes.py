@@ -77,7 +77,10 @@ def build_query():
 @common_bp.route('/search', methods=['POST'])
 def search():
     content = request.get_json(force=True)
-    user_entry = content.get('value', None)
+    user_entry = content.get('content', None)
+    author = content.get('author', None)
+    to_date = content.get('to_date', None)
+    from_date = content.get('from_date', None)
     index_name = content.get('index_name', None)
     if  not index_name:
         return
@@ -92,7 +95,8 @@ def search():
     res = elastic_search(user_entry,
                 index_name,
                 glossary_file,
-                expression_file)
+                expression_file,
+                from_date, to_date, author)
 
     seuil = 4.5
     seuil_affichage = 3.5
