@@ -13,7 +13,9 @@
 												body: JSON.stringify({
 															 index_name: $index_name,
 															 content: $searchInput.content.value,
-															 author: $searchInput.author.value
+															 author: $searchInput.author.value,
+															 to_date: $searchInput.to_date.value,
+															 from_date: $searchInput.from_date.value,
 														 })
 													 });
 
@@ -41,13 +43,26 @@ promise = search();
 
 	<div class="flex mb-4">
 		<div class="w-2/3 px-2" >
-			<input type="search" bind:value={$searchInput.content.value}
-			       placeholder={$searchInput.content.placeholder}
-						  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
-
-			<input type="search" bind:value={$searchInput.author.value}
-			       placeholder={$searchInput.author.placeholder}
-						  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
+			<label> {@html $searchInput.content.innerHtml}
+				<input type="search" bind:value={$searchInput.content.value}
+				       placeholder={$searchInput.content.placeholder}
+							  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
+			</label>
+			<label> {@html $searchInput.author.innerHtml}
+				<input type="search" bind:value={$searchInput.author.value}
+				       placeholder={$searchInput.author.placeholder}
+							  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
+			</label>
+			<label> {@html $searchInput.from_date.innerHtml}
+				<input type="date" bind:value={$searchInput.from_date.value}
+				       placeholder={$searchInput.from_date.placeholder}
+							  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
+			</label>
+			<label> {@html $searchInput.to_date.innerHtml}
+				<input type="date" bind:value={$searchInput.to_date.value}
+							 placeholder={$searchInput.to_date.placeholder}
+								class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
+			</label>
 
 		</div>
 		<div class="w-1/3 px-2" >
