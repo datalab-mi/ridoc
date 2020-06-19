@@ -42,30 +42,42 @@ promise = search();
 <div class='search-bar'>
 
 	<div class="flex mb-4">
-		<div class="w-2/3 px-2" >
+		<div class="w-3/4 p-2" >
+			<div class="flex flex-col px-2">
 			<label> {@html $searchInput.content.innerHtml}
 				<input type="search" bind:value={$searchInput.content.value}
 				       placeholder={$searchInput.content.placeholder}
 							  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
 			</label>
-			<label> {@html $searchInput.author.innerHtml}
-				<input type="search" bind:value={$searchInput.author.value}
-				       placeholder={$searchInput.author.placeholder}
-							  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
-			</label>
-			<label> {@html $searchInput.from_date.innerHtml}
-				<input type="date" bind:value={$searchInput.from_date.value}
-				       placeholder={$searchInput.from_date.placeholder}
-							  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
-			</label>
-			<label> {@html $searchInput.to_date.innerHtml}
-				<input type="date" bind:value={$searchInput.to_date.value}
-							 placeholder={$searchInput.to_date.placeholder}
-								class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
-			</label>
+
+			<div class="flex mb-4">
+				<div class="w-2/4 px-2" >
+					<label> {@html $searchInput.author.innerHtml}
+						<input type="search" bind:value={$searchInput.author.value}
+									 placeholder={$searchInput.author.placeholder}
+										class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
+					</label>
+				</div>
+				<div class="w-1/4 px-2" >
+				<label> {@html $searchInput.from_date.innerHtml}
+					<input type="date" bind:value={$searchInput.from_date.value}
+					       placeholder={$searchInput.from_date.placeholder}
+								  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
+				</label>
+				</div>
+				<div class="w-1/4 px-2" >
+					<label> {@html $searchInput.to_date.innerHtml}
+						<input type="date" bind:value={$searchInput.to_date.value}
+									 placeholder={$searchInput.to_date.placeholder}
+										class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
+					</label>
+				</div>
+			</div>
+
+			</div>
 
 		</div>
-		<div class="w-1/3 px-2" >
+		<div class="w-1/4 px-2" >
 			<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
 				<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/></svg>
 				<span>Rechercher</span>
