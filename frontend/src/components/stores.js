@@ -5,14 +5,14 @@ export const searchInput = writable({
   content: {
     value: "",
     type: "text",
-    placeholder: "Saisissez votre recherche...",
+    placeholder: "Recherche par mots clefs",
     innerHtml: ""
     },
   author: {
     value: "",
     type: "text",
     placeholder: "Paul Dupond, Anne-Marie",
-    innerHtml: ""
+    innerHtml: "Nom ou Prénom"
 
   },
   from_date: {
@@ -26,7 +26,7 @@ export const searchInput = writable({
     value: "",
     type: "text",
     placeholder: "01/01/2018",
-    innerHtml: "Jusqu'à"
+    innerHtml: "Jusqu'à : "
   }
   }
 )
