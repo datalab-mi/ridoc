@@ -148,15 +148,14 @@ def build_query(req:str, index_name:str,
                                                 }}})
 
 
-    if from_date is not None:
+    if from_date:
         body['query']['bool']["filter"].append({"range" :
                                 {"date" : {"gte" : from_date}}
                                              })
-    if  to_date is not None:
+    if  to_date:
         body['query']['bool']["filter"].append({"range" :
                                 {"date" : {"lte" : to_date}}
                                             })
-
 
     if author:
       body['query']['bool']["filter"].append({"match" :
