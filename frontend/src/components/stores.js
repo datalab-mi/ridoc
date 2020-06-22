@@ -31,7 +31,10 @@ export const searchInput = writable({
   }
 )
 
-export const searchResults = writable([]);
+export const searchResults = writable({
+  'hits':[],
+  'threshold':2
+});
 
 export const index_name = writable('iga')
 

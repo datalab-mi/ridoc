@@ -1,14 +1,17 @@
 <script>
 import { searchInput, searchResults, index_name } from '../components/stores.js';
 import ResultItem from '../components/ResultItem.svelte';
-
+let stop=false
 </script>
 
 
 {#if searchResults}
 	<div class='result-list'>
 
-	{#each $searchResults as item, i}
+	{#each $searchResults.hits as item, i}
+		{#if item._score <=  $searchResults.threshold}
+		<p></p>
+		{/if}
 		<ResultItem {...item}/>
 	{/each}
 
