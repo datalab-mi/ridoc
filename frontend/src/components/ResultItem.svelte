@@ -76,7 +76,7 @@
 
 	<div slot="highlight">
 		{#if highlight.content != ''}
-			<p> &laquo; {@html highlight.content} &raquo; </p>
+			<p> &laquo; {@html highlight.content.join(' [...] ')} &raquo; </p>
 		{/if}
 	</div>
 

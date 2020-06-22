@@ -23,8 +23,9 @@
 		const items = await res.json();
 		console.log(items)
 		if (res.ok) {
-			$searchResults = items[0]
-			return items[0].length;
+			$searchResults = items
+
+			return items.hits.length;
 		} else {
 			throw new Error('Oups');
 		}
