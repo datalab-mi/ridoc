@@ -89,7 +89,7 @@ def build_query(req:str, index_name:str,
 
     analyzed = [ananyse_tokens['token'] for ananyse_tokens in analyse["tokens"]]
 
-    lenght_of_request = len(analyzed)
+    length_of_request = len(analyzed)
 
     #------------------------Application du filtre 1 -----------------------------
     T = False
@@ -119,16 +119,16 @@ def build_query(req:str, index_name:str,
                                 }
                         },
                     "highlight" : {
-                    "pre_tags" : ["<mark>"],
-                    "post_tags" : ["</mark>"],
-                    "fragment_size" : 300,
-                    "number_of_fragments" : 3,
-                    "order" : "score",
-                    "boundary_scanner" : "sentence",
-                    "boundary_scanner_locale" : "fr-FR",
-                    "fields":{
-                        "content":{}
-                        }
+                        "pre_tags" : ["<mark>"],
+                        "post_tags" : ["</mark>"],
+                        "fragment_size" : 300,
+                        "number_of_fragments" : 3,
+                        "order" : "score",
+                        "boundary_scanner" : "sentence",
+                        "boundary_scanner_locale" : "fr-FR",
+                        "fields":{
+                            "content":{}
+                            }
                     }
                 }
 
@@ -162,7 +162,7 @@ def build_query(req:str, index_name:str,
                         {"author" : {"query" : author}}})
 
     print(body)
-    return body, lenght_of_request
+    return body, length_of_request
 
 def search(req, index_name,
             glossary_file=None, expression_file=None,
@@ -188,7 +188,7 @@ def search(req, index_name,
             break
     """
     if (req != '') or from_date or to_date or author:
-        body, lenght_of_request = build_query(req,
+        body, length_of_request = build_query(req,
                             index_name,
                             glossary_file,
                             expression_file,
@@ -198,7 +198,7 @@ def search(req, index_name,
                       body = body,
                       size = 10)
     else:
-        lenght_of_request = None
+        length_of_request = None
         D = es.search(index = index_name,
                       body = {
                             "query": {
@@ -208,12 +208,12 @@ def search(req, index_name,
                     size = int(10000)
                     )
     try: #This try is for the case where no match is found
-        if not T and D['hits']['hits'][0]["_score"]/lenght_of_request < seuil: #The first filter then the second filter
+        if not T and D['hits']['hits'][0]["_score"]/length_of_request < seuil: #The first filter then the second filter
           Bande = True
     except:
         pass
 
-    return D['hits']['hits'], lenght_of_request , Bande
+    return {'hits': D['hits']['hits'], 'length': length_of_request , 'band': Bande}
 
 def corriger(req , nom_index):
   """
