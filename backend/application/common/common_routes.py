@@ -98,8 +98,9 @@ def search():
                 expression_file,
                 from_date, to_date, author)
 
-    seuil = 4.5
+    threshold = 1
     seuil_affichage = 3.5
+    res['threshold'] = threshold
     return json.dumps(res)
 
 @common_bp.route('/synonym', methods=['GET'])
