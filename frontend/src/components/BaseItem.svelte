@@ -54,7 +54,7 @@
     border-radius: 2px;
     box-shadow: 2px 2px 8px rgba(0,0,255,1);
     padding: 1em;
-    margin: 0 0 1em 0;
+    margin: 1em 1em 1em 1em;
   }
 	.base-item {
 		width: 90%;
