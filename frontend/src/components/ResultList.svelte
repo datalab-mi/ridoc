@@ -5,7 +5,7 @@ import VirtualList from '../components/VirtualList.svelte';
 let start;
 let end;
 let items
-
+let height = '90%';
 
 $: {
 	let i = 0;
@@ -16,10 +16,7 @@ $: {
 		}
 		i += 1
 	}
-
 	items.splice(i, 0, "bar")
-	console.log("items : ")
-	console.log(items)
 }
 
 
@@ -29,7 +26,7 @@ $: {
 {#if searchResults}
 	<div class='result-list'>
 	<p>{start}-{end}</p>
-		<VirtualList {items} bind:start bind:end let:item>
+		<VirtualList {items} {height} bind:start bind:end let:item>
 			{#if  item === "bar"}
 				<div class="bar">
 					<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Nous vous recommandons de contacter  <a href="mailto://iga@interieur.gouv.fr?subject=Demande_de_consultation">[iga@interieur.gouv.fr]</a></p>

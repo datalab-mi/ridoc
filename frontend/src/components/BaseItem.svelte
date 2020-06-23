@@ -43,8 +43,15 @@
     {/each}
   </div>
 
-  <slot name="button">
-  </slot>
+  <div class="flex justify-between">
+
+    <slot name="button">
+    </slot>
+
+    <slot name="score">
+    </slot>
+    
+  </div>
 
 </section>
 
