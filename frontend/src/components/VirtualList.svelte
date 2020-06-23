@@ -104,13 +104,15 @@
 		position: relative;
 		overflow-y: auto;
 		-webkit-overflow-scrolling:touch;
-		display: block;
+		display: block
 	}
 	svelte-virtual-list-contents, svelte-virtual-list-row {
 		display: block;
 	}
 	svelte-virtual-list-row {
 		overflow: hidden;
+		height: 90%
+
 	}
 
 </style>
