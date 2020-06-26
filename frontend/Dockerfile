@@ -1,6 +1,13 @@
 ARG PDFJS_VERSION
+
+
 FROM node:12.2.0-alpine
+
 ENV PDFJS_VERSION "$PDFJS_VERSION"
+
+RUN apk update\
+  && apk add ca-certificates wget\
+  && update-ca-certificates
 
 # For production, see https://github.com/mikenikles/sapper-on-cloud-run/blob/master/Dockerfile
 WORKDIR /app
