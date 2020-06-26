@@ -6,9 +6,9 @@ from os import environ
 from flask import current_app as app
 from flask import Blueprint, render_template, request, make_response, abort, jsonify, send_from_directory
 
-from tools.elastic import create_index, inject_documents
 from tools.elastic import index_file as elastic_index_file
 from tools.elastic import delete_file as elastic_delete_file
+from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','md'}
 
@@ -96,14 +96,17 @@ def index_file(index_name: str, filename: str):
         return make_response(res, status)
 
 
-@admin_bp.route('/index', methods=['GET'])
-def index():
+@admin_bp.route('/<index_name>/reindex', methods=['GET'])
+def index(index_name: str):
     """(Re)index after a mapping change
     """
-    content = request.get_json(force=True)
-    index_name = content.get('index_name', app.config['NOM_INDEX'])
-
-    create_index(app.config['NOM_INDEX'],
+    #content = request.get_json(force=True)
+    #index_name = content.get('index_name', app.config['INDEX_NAME'])
+    #index_name  = index_name if index_name else app.config['INDEX_NAME']
+    old_index = get_index_name(index_name)
+    new_index = replace_blue_green(old_index, index_name)
+    print(new_index)
+    create_index(new_index,
                  app.config['USER_DATA'],
                  app.config['ES_DATA'],
                  app.config['MAPPING_FILE'],
@@ -111,15 +114,19 @@ def index():
                  app.config['EXPRESSION_FILE'])
 
     # inject only json
-    META_DIR = Path(app.config['USER_DATA']) / app.config['PDF_DIR'] / metada_file
+    META_DIR = Path(app.config['USER_DATA']) / app.config['META_DIR']
 
-    inject_documents(index_name,
+    inject_documents(new_index,
                     app.config['USER_DATA'],
                     pdf_path = app.config['PDF_DIR'],
                     json_path = app.config['JSON_DIR'],
-                    metada_file = META_DIR)
+                    meta_path = META_DIR)
 
-    return jsonify(success=True)
+    # Switch index in alias
+    put_alias(new_index, index_name)
+    delete_alias(old_index, index_name)
+
+    return make_response({'color': new_index}, 200)
 
 @admin_bp.route("/expression/<key>", methods=["DELETE", "PUT"])
 def expression(key: str):
