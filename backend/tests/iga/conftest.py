@@ -78,3 +78,8 @@ def file_name():
 @pytest.fixture
 def index_name():
     yield NOM_INDEX
+
+@pytest.fixture
+def pdf_file():
+    yield filename
+    
