@@ -33,10 +33,11 @@ export const searchInput = writable({
 
 export const searchResults = writable({
   'hits':[],
-  'threshold':2
+  'threshold':1
 });
 
 export const index_name = writable('iga')
+export const isReindex = writable(false)
 
 export const list_synonym = writable([])
 export const list_expression = writable([])
