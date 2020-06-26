@@ -31,15 +31,15 @@ def empty_tree(pth: Path):
 es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
 indices = elasticsearch.client.IndicesClient(es)
 
-def simple_request(nom_index):
+def simple_request(INDEX_NAME):
     request = {
         "query": {
             "match_all" : {}
             }
     }
 
-    #D = es.search(index=str(nom_index), size=15, body=request)
-    D = es.search(index=str(nom_index_prop), size=15, body=request)
+    #D = es.search(index=str(INDEX_NAME), size=15, body=request)
+    D = es.search(index=str(INDEX_NAME_prop), size=15, body=request)
     return D['hits']['hits']
 
 def build_query(req:str, index_name:str,
@@ -78,6 +78,9 @@ def build_query(req:str, index_name:str,
         list_expression = [x.split('=>')[1] for x in content.split(
                 '\n')[:-1] if '=>' in x] # last empty line
         list_expression = [x.replace('_','').strip() for x in list_expression]
+
+    else:
+        list_expression = []
     # TODO : process all keyword???
     # Liste_acronyme
 
@@ -103,6 +106,8 @@ def build_query(req:str, index_name:str,
     """
     # find expression in the request
     req_expression = []
+
+
     for expression in list_expression:
         if expression in analyzed :
             req_expression.append(expression)
@@ -215,16 +220,16 @@ def search(req, index_name,
 
     return {'hits': D['hits']['hits'], 'length': length_of_request , 'band': Bande}
 
-def corriger(req , nom_index):
+def corriger(req , INDEX_NAME):
   """
     Fonction qui permet de corriger la requête de l'utilisateur
     Arguments:
-      nom_index : Le nom de l'index où on effectue la recherche des mots
+      INDEX_NAME : Le nom de l'index où on effectue la recherche des mots
       req : la requête entrèe par l'utilisateur
     Output:
       Liste des suggestions de correction
 """
-  D = es.search(index = nom_index , body = {
+  D = es.search(index = INDEX_NAME , body = {
   "suggest" : {
    "mytermsuggester" : {
       "text" : req,
@@ -239,14 +244,46 @@ def corriger(req , nom_index):
     L.append(D['suggest']['mytermsuggester'][0]['options'][i]['text'])
   return L
 
+def get_index_name(alias_name):
+    try:
+        res = es.indices.get_alias(name=alias_name)
+        if len(res.keys()) == 1 and list(res.keys())[0] != "":
+            index_name = list(res.keys())[0]
+        else:
+            raise Exception
+    except elasticsearch.exceptions.NotFoundError:
+        # create alias pointing to the blue index.
+        index_name = alias_name + '_blue'
+        es.indices.put_alias(index=alias_name, name=index_name)
+    return index_name
 
-def create_index(nom_index,
+def replace_blue_green(index_name, alias_name):
+    if 'blue' in index_name:
+        index_name = index_name.replace('blue', 'green')
+    elif 'green' in index_name:
+        index_name = index_name.replace('green', 'blue')
+    else:
+        raise Exception
+
+    return index_name
+
+def put_alias(index_name, alias_name):
+    #es.indices.delete_alias(index=index_name, name=alias_name, ignore=[400, 404])
+    es.indices.put_alias(index=index_name, name=alias_name)
+    #es.indices.put_alias(index=index_name, name=alias_name)
+
+def delete_alias(index_name, alias_name):
+    es.indices.delete_alias(index=index_name, name=alias_name, ignore=[400, 404])
+
+def get_alias(alias_name):
+    return  es.indices.get_alias(name=alias_name)
+
+def create_index(INDEX_NAME,
             user_data,
             es_data,
             mapping_file,
             glossary_file=None,
             expression_file=None):
-
 
     synonym_file = os.path.join(es_data, 'synonym.txt')
     print(os.path.join(user_data, mapping_file))
@@ -267,7 +304,7 @@ def create_index(nom_index,
                 outfile.write(f2.read())
 
         else:
-            outfile.write()
+            outfile.write('')
 
     map['settings']["analysis"]["filter"]["synonym"].update(
             {"synonyms_path" : os.path.join(es_data, synonym_file)})
@@ -276,12 +313,13 @@ def create_index(nom_index,
     with open(os.path.join(es_data, mapping_file), 'w') as outfile:
         json.dump(map, outfile)
 
-    es.indices.delete(index=nom_index, ignore=[400, 404])
+    # Drop index
+    es.indices.delete(index=INDEX_NAME, ignore=[400, 404])
     # create index
-    es.indices.create(index = nom_index, body=map)
+    es.indices.create(index=INDEX_NAME, body=map)
 
 
-def inject_documents(nom_index, user_data, pdf_path, json_path,
+def inject_documents(INDEX_NAME, user_data, pdf_path, json_path,
             meta_path=None):
 
     no_match = 0
@@ -295,7 +333,7 @@ def inject_documents(nom_index, user_data, pdf_path, json_path,
             #path_document = pdf_path / filename
             print('Read %s'%str(path_document))
 
-            index_file(path_document.name, nom_index, user_data, pdf_path, json_path,
+            index_file(path_document.name, INDEX_NAME, user_data, pdf_path, json_path,
                         meta_path)
             print('Document %s just uploaded'% path_document)
 
@@ -309,7 +347,7 @@ def inject_documents(nom_index, user_data, pdf_path, json_path,
 
     print("There is %s documents without metadata match"%no_match)
 
-def index_file(filename, nom_index, user_data, pdf_path, json_path,
+def index_file(filename, INDEX_NAME, user_data, pdf_path, json_path,
             meta_path):
     """
     Index json file to elastic with metadata
@@ -330,12 +368,12 @@ def index_file(filename, nom_index, user_data, pdf_path, json_path,
 
     save_json(data, path_json)
 
-    res = es.index(index = nom_index, body=data , id = filename)
+    res = es.index(index = INDEX_NAME, body=data , id = filename)
     return res
 
-def delete_file(filename, nom_index):
+def delete_file(filename, INDEX_NAME):
     try:
-        res = es.delete(index = nom_index, id = filename)
+        res = es.delete(index = INDEX_NAME, id = filename)
         return 200, res
     except elasticsearch.exceptions.NotFoundError as e:
         return e.status_code, e.info
@@ -345,7 +383,7 @@ def delete_file(filename, nom_index):
 
 if __name__ == '__main__':
 
-    NOM_INDEX = 'prod'
+    INDEX_NAME = 'prod'
     USER_DATA = '/data/user'
     ES_DATA = '/usr/share/elasticsearch/data/extra'
 
@@ -357,9 +395,9 @@ if __name__ == '__main__':
     PDF_DIR = 'Data_Pdf'
     JSON_DIR = 'Data_Json'
 
-    create_index(NOM_INDEX, USER_DATA, ES_DATA, MAPPING_FILE,
+    create_index(INDEX_NAME, USER_DATA, ES_DATA, MAPPING_FILE,
                 GLOSSARY_FILE,
                 EXPRESSION_FILE)
 
-    inject_documents(NOM_INDEX, USER_DATA, PDF_DIR, JSON_DIR,
+    inject_documents(INDEX_NAME, USER_DATA, PDF_DIR, JSON_DIR,
             metada_file = METADATA_FILE)
