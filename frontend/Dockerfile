@@ -15,11 +15,12 @@ COPY . .
 RUN npm install
 EXPOSE 3000
 
-# PDF VIEWER
+# PSDF VIEWER
 RUN wget "https://github.com/mozilla/pdf.js/releases/download/v2.3.200/pdfjs-2.3.200-dist.zip"
 RUN mkdir -p public
 RUN unzip -d public pdfjs-2.3.200-dist.zip
 RUN rm pdfjs-2.3.200-dist.zip
+
 
 # tailwindcss
 RUN npm install tailwindcss postcss-cli --save-dev
