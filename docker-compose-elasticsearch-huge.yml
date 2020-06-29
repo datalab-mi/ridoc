@@ -9,6 +9,7 @@ services:
       dockerfile: Dockerfile
       args:
         - http_proxy=${http_proxy}
+        - https_proxy=${http_proxy}
         - ES_VERSION=${ES_VERSION}
     environment:
       - cluster.name=matchid-cluster
