@@ -1,10 +1,10 @@
 _Dépot boite à outils pour un moteur de recherche._
-------
+
 
 ## Présentation
  Makefile : Contient les commandes et variables du projet.<br />
  |_ elasticsearch : Fichiers de config pour **ElasticSearch**.<br />
- |_ backend : Serveur **Flask** et indexation de la base ouverte pour tester. [bonnes feuilles](https://www.interieur.gouv.fr/Publications/Rapports-de-l-IGA/Bonnes-Feuilles).<br />
+ |_ backend : Serveur **Flask** et indexation de la base ouverte [bonnes feuilles](https://www.interieur.gouv.fr/Publications/Rapports-de-l-IGA/Bonnes-Feuilles) pour tester le moteur.<br />
  |_ frontend : Code source pour distribuer une interface utilisateur branché à ElasticSearch. Fourni un site statique en **Svelte**.<br />
  |_ La conf du 'reverse proxy' **nginx** qui permet d'éviter les requêtes cross-origin
 
