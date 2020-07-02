@@ -1,5 +1,4 @@
 <script>
-import SvgSpinner from '../components/SvgSpinner.svelte';
 import { index_name, isReindex } from './stores.js';
 
 let promise;
@@ -16,7 +15,6 @@ async function ReIndex() {
 		}
 	}
 
-
 	function handleIndex() {
     $isReindex = true
 		promise = ReIndex()
@@ -24,8 +22,6 @@ async function ReIndex() {
 
 	}
 </script>
-
-
 
 	<div>
     <button on:click={handleIndex} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
