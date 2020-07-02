@@ -16,7 +16,7 @@ _Dépot boite à outils pour un moteur de recherche._
 ### Les micro-services
 
 ### Nginx
- -  Fabriquer l'image docker : `make nginx`. Lance le service **nginx** dans un docker. Seul le port 80 est exposé. Tester avec `http://localhost`
+ -  Fabriquer l'image docker : `make nginx`. Lance le service **nginx** dans un docker. Seul le port 80 est exposé. Tester avec http://localhost
 
 ### Elasticsearch
  - Fabriquer l'image docker : `make elasticsearch`. Lance ES et crée un réseau docker.
@@ -26,14 +26,14 @@ _Dépot boite à outils pour un moteur de recherche._
  - Fabriquer l'image docker du backend : `make backend-dev`. Cela aura pour effet de lancer l'application **Flask**.
  - Rentrer dans le container : `make backend-exec`.
  - Lancer les tests unitaires, qui va indexer les données tests `pytest tests/iga`.
- - Tester le back : `http://localhost/api/common/healthcheck`
+ - Tester le back : http://localhost/api/common/healthcheck
 
 
 ### Frontend
   - **Sapper** pour le routage, **Svelte** pour l'UI et **Tailwindcss** pour la mise en forme.
   - Fabriquer l'image docker du frontend : `make frontend-dev`.
-  - Se rendre à curl http://localhost (Le hot-reloading est configuré)
+  - Se rendre à http://localhost (Le hot-reloading est configuré)
 
 ### Kibana
   - Pour tester efficacement des changements de mapping dans l'index, la console dev de **Kibana** peut être utile.
-  - Lancer Kibana avec `make kibana`. Le container Elasticsearch doit tourner. Se rendre à l'adresse `http://localhost/5601`
+  - Lancer Kibana avec `make kibana`. Le container Elasticsearch doit tourner. Se rendre à l'adresse http://localhost/5601
