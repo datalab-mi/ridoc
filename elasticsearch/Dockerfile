@@ -16,3 +16,9 @@ ARG ES_VERSION
 RUN wget "https://artifacts.elastic.co/downloads/elasticsearch-plugins/analysis-icu/analysis-icu-${ES_VERSION}.zip"
 RUN mkdir -p plugins/analysis-icu
 RUN unzip -d plugins/analysis-icu analysis-icu-${ES_VERSION}.zip
+
+# /analysis-phonetic
+ARG ES_VERSION
+RUN wget "https://artifacts.elastic.co/downloads/elasticsearch-plugins/analysis-phonetic/analysis-phonetic-${ES_VERSION}.zip"
+RUN mkdir -p plugins/analysis-phonetic
+RUN unzip -d plugins/analysis-phonetic analysis-phonetic-${ES_VERSION}.zip
