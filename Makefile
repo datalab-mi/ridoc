@@ -92,7 +92,7 @@ elasticsearch: network
 		i=`expr $$i - 1`; \
 	done;\
 	true)
-	${DC} -f ${DC_FILE}-elasticsearch-huge.yml up -d
+	${DC} -f ${DC_FILE}-elasticsearch-huge.yml up --build -d
 
 elasticsearch-stop:
 	@echo docker-compose down elasticsearch
@@ -168,7 +168,7 @@ nginx: network
 frontend-dev:
 	@echo docker-compose run ${APP} frontend #--build
 	@echo ${DATA_PATH}
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml up -d  #--build --force-recreate
+	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml up -d  --build --force-recreate
 	$(DC) -f ${DC_FILE}-frontend.yml exec -d frontend npm run dev:tailwindcss
 frontend-exec:
 	$(DC) -f ${DC_FILE}-frontend.yml exec frontend sh
@@ -195,6 +195,6 @@ frontend-build-dist: ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION) frontend-check-bui
 
 dev: network frontend-stop frontend-dev
 
-up: frontend-dev backend-dev elasticsearch nginx
+up: network frontend-dev backend-dev elasticsearch nginx
 
 down: frontend-dev-stop backend-dev-stop elasticsearch-stop nginx-stop
