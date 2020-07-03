@@ -202,7 +202,7 @@ def test_blue_green():
     put_alias(new_index, INDEX_NAME)
     delete_alias(old_index, INDEX_NAME)
     res = search(req, INDEX_NAME)
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
     # should be equal rather than in, but doesn't work with test_app.py. WHY??
     assert [hits['_id'] for hits in res['hits']] in ['BF2014-09-13055+-+Problématique+foncière+aux+Antilles.pdf',
                                                     'BF2015-16-15003-fondation-louis-lépine.pdf',
