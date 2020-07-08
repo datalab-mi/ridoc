@@ -7,7 +7,7 @@ async function upload(meta, files) {
 
   meta.forEach(item => formData.append(item.key, item.value));
 
-  const upload = await fetch(`http://localhost/api/admin/${filename}`, {
+  const upload = await fetch(`/api/admin/${filename}`, {
       method: 'PUT',
       body: formData
       });
@@ -29,7 +29,7 @@ async function index(index_name, filename, method) {
       statusOK = (s) => (s.ok || s.status == 404)
     }
     // Make the  http request
-    const index = await fetch(`http://localhost/api/admin/${index_name}/_doc/${filename}`,
+    const index = await fetch(`/api/admin/${index_name}/_doc/${filename}`,
       {method: method});
 		if (statusOK(index)) {
 			return index.status

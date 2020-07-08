@@ -32,7 +32,7 @@
 	async function expression(method) {
 		let res;
 
-		res = await fetch(`http://localhost/api/admin/expression/${expressionA}`, {
+		res = await fetch(`/api/admin/expression/${expressionA}`, {
 				method: method,
 				body: JSON.stringify(meta)});
 		$list_expression = await res.json();
