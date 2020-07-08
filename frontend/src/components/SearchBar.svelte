@@ -8,7 +8,7 @@
 
 	async function search() {
 
-		const res = await fetch("http://localhost/api/common/search",{
+		const res = await fetch("/api/common/search",{
 												method: "POST",
 												body: JSON.stringify({
 															 index_name: $index_name,
