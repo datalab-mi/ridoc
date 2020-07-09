@@ -32,7 +32,7 @@
 	async function synonym(method) {
 		let res;
 
-		res = await fetch(`http://localhost/api/admin/synonym/${expressionA}`, {
+		res = await fetch(`/api/admin/synonym/${expressionA}`, {
 				method: method,
 				body: JSON.stringify(meta)});
 		$list_synonym = await res.json();

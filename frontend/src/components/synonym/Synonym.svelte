@@ -42,11 +42,11 @@
 	async function synonym(method) {
 		let res;
 		if (method == 'GET') {
-			res = await fetch(`http://localhost/api/common/synonym?filename=${filename}`,
+			res = await fetch(`/api/common/synonym?filename=${filename}`,
 					{method: 'GET'});
 		} else if (method == 'PUT') {
 			key = filterKey
-			res = await fetch(`http://localhost/api/admin/synonym/${key}?filename=${filename}`, {
+			res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
 					method: 'PUT',
 					body: JSON.stringify([{'value': filterKey}, {'value': filterValue}])});
 		}

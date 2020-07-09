@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch
 
 from application import create_app
 
-NOM_INDEX = 'iga'
+INDEX_NAME = 'iga'
 
 USER_DATA = 'tests/iga/data'
 filename = 'ignit_pnigitis'
@@ -25,7 +25,11 @@ def client(app):
 
 @pytest.fixture
 def search_data():
-    return dict(index_name=NOM_INDEX, value='travail illegal')
+    return dict(index_name=INDEX_NAME,
+                content='travail illegal',
+                author='GRANJEANT',
+                to_date='2017-06-06',
+                from_date='2015-06-06')
 
 @pytest.fixture
 def es():
@@ -69,6 +73,7 @@ def dummy_index():
 def form_to_upload():
     yield dict(author= 'babar',
                 date= '2020-05-04',
+                filename=filename + '.pdf',
                 file=(open(USER_DATA + '/' + filename + '.pdf', "rb"), filename) )
 
 @pytest.fixture
@@ -77,9 +82,8 @@ def file_name():
 
 @pytest.fixture
 def index_name():
-    yield NOM_INDEX
+    yield INDEX_NAME
 
 @pytest.fixture
 def pdf_file():
     yield filename
-    

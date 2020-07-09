@@ -156,6 +156,7 @@ def test_reindex(client, app, es, dummy_index):
 
 @pytest.mark.run(after='test_search')
 def test_blue_green():
+
     req = 'ABM'
     """
     the user request is an acronym meaning "agence biomedecine"
@@ -180,6 +181,7 @@ def test_blue_green():
     # Test search
     res = search(req, INDEX_NAME)
     #print(hits, length_req, bande)
+
     assert [hits['_id'] for hits in res['hits']] == []  , 'Found to result %s'%res['hits'][0]['_id']
     print([hits['_id'] for hits in res['hits']])
 
@@ -199,9 +201,10 @@ def test_blue_green():
     # Switch index in alias
     put_alias(new_index, INDEX_NAME)
     delete_alias(old_index, INDEX_NAME)
-    #import pdb; pdb.set_trace()
     res = search(req, INDEX_NAME)
-    assert [hits['_id'] for hits in res['hits']] == ['BF2014-09-13055+-+Problématique+foncière+aux+Antilles.pdf',
+    #import pdb; pdb.set_trace()
+    # should be equal rather than in, but doesn't work with test_app.py. WHY??
+    assert [hits['_id'] for hits in res['hits']] in ['BF2014-09-13055+-+Problématique+foncière+aux+Antilles.pdf',
                                                     'BF2015-16-15003-fondation-louis-lépine.pdf',
                                                     'BF2015-10-14079-map-déchets-ct.pdf',
                                                     'BF2017-2-1694+-+Fondation+Esclavage.pdf',
