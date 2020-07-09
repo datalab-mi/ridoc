@@ -1,11 +1,10 @@
 <script>
-import SvgSpinner from '../components/SvgSpinner.svelte';
 import { index_name, isReindex } from './stores.js';
 
 let promise;
 
 async function ReIndex() {
-		const res = await fetch(`http://localhost/api/admin/${$index_name}/reindex`);
+		const res = await fetch(`/api/admin/${$index_name}/reindex`);
 		const text = await res.text();
 
 		if (res.ok) {
@@ -16,7 +15,6 @@ async function ReIndex() {
 		}
 	}
 
-
 	function handleIndex() {
     $isReindex = true
 		promise = ReIndex()
@@ -24,8 +22,6 @@ async function ReIndex() {
 
 	}
 </script>
-
-
 
 	<div>
     <button on:click={handleIndex} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">

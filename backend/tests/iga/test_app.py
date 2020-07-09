@@ -2,11 +2,12 @@ import pytest
 import json, os
 
 from dotenv import load_dotenv
+from tools.elastic import get_index_name, replace_blue_green
 
 env_path = '/app/tests/iga/.env-iga'
 load_dotenv(dotenv_path=env_path)
 
-NOM_INDEX = os.getenv('NOM_INDEX')
+INDEX_NAME = os.getenv('INDEX_NAME')
 
 USER_DATA = os.getenv('USER_DATA')
 ES_DATA = os.getenv('ES_DATA')
@@ -25,15 +26,17 @@ def test_healthcheck(client, app):
     print(res)
     assert res.status_code == 200,res
 
-def test_index(client, app):
+def test_reindex(client, app):
+
+    old_index = get_index_name(INDEX_NAME)
+    new_index = replace_blue_green(old_index, INDEX_NAME)
+
     with app.test_client() as c:
         resp = c.get(
-            '/admin/index',
-            content_type='application/json',
-            data = json.dumps({'index_name' : NOM_INDEX}))
-
+            '/admin/%s/reindex'%INDEX_NAME)
 
     assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
+    assert resp.json['color'] == new_index
 
 def test_search(client, app, search_data):
     with app.test_client() as c:
@@ -44,31 +47,46 @@ def test_search(client, app, search_data):
 
     assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
 
-    resp = json.loads(
+    res= json.loads(
             resp.get_data(as_text=False).decode('utf-8'))
 
-    assert len(resp)>0, "No document found"
-
-
-
+    assert len(res)>0, "No document found"
+    assert [hits['_id'] for hits in res['hits']] == ['BF2016-08-16010-dfci.pdf'], 'Find %s'%[hits['_id'] for hits in resp['hits']]
 
 def test_upload_file(client, app, form_to_upload):
-
+    # Add document
     with app.test_client() as c:
-        resp = c.post(
-            '/common/upload',
+        resp = c.put(
+            '/admin/%s'%form_to_upload['filename'],
             content_type = 'multipart/form-data',
             data = form_to_upload)
 
-    assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
+    assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
 
-def test_index_file(client, app, index_name, path_pdf):
-
+    # Delete document
     with app.test_client() as c:
-        resp = c.get(
-            '/common/index?index_name={index_name}&filename={filename}'.format(
+        resp = c.delete(
+            '/admin/%s'%form_to_upload['filename'])
+
+    assert resp.status_code == 204, 'Status Code : %s'%resp.status_code
+
+def test_index_file(client, app, index_name, pdf_file):
+    # Add document
+    with app.test_client() as c:
+        resp = c.put(
+            '/admin/{index_name}/_doc/{filename}'.format(
             index_name=index_name,
-            filename=path_pdf
+            filename=pdf_file
+            ))
+
+    assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
+
+    # Delete document
+    with app.test_client() as c:
+        resp = c.delete(
+            '/admin/{index_name}/_doc/{filename}'.format(
+            index_name=index_name,
+            filename=pdf_file
             ))
 
     assert resp.status_code == 200, 'Status Code : %s'%resp.status_code

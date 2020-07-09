@@ -25,11 +25,11 @@
 	async function expression(method) {
 		let res;
 		if (method == 'GET') {
-			res = await fetch(`http://localhost/api/common/expression`,
+			res = await fetch(`/api/common/expression`,
 					{method: 'GET'});
 		} else if (method == 'PUT') {
 			key = '0';
-			res = await fetch(`http://localhost/api/admin/expression/${key}`, {
+			res = await fetch(`/api/admin/expression/${key}`, {
 					method: 'PUT',
 					body: JSON.stringify([{'value': key}, {'value': filterValue}])});
 		}
