@@ -39,6 +39,10 @@
 
 
   <div slot="button">
+    <label for="fileUpload" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+    Choisir un fichier
+    </label>
+
     <input id="fileUpload" type="file" bind:files>
 
     {#if files}
@@ -46,6 +50,8 @@
         <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
         <span>SOUMETTRE</span>
       </button>
+      <br>
+      {files[0].name}
     {:else}
       <button disabled class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
         <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
@@ -64,8 +70,9 @@
 <style>
 
   #fileUpload {
-
+    display: none;
   }
+
 	.new-item {
 		width: 90%;
 		border: 1px solid #aaa;
@@ -86,4 +93,5 @@
 	 margin: 0;
 	 padding: 0;
  }
+
 </style>
