@@ -92,7 +92,7 @@ elasticsearch: network
 		i=`expr $$i - 1`; \
 	done;\
 	true)
-	${DC} -f ${DC_FILE}-elasticsearch-huge.yml up --build -d
+	${DC} -f ${DC_FILE}-elasticsearch-huge.yml up #--build -d
 
 elasticsearch-stop:
 	@echo docker-compose down elasticsearch
@@ -158,7 +158,7 @@ test:
 ##############
 
 nginx: network
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-nginx.yml up -d --build --force-recreate
+	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-nginx.yml up -d #--build --force-recreate
 
 ##############
 #  Frontend  #
