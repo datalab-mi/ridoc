@@ -7,7 +7,7 @@ import elasticsearch
 from elasticsearch import Elasticsearch
 from shutil import copyfile
 
-from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file
+from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file, suggest
 from tools.converter import pdf2json
 
 import pytest
@@ -215,6 +215,11 @@ def test_blue_green():
 
     assert get_alias(INDEX_NAME) == {INDEX_NAME + '_green': {'aliases': {INDEX_NAME: {}}}}
 
+@pytest.mark.run(after='test_search')
+def test_suggest():
+    req = "travail ilegal"
+    res = suggest(req, INDEX_NAME)
+    assert [element['text'] for element in res] == ['travail illégal', 'travail inégal', 'travail légal']
 
 if __name__ == '__main__':
     test_create_index()
