@@ -36,6 +36,8 @@ export const searchResults = writable({
   'threshold':1
 });
 
+export const suggestEntry = writable([]);
+
 export const index_name = writable('iga')
 export const isReindex = writable(false)
 

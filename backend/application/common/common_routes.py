@@ -9,7 +9,7 @@ from flask import current_app as app
 
 from tools.elastic import search as elastic_search
 from tools.elastic import build_query as elastic_build_query
-
+from tools.elastic import suggest as elastic_suggest
 # Blueprint Configuration
 common_bp = Blueprint('common_bp', __name__,url_prefix='/common')
 # USER_DATA is known by parent script __init__
@@ -137,3 +137,14 @@ def expression():
 
     # In the other cases
     return make_response('', 204)
+
+@common_bp.route('/suggest', methods=['POST'])
+def suggest():
+    content = request.get_json(force=True)
+    user_entry = content.get('content', None)
+    index_name = content.get('index_name', None)
+
+    res = elastic_suggest(user_entry,
+                index_name)
+
+    return json.dumps(res)#.encode('utf8')
