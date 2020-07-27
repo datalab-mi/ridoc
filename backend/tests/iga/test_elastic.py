@@ -79,9 +79,10 @@ def test_analyse_index():
     print(' '.join([token['token'] for token in res['tokens']]))
 
     assert 'Jusqu' not in  str(res['tokens'])
-    assert 'comandpubliqu' in  str(res['tokens']), 'expresion not taken into account'
+    #import pdb; pdb.set_trace()
+    assert 'commandpubliqu' in  str(res['tokens']), 'expression not taken into account'
+    assert 'command' in  str(res['tokens']), 'expression remove command!'
 
-    # § sensibilité au accents
 @pytest.mark.run(after='test_inject_documents')
 def test_search():
     glossary_file = Path(USER_DATA) / GLOSSARY_FILE
@@ -91,8 +92,8 @@ def test_search():
     #import pdb; pdb.set_trace()
     res= search(req, INDEX_NAME, str(glossary_file), str(expression_file))
     #print(hits, length_req, bande)
-    assert  res['hits'][0]['_id'] == 'BF2014-20-14072+Médecine+de+prévention.pdf', 'Found to result %s'%hits[0]['_id']
-    assert res['length'] == 1, res['length']
+    assert  res['hits'][0]['_id'] == 'BF2016-08-16010-dfci.pdf', 'Found to result %s'%hits[0]['_id']
+    assert res['length'] == 3, res['length']
     assert not res['band']
 
 """
@@ -154,14 +155,14 @@ def test_reindex(client, app, es, dummy_index):
     res = es.search(index='dummy_alias', body=request)
     assert  res['hits']['hits'][0]['_id'] == 'babar', res
 
-@pytest.mark.run(after='test_search')
+@pytest.mark.run(after='test_reindex')
 def test_blue_green():
 
-    req = 'ABM'
+    req = 'MI'
     """
-    the user request is an acronym meaning "agence biomedecine"
-    test if blue index without acronym hits no result and
-    green index hits documents with "agence biomedecine"
+    the user request is an acronym meaning "mistere interieur"
+    test if blue index without acronym hits low result and
+    green index hits documents with "mistere interieur"
     """
     # Clear
     es.indices.delete_alias(index=[INDEX_NAME+'_blue',INDEX_NAME+'_green'], name=INDEX_NAME, ignore=[400, 404])
@@ -182,7 +183,8 @@ def test_blue_green():
     res = search(req, INDEX_NAME)
     #print(hits, length_req, bande)
 
-    assert [hits['_id'] for hits in res['hits']] == []  , 'Found to result %s'%res['hits'][0]['_id']
+    assert [hits['_id'] for hits in res['hits']] == ['BF2014-08-13069+-+Plan+submersions+rapides.pdf',
+                                                    'BF2015-09-14124+-+Accueil+ressortissants+étrangers.pub.pdf']  , 'Found to result %s'%res['hits'][0]['_id']
     print([hits['_id'] for hits in res['hits']])
 
     ####  Switch to new index #####
@@ -204,11 +206,7 @@ def test_blue_green():
     res = search(req, INDEX_NAME)
     #import pdb; pdb.set_trace()
     # should be equal rather than in, but doesn't work with test_app.py. WHY??
-    assert [hits['_id'] for hits in res['hits']] in ['BF2014-09-13055+-+Problématique+foncière+aux+Antilles.pdf',
-                                                    'BF2015-16-15003-fondation-louis-lépine.pdf',
-                                                    'BF2015-10-14079-map-déchets-ct.pdf',
-                                                    'BF2017-2-1694+-+Fondation+Esclavage.pdf',
-                                                    'BF2016-01-15130-simplilfication-entreprises.pdf'], 'Found to result %s'%res['hits'][0]['_id']
+    assert  'BF2015-15-15034-action-sociale-du-mi.pdf' in [hits['_id'] for hits in res['hits']], 'Found to result %s'%res['hits'][0]['_id']
 
     print([hits['_id'] for hits in res['hits']])
 
