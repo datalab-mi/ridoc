@@ -38,13 +38,12 @@
         },
         "minimal_stemmer": {
           "type" : "stemmer",
-          "name" : "light_french"
-        },
-        "my_multiplexer": {
-          "type" : "multiplexer",
-          "filters" : ["acronym"]
+          "name" : "french"
         },
         "acronym": {
+          "type": "synonym"
+        },
+        "light_acronym": {
           "type": "synonym"
         },
         "expression": {
@@ -53,26 +52,35 @@
         "synonym": {
           "type": "synonym"
         },
+        "search_synonym": {
+          "type": "synonym"
+        },
+        "my_multiplexer" : {
+          "type" : "multiplexer",
+          "filters" : ["search_synonym, remove_artifact"],
+          "preserve_original": true
+        },
         "remove_artifact" : {
-         "type": "pattern_replace",
-         "pattern": "_(.*)_",
-         "replacement" : "$1"
-       },
-       "my_beider_morse": {
-        "type": "phonetic",
-        "encoder": "beider_morse",
-        "replace": false,
-        "languageset": "french"
-      },
-      "shingle": {
-        "type": "shingle",
-        "min_shingle_size": 2,
-        "max_shingle_size": 3
+          "type": "pattern_replace",
+          "pattern": "_(.*)_",
+          "replacement" : "$1"
+        },
+        "my_beider_morse": {
+          "type": "phonetic",
+          "encoder": "beider_morse",
+          "replace": false,
+          "languageset": "french"
+        },
+          "shingle": {
+          "type": "shingle",
+          "min_shingle_size": 2,
+          "max_shingle_size": 3
         }
       },
       "analyzer": {
         "my_analyzer": {
-          "char_filter": [ "quotes","new_line" ],
+          "type":"custom",
+          "char_filter": [ "quotes","new_line","html_strip"],
           "tokenizer": "icu_tokenizer",
           "filter": [
             "lowercase",
@@ -84,6 +92,19 @@
             "synonym",
             "remove_artifact"
             ]
+        },
+        "my_search_analyzer": {
+          "type":"custom",
+          "char_filter": [ "quotes","new_line","html_strip"],
+          "tokenizer": "icu_tokenizer",
+          "filter": [
+            "lowercase",
+            "french_elision",
+            "icu_folding",
+            "more_stop",
+            "minimal_stemmer",
+            "my_multiplexer"
+            ]        
         },
         "phonetic_analyser": {
           "tokenizer": "standard",
@@ -115,7 +136,7 @@
        "content": {
           "type": "text",
           "analyzer" : "my_analyzer",
-          "search_analyzer" : "my_analyzer",
+          "search_analyzer" : "my_search_analyzer",
           "fields" :{
             "trigram": {
               "type": "text",
@@ -133,5 +154,7 @@
           "search_analyzer" : "phonetic_analyser"
         }
       }
-  }
+   }
 }
+
+

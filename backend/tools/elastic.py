@@ -55,21 +55,6 @@ def build_query(req:str, index_name:str,
     Returns:
         dict
     """
-    # process gloassary
-    if glossary_file:
-        with open(glossary_file, 'r') as f:
-            content = f.read()
-        list_glossary = [x.split('=>') for x in str(content).split(
-                                '\n') if '=>' in x]
-
-        dic_glossary = {x[0].strip() : x[1].replace(
-                        ',', '').strip() for  x  in list_glossary}
-        #print(dic_glossary)
-
-        # If user input contains acronym in glossary, add it to req
-        for key, val in dic_glossary.items():
-            if key in [word.lower() for word in req.split(' ')]:
-                req = req + ' ' + val
 
     if expression_file:
         # process expression
@@ -302,12 +287,14 @@ def create_index(INDEX_NAME,
             expression_file=None):
 
     synonym_file = os.path.join(es_data, 'synonym.txt')
-    print(os.path.join(user_data, mapping_file))
+    synonym_search_file = os.path.join(es_data, 'search_synonym.txt')
+
     with open(os.path.join(user_data, mapping_file) , 'r' , encoding = 'utf-8') as json_file:
         map = json.load(json_file)
     # Copy glossary and experssion file to elastic search mount volume
     print(map)
 
+    # for index analyser
     with open(synonym_file, 'w') as outfile:
         if glossary_file:
             print('Use glossary file %s'%glossary_file)
@@ -318,12 +305,33 @@ def create_index(INDEX_NAME,
             print('Use expresion file %s'%expression_file)
             with open(os.path.join(user_data, expression_file), 'r') as f2:
                 outfile.write(f2.read())
-
         else:
             outfile.write('')
 
+
     map['settings']["analysis"]["filter"]["synonym"].update(
             {"synonyms_path" : os.path.join(es_data, synonym_file)})
+
+    # for search analyser
+    with open(synonym_search_file, 'w') as outfile:
+        if glossary_file:
+            print('Use glossary file %s'%glossary_file)
+            with open(os.path.join(user_data, glossary_file), 'r') as f1:
+                list_glossary = [x.split(' => ') for x in str(f1.read()).split(
+                                        '\n') if '=>' in x]
+                list_glossary = [x[0].replace(' ', ', ') + ' => ' + x[1] for x in list_glossary]
+                str_glossary = '\n'.join(list_glossary)
+                outfile.write(str_glossary)
+        outfile.write('\n')
+        if expression_file:
+            print('Use expresion file %s'%expression_file)
+            with open(os.path.join(user_data, expression_file), 'r') as f2:
+                outfile.write(f2.read())
+        else:
+            outfile.write('')
+
+    map['settings']["analysis"]["filter"]["search_synonym"].update(
+            {"synonyms_path" : os.path.join(es_data, synonym_search_file)})
 
     print(map)
     with open(os.path.join(es_data, mapping_file), 'w') as outfile:
