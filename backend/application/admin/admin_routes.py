@@ -8,7 +8,7 @@ from flask import Blueprint, render_template, request, make_response, abort, jso
 
 from tools.elastic import index_file as elastic_index_file
 from tools.elastic import delete_file as elastic_delete_file
-from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents
+from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, clean
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','md'}
 
@@ -127,6 +127,71 @@ def index(index_name: str):
     delete_alias(old_index, index_name)
 
     return make_response({'color': new_index}, 200)
+
+
+@admin_bp.route("/synonym/<int:key>", methods=["DELETE", "PUT"])
+def synonym(key:int):
+    filename = request.args.get('filename', app.config['GLOSSARY_FILE'])
+    synonym_file = Path(app.config['USER_DATA']) / (filename + '.txt')
+
+    if 'glossaire' in filename:
+        names = ['expressionB','expressionA']
+    elif 'expression' in filename:
+        names = ['key','value']
+    else:
+        return abort(501)
+
+    if synonym_file.exists():
+        synonym_df = pd.read_csv(synonym_file, sep=' => ',header=None, names=names);
+        synonym_df['key'] = synonym_df.index + 1
+
+    else:
+        return abort(503)
+
+    if request.method == 'PUT':
+        body = request.get_json(force=True)
+        expressionA = body.get('expressionA')
+        expressionB = body.get('expressionB')
+        if not expressionA or not expressionB:
+            print('Missing keys')
+            return  abort(500)
+        else:
+            if 'glossaire' in filename:
+                list_token = clean(expressionB, app.config['INDEX_NAME'])
+                expressionB = ' '.join(list_token)
+                if '_' not in expressionA:
+                    expressionA = '_' + expressionA.upper() + '_'
+
+            elif 'expression' in filename:
+                value = '_' + ''.join(list_token) + '_' + ', ' + ', '.join(list_token)
+            else:
+                return abort(501)
+
+        if key in synonym_df['key'].tolist():
+            status = 200 # update
+            synonym_df.loc[synonym_df['key'] == key, 'expressionB'] = expressionB
+            synonym_df.loc[synonym_df['key'] == key, 'expressionA'] = expressionA
+
+        else:
+            status = 201 # create
+            synonym_df = pd.concat([pd.DataFrame({'key': key, 'expressionA': expressionA,'expressionB': expressionB},index=[0]),
+                                    synonym_df], ignore_index=True)
+
+    elif request.method == 'DELETE':
+        if key in synonym_df['key'].tolist():
+            status = 200
+            synonym_df = synonym_df[synonym_df['key'] != key]
+        else:
+            status = 404
+    #synonym_df.to_csv(synonym_file, sep=str('=>'), header=False, index=False, encoding='utf-8')
+    synonym_df['key'] = synonym_df.index + 1
+    if 'glossaire' in filename:
+        synonym_file.write_text('\n'.join((synonym_df['expressionB'] + ' => ' + synonym_df['expressionA']).tolist()))
+        return make_response(synonym_df.to_json(orient='records'), status)
+
+    elif 'expression' in filename:
+        synonym_file.write_text('\n'.join((synonym_df['key'] + ' => ' + synonym_df['value']).tolist()))
+        return make_response(synonym_df.to_json(orient='records'), status)
 
 @admin_bp.route("/expression/<key>", methods=["DELETE", "PUT"])
 def expression(key: str):

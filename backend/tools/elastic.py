@@ -42,6 +42,22 @@ def simple_request(INDEX_NAME):
     D = es.search(index=str(INDEX_NAME_prop), size=15, body=request)
     return D['hits']['hits']
 
+def clean(expression:str, index_name:str, analyzer="clean_analyser"):
+    """
+    Lowercase, filter stop word
+    Args:
+        Expression: The string to clean <str>
+        index_name: The index where analysers lie on <str>
+        analyzer The ES analyser to use <str>
+    Returns:  ES token
+    """
+    body = {'analyzer': analyzer, "text": expression}
+    analyse = indices.analyze(index= index_name, body = body)
+    list_token = [x['token'] for x  in analyse['tokens'] if 'token' in x]
+
+    return list_token
+
+
 def build_query(req:str, index_name:str,
         glossary_file=None, expression_file=None,
         from_date=None, to_date=None, author=None) -> dict:
@@ -204,6 +220,7 @@ def search(req, index_name,
         pass
 
     return {'hits': D['hits']['hits'], 'length': length_of_request , 'band': Bande}
+
 
 def suggest(req , index_name):
   """

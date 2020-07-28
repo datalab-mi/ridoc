@@ -25,15 +25,17 @@
 	async function expression(method) {
 		let res;
 		if (method == 'GET') {
-			res = await fetch(`/api/common/expression`,
+			res = await fetch(`/api/common/synonym?filename=${filename}`,
 					{method: 'GET'});
 		} else if (method == 'PUT') {
 			key = '0';
-			res = await fetch(`/api/admin/expression/${key}`, {
+			res = await fetch(`/api/admin/synonym/${key}`, {
 					method: 'PUT',
 					body: JSON.stringify([{'value': key}, {'value': filterValue}])});
 		}
 		$list_expression = await res.json();
+		console.log($list_expression)
+
 		if (res.ok)  {
 			return res.status
 		} else {

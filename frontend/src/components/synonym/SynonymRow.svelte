@@ -2,6 +2,9 @@
 
 	import { index_name, list_synonym  } from '../stores.js';
 
+	export let filename ;
+	export let key ;
+
 	export let expressionA ;
 	export let expressionB ;
 
@@ -13,28 +16,19 @@
 	let send = false;
 	let meta;
 
-	$: meta = [
-						{
-							key: 'expresion1',
-							type: 'text',
-							placeholder: 'DNUM',
-							value: expressionA,
-							innerHtml: 'Acronyme: '
-						},
-						{
-							key: 'expresion2',
-							type: 'text',
-							placeholder: 'Direction du Numérique',
-							value: expressionB,
-							innerHtml: 'Signification: '
+	$: meta = {
+							key: key,
+							expressionA: expressionA,
+							expressionB: expressionB
 						}
-					]
+						
 	async function synonym(method) {
 		let res;
-
-		res = await fetch(`/api/admin/synonym/${expressionA}`, {
+		console.log(meta)
+		res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
 				method: method,
 				body: JSON.stringify(meta)});
+
 		$list_synonym = await res.json();
 
 		console.log('Delete/update')
@@ -53,6 +47,7 @@
 		send = !send
 		readonly = !readonly
 		if (readonly & send){
+			console.log('PUT');
 			synonym('PUT')
 		}
 	}

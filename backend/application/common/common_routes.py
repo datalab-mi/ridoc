@@ -106,7 +106,7 @@ def search():
 @common_bp.route('/synonym', methods=['GET'])
 def synonym():
     filename = request.args.get('filename', app.config['GLOSSARY_FILE'])
-    if filename == "glossary":
+    if filename == "glossaire":
         synonym_file = Path(app.config['USER_DATA']) / app.config['GLOSSARY_FILE']
     elif filename == "expression":
         synonym_file = Path(app.config['USER_DATA']) / app.config['EXPRESSION_FILE']
@@ -117,7 +117,8 @@ def synonym():
         with synonym_file.open() as f:
             content = f.read()
         if content:
-            synonym_df = pd.read_csv(synonym_file, sep=' => ',header=None, names=['value','key']);
+            synonym_df = pd.read_csv(synonym_file, sep=' => ',header=None, names=['expressionB','expressionA']);
+            synonym_df['key'] = synonym_df.index + 1
             #list_glossary = [x.split(' => ') for x in str(content).split(
             #                        '\n') if '=>' in x]
             #dic_dictionary = {key:value.replace('_','') for key,value in list_glossary}
