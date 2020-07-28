@@ -71,8 +71,10 @@ function handleAdd() {
 	isAdd = !isAdd;
 }
 
-
-$: {list_synonym_filter = $list_synonym.filter(item => (item.key.includes(filterKey)) & (item.value.includes(filterValue)))}
+$: {
+	console.log($list_synonym.filter(item => typeof(item.value) == 'undefined'))
+	list_synonym_filter = $list_synonym.filter(item => (item.key.includes(filterKey)) & (item.value.includes(filterValue)))
+}
 
 </script>
 
