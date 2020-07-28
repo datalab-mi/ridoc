@@ -63,7 +63,12 @@
         "encoder": "beider_morse",
         "replace": false,
         "languageset": "french"
-      }
+      },
+      "shingle": {
+        "type": "shingle",
+        "min_shingle_size": 2,
+        "max_shingle_size": 3
+        }
       },
       "analyzer": {
         "my_analyzer": {
@@ -86,6 +91,16 @@
             "lowercase",
             "my_beider_morse"
           ]
+        },
+        "trigram": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["lowercase","shingle"]
+          },
+        "reverse": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["lowercase","reverse"]
         }
       }
     },
@@ -100,7 +115,17 @@
        "content": {
           "type": "text",
           "analyzer" : "my_analyzer",
-          "search_analyzer" : "my_analyzer"
+          "search_analyzer" : "my_analyzer",
+          "fields" :{
+            "trigram": {
+              "type": "text",
+              "analyzer": "trigram"
+            },
+            "reverse": {
+              "type": "text",
+              "analyzer": "reverse"
+            }
+          }
         },
         "author": {
           "type": "text" ,
