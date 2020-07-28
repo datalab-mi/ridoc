@@ -4,6 +4,7 @@
 	import VirtualList from '../VirtualList.svelte';
 
 	export let filename;
+	export let meta;
 
 	let GetPromise;
 	let PutPromise = new Promise(()=>{});
@@ -13,28 +14,14 @@
 	let filterKey = '';
 	let filterValue = '';
 
+	let filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
+	console.log(filterRow)
 	let isAdd = false;
 	let readonly = true;
 	let send = false;
 
 	let start;
 	let end;
-	let meta = [
-						{
-							key: 'expresion1',
-							type: 'text',
-							placeholder: 'DNUM',
-							value: '',
-							innerHtml: 'Acronyme: '
-						},
-						{
-							key: 'expresion2',
-							type: 'text',
-							placeholder: 'Direction du Numérique',
-							value: '',
-							innerHtml: 'Signification: '
-						}
-					]
 
 	let key;
 
@@ -45,10 +32,10 @@
 			res = await fetch(`/api/common/synonym?filename=${filename}`,
 					{method: 'GET'});
 		} else if (method == 'PUT') {
-			key = filterKey
+			key = 0
 			res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
 					method: 'PUT',
-					body: JSON.stringify([{'value': filterKey}, {'value': filterValue}])});
+					body: JSON.stringify({'expressionA': filterKey, 'expressionB': filterValue})});
 		}
 		$list_synonym = await res.json();
 		if (res.ok)  {
@@ -72,8 +59,9 @@ function handleAdd() {
 }
 
 $: {
-	console.log($list_synonym.filter(item => typeof(item.value) == 'undefined'))
-	list_synonym_filter = $list_synonym.filter(item => (item.key.includes(filterKey)) & (item.value.includes(filterValue)))
+	list_synonym_filter = $list_synonym.filter(
+		item => (item.expressionB.includes(filterRow.expressionB)))
+					//	(item.expressionA.includes(filterRow.expressionA)) &
 }
 
 </script>
@@ -85,12 +73,12 @@ $: {
 	{:then status}
 
 		<div class="inline-flex bg-{(isAdd) ? 'white': 'gray'}-200 w-full">
-			<div class="flex-initial w-1/5 text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
-				<input type="search" bind:value={filterKey} placeholder={(isAdd) ? 'DNUM': 'recherche'} >
-			</div>
-			<div class="flex-initial w-4/5 text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
-				<input type="search" bind:value={filterValue} placeholder={(isAdd) ? 'Direction du numérique': 'recherche'} >
-			</div>
+			{#each meta as {key, type, placeholder, value, innerHtml, size} }
+				<div class="flex-initial w-{size} text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
+					<input type="search" bind:value={filterRow[key]} placeholder={(isAdd) ? placeholder: 'recherche'} >
+				</div>
+			{/each}
+
 			<div class="flex-initial w-1/5 px-4 py-2 m-2">
 				{#if (isAdd)}
 					{#if (filterKey != '') & (filterValue != '') }
@@ -116,12 +104,12 @@ $: {
 				</button>
 				{/if}
 			</div>
+
 		</div>
 
 		<VirtualList items={list_synonym_filter} let:item>
-			<SynonymRow expressionA={item.key} expressionB={item.value} />
+			<SynonymRow filename={filename} key={item.key} expressionA={item.expressionA} expressionB={item.expressionB} />
 		</VirtualList>
-
 
 
 	{:catch error}

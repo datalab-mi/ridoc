@@ -20,14 +20,14 @@
                 type: 'text',
                 placeholder: 'Séparez les par des virgules',
                 value: '',
-                innerHtml: 'Auteurs :'
+                innerHtml: '<b>Auteurs :</b>'
               },
               {
                 key: 'date',
                 type: 'date',
                 placeholder: 'Date',
                 value: '',
-                innerHtml: 'Date :'
+                innerHtml: '<b>Date :</b>'
               }
             ]
 
