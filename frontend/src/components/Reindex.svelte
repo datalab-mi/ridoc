@@ -4,7 +4,7 @@ import { index_name, isReindex } from './stores.js';
 let promise;
 
 async function ReIndex() {
-		const res = await fetch(`http://localhost/api/admin/${$index_name}/reindex`);
+		const res = await fetch(`/api/admin/${$index_name}/reindex`);
 		const text = await res.text();
 
 		if (res.ok) {
@@ -37,7 +37,6 @@ async function ReIndex() {
 
       <span>Réindexation</span>
     </button>
-
   </div>
 
 {#await promise}

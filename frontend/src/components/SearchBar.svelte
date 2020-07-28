@@ -1,13 +1,13 @@
 <script>
-	import { searchInput, searchResults, index_name } from '../components/stores.js';
+	import { searchInput, searchResults, suggestEntry,  index_name } from '../components/stores.js';
 
-	let promise =  new Promise(()=>{});
+	let promiseSearch =  new Promise(()=>{});
+	let promiseSuggest =  new Promise(()=>{});
 
 	//let searchInputList = $searchInputObject.entries($searchInput)
 	//console.log(searchInputList)
 
 	async function search() {
-
 		const res = await fetch("/api/common/search",{
 												method: "POST",
 												body: JSON.stringify({
@@ -19,24 +19,51 @@
 														 })
 													 });
 
-
 		const items = await res.json();
-		console.log(items)
 		if (res.ok) {
 			$searchResults = items
-
 			return items.hits.length;
 		} else {
 			throw new Error('Oups');
 		}
 	}
 
+	async function suggest() {
+		console.log($searchInput.content.value)
+		const res = await fetch("/api/common/suggest",{
+												method: "POST",
+												body: JSON.stringify({
+															 index_name: $index_name,
+															 content: $searchInput.content.value,
+														 })
+													 });
 
-	function handleSearch() {
-		promise = search();
+		const items = await res.json();
+		//console.log(items)
+		if (res.ok) {
+			$suggestEntry = items
+			return "ok";
+		} else {
+			throw new Error('Oups');
+		}
 	}
 
-promise = search();
+	function handleSearch() {
+		promiseSearch = search();
+	}
+
+	function handleSuggest() {
+		console.log('handleSuggest')
+		promiseSuggest = suggest();
+	}
+
+	function handleSuggestChosen(v) {
+		//$searchInput.content.value = e.target.innerHTML
+		$searchInput.content.value = v
+		$suggestEntry = []
+	}
+
+promiseSearch = search();
 
 </script>
 
@@ -45,18 +72,29 @@ promise = search();
 	<div class="flex mb-4">
 		<div class="w-3/4 p-2" >
 			<div class="flex flex-col px-2">
-			<label> {@html $searchInput.content.innerHtml}
-				<input type="search" bind:value={$searchInput.content.value}
-				       placeholder={$searchInput.content.placeholder}
-							  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
-			</label>
+				<div class="px-2" >
+				<label> {@html $searchInput.content.innerHtml}
+					<input type="search" bind:value={$searchInput.content.value}
+					       placeholder={$searchInput.content.placeholder}
+								 on:input={handleSuggest}
+								 class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
+
+				<div class="px-2" id="suggest">
+					{#each $suggestEntry as {text, highlighted} }
+				     <div class="bg-white hover:bg-gray-500" on:click="{e => handleSuggestChosen(text)}">
+						 	{@html highlighted}
+						 </div>
+					 {/each}
+				</div>
+				</label>
+				</div>
 
 			<div class="flex mb-4">
-				<div class="w-2/4 px-2" >
+				<div class="w-2/4 px-2">
 					<label> {@html $searchInput.author.innerHtml}
 						<input type="search" bind:value={$searchInput.author.value}
 									 placeholder={$searchInput.author.placeholder}
-										class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
+									class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
 					</label>
 				</div>
 				<div class="w-1/4 px-2" >
@@ -91,7 +129,7 @@ promise = search();
 		<h1>La recherche est : {$searchInput.content.value}</h1>
 	{/if}
 
-	{#await promise}
+	{#await promiseSearch}
 		<p>...Attente de la requête</p>
 
 	{:then length}
@@ -105,7 +143,7 @@ promise = search();
 
 <style>
 	.search-bar {
-		width: 90%;
+		width: 100%;
 		border: 1px solid #aaa;
 		border-radius: 4px;
 		box-shadow: 2px 2px 8px rgba(0,255,0,1);
@@ -113,4 +151,9 @@ promise = search();
 		margin: 0 0 1em 0;
 	}
 
-</style>
+	#suggest {
+			z-index: 2;
+			position: absolute;
+			background-color: rgba(255,255,255,1);
+		}
+	</style>

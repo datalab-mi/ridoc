@@ -220,29 +220,45 @@ def search(req, index_name,
 
     return {'hits': D['hits']['hits'], 'length': length_of_request , 'band': Bande}
 
-def corriger(req , INDEX_NAME):
+def suggest(req , index_name):
   """
     Fonction qui permet de corriger la requête de l'utilisateur
     Arguments:
-      INDEX_NAME : Le nom de l'index où on effectue la recherche des mots
+      index_name : Le nom de l'index où on effectue la recherche des mots
       req : la requête entrèe par l'utilisateur
     Output:
       Liste des suggestions de correction
 """
-  D = es.search(index = INDEX_NAME , body = {
-  "suggest" : {
-   "mytermsuggester" : {
-      "text" : req,
-      "phrase" : {
-         "field" : "Réponse"
-       }
-    }
-  }
+  D = es.search(index = index_name , body = {
+      "suggest": {
+        "text" : req,
+        "simple_phrase" : {
+          "phrase" : {
+            "field" : "content.trigram",
+            "highlight": {
+                "pre_tag": "<b>",
+                "post_tag": "</b>"
+              },
+            "size" : 3,
+            "direct_generator" : [ {
+              "field" : "content.trigram",
+              "suggest_mode" : "always"
+            }, {
+              "field" : "content.reverse",
+              "suggest_mode" : "always",
+              "pre_filter" : "reverse",
+              "post_filter" : "reverse"
+            } ]
+          }
+        }
+      }
   })
-  L = []
-  for i in range (len(list(D['suggest']['mytermsuggester'][0]['options']))):
-    L.append(D['suggest']['mytermsuggester'][0]['options'][i]['text'])
-  return L
+
+  res = []
+  for suggestion in D['suggest']['simple_phrase'][0]['options']:
+    res.append(suggestion)
+  return res
+
 
 def get_index_name(alias_name):
     try:
