@@ -1,5 +1,5 @@
 import pytest
-import json, os
+import json, os, time
 
 from dotenv import load_dotenv
 from tools.elastic import get_index_name, replace_blue_green
@@ -51,8 +51,9 @@ def test_search(client, app, search_data):
             resp.get_data(as_text=False).decode('utf-8'))
 
     assert len(res)>0, "No document found"
-    import pdb; pdb.set_trace()
-    assert [hits['_id'] for hits in res['hits']] == ['BF2016-08-16010-dfci.pdf'], 'Find %s'%[hits['_id'] for hits in resp['hits']]
+    #import pdb; pdb.set_trace()
+    time.sleep(2)
+    assert [hits['_id'] for hits in res['hits']] == ['BF2016-08-16010-dfci.pdf'], 'Find %s'%[hits['_id'] for hits in res['hits']]
 
 def test_upload_file(client, app, form_to_upload):
     # Add document

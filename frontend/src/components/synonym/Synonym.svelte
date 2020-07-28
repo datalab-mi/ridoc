@@ -72,8 +72,7 @@ function handleAdd() {
 }
 
 $: {
-	console.log($list_synonym)
-	//$list_synonym.map(item => console.log(item.value))
+	console.log($list_synonym.filter(item => typeof(item.value) == 'undefined'))
 	list_synonym_filter = $list_synonym.filter(item => (item.key.includes(filterKey)) & (item.value.includes(filterValue)))
 }
 

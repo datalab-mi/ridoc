@@ -62,8 +62,9 @@ def build_query(req:str, index_name:str,
             content = f.read()
         list_expression = [x.split('=>')[1] for x in content.split(
                 '\n')[:-1] if '=>' in x] # last empty line
-        list_expression = [x.replace('_','').strip() for x in list_expression]
 
+        list_expression = [x.split(',')[0] for x in list_expression]
+        list_expression = [x.replace('_','').strip() for x in list_expression]
     else:
         list_expression = []
     # TODO : process all keyword???
@@ -71,13 +72,13 @@ def build_query(req:str, index_name:str,
 
     print(req)
     #Au début on va analyser la requête
-
     body = {'analyzer':"my_analyzer", "text": req}
     analyse = indices.analyze(index= index_name, body = body)
 
     analyzed = [ananyse_tokens['token'] for ananyse_tokens in analyse["tokens"]]
-
+    print(analyzed)
     length_of_request = len(analyzed)
+
 
     #------------------------Application du filtre 1 -----------------------------
     T = False
@@ -91,7 +92,6 @@ def build_query(req:str, index_name:str,
     """
     # find expression in the request
     req_expression = []
-
 
     for expression in list_expression:
         if expression in analyzed :

@@ -1,4 +1,4 @@
-import sys, json, os
+import sys, json, os, time
 from pathlib import Path  # python3 only
 from dotenv import load_dotenv
 from os import environ
@@ -37,8 +37,11 @@ doc_guyane_eau = "les-bonnes-feuilles-IGA-eau-potable-en-guadeloupe.pdf"
 
 def test_create_index():
     # Clear
-    es.indices.delete_alias(index=[INDEX_NAME+'_blue',INDEX_NAME+'_green'], name=INDEX_NAME, ignore=[400, 404])
-    es.indices.delete(index=INDEX_NAME, ignore=[400, 404])
+    for i in range(3): # to be sure alias and indexes are removed
+        es.indices.delete(index=INDEX_NAME, ignore=[400, 404])
+        es.indices.delete_alias(index=[INDEX_NAME + '_blue', INDEX_NAME + '_green'],
+            name=INDEX_NAME, ignore=[400, 404])
+
 
     create_index(INDEX_NAME, USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, EXPRESSION_FILE )
 
@@ -90,6 +93,7 @@ def test_search():
 
     req = 'travail illegal'
     #import pdb; pdb.set_trace()
+    time.sleep(2)
     res= search(req, INDEX_NAME, str(glossary_file), str(expression_file))
     #print(hits, length_req, bande)
     assert  res['hits'][0]['_id'] == 'BF2016-08-16010-dfci.pdf', 'Found to result %s'%hits[0]['_id']
@@ -182,7 +186,7 @@ def test_blue_green():
     # Test search
     res = search(req, INDEX_NAME)
     #print(hits, length_req, bande)
-
+    time.sleep(2)
     assert [hits['_id'] for hits in res['hits']] == ['BF2014-08-13069+-+Plan+submersions+rapides.pdf',
                                                     'BF2015-09-14124+-+Accueil+ressortissants+étrangers.pub.pdf']  , 'Found to result %s'%res['hits'][0]['_id']
     print([hits['_id'] for hits in res['hits']])
@@ -206,6 +210,7 @@ def test_blue_green():
     res = search(req, INDEX_NAME)
     #import pdb; pdb.set_trace()
     # should be equal rather than in, but doesn't work with test_app.py. WHY??
+    time.sleep(2)
     assert  'BF2015-15-15034-action-sociale-du-mi.pdf' in [hits['_id'] for hits in res['hits']], 'Found to result %s'%res['hits'][0]['_id']
 
     print([hits['_id'] for hits in res['hits']])
