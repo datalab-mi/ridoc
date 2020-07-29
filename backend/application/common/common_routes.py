@@ -57,11 +57,11 @@ def build_query():
         return json.dumps({})
 
     GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
-    EXPRESSION_FILE = os.getenv('EXPRESSION_FILE')
+    EXPRESSION_FILE = os.getenv('RAW_EXPRESSION_FILE')
     USER_DATA = os.getenv('USER_DATA')
 
     glossary_file = Path(USER_DATA) / GLOSSARY_FILE
-    expression_file = Path(USER_DATA) / 'analysed_expression.txt'
+    expression_file = Path(USER_DATA) / EXPRESSION_FILE
 
     res = elastic_build_query(user_entry,
                 index_name,
@@ -86,7 +86,7 @@ def search():
         return
 
     GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
-    EXPRESSION_FILE = os.getenv('EXPRESSION_FILE')
+    EXPRESSION_FILE = os.getenv('RAW_EXPRESSION_FILE')
     USER_DATA = os.getenv('USER_DATA')
 
     glossary_file = Path(USER_DATA) / GLOSSARY_FILE
