@@ -37,13 +37,13 @@
 	          type: 'text',
 	          placeholder: 'NA',
 	          value: _source.author,
-	          innerHtml: 'Auteurs :'
+						innerHtml: '<b>Auteurs :</b>'
 	        },
 	        {
 	          key: 'date',
 	          type: 'date',
 	          value: _source.date,
-	          innerHtml: 'Date :'
+						innerHtml: '<b>Date :</b>'
 	        }
 	            ]
 	}

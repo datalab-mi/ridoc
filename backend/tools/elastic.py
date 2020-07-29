@@ -42,6 +42,22 @@ def simple_request(INDEX_NAME):
     D = es.search(index=str(INDEX_NAME_prop), size=15, body=request)
     return D['hits']['hits']
 
+def clean(expression:str, index_name:str, analyzer="clean_analyser"):
+    """
+    Lowercase, filter stop word
+    Args:
+        Expression: The string to clean <str>
+        index_name: The index where analysers lie on <str>
+        analyzer The ES analyser to use <str>
+    Returns:  ES token
+    """
+    body = {'analyzer': analyzer, "text": expression}
+    analyse = indices.analyze(index= index_name, body = body)
+    list_token = [x['token'] for x  in analyse['tokens'] if 'token' in x]
+
+    return list_token
+
+
 def build_query(req:str, index_name:str,
         glossary_file=None, expression_file=None,
         from_date=None, to_date=None, author=None) -> dict:
@@ -60,11 +76,8 @@ def build_query(req:str, index_name:str,
         # process expression
         with open(expression_file, 'r') as f:
             content = f.read()
-        list_expression = [x.split('=>')[1] for x in content.split(
-                '\n')[:-1] if '=>' in x] # last empty line
-
-        list_expression = [x.split(',')[0] for x in list_expression]
-        list_expression = [x.replace('_','').strip() for x in list_expression]
+        list_expression = [x.lower().split(' ') for x in str(content).split('\n')]
+        list_expression = [''.join(x) for x in list_expression]
     else:
         list_expression = []
     # TODO : process all keyword???
@@ -133,7 +146,7 @@ def build_query(req:str, index_name:str,
     for key in req_expression:
       body['query']['bool']["should"].append({"match":{
                                       'content' :{
-                                          "query" : key,
+                                          "query" : '_' + key + '_',
                                           "boost" : 5
                                                 }}})
 
@@ -204,6 +217,7 @@ def search(req, index_name,
         pass
 
     return {'hits': D['hits']['hits'], 'length': length_of_request , 'band': Bande}
+
 
 def suggest(req , index_name):
   """
@@ -292,7 +306,6 @@ def create_index(INDEX_NAME,
     with open(os.path.join(user_data, mapping_file) , 'r' , encoding = 'utf-8') as json_file:
         map = json.load(json_file)
     # Copy glossary and experssion file to elastic search mount volume
-    print(map)
 
     # for index analyser
     with open(synonym_file, 'w') as outfile:
@@ -304,10 +317,13 @@ def create_index(INDEX_NAME,
         if expression_file:
             print('Use expresion file %s'%expression_file)
             with open(os.path.join(user_data, expression_file), 'r') as f2:
-                outfile.write(f2.read())
+                # Create expression file from raw_expression
+                list_expression = [x.lower().split(' ') for x in str(f2.read()).split('\n') if x != '']
+                list_expression = [' '.join(x) + ' => ' + '_' + ''.join(x) + '_, ' + ', '.join(x) for x in list_expression]
+                str_expression = '\n'.join(list_expression)
+                outfile.write(str_expression)
         else:
             outfile.write('')
-
 
     map['settings']["analysis"]["filter"]["synonym"].update(
             {"synonyms_path" : os.path.join(es_data, synonym_file)})
@@ -326,7 +342,11 @@ def create_index(INDEX_NAME,
         if expression_file:
             print('Use expresion file %s'%expression_file)
             with open(os.path.join(user_data, expression_file), 'r') as f2:
-                outfile.write(f2.read())
+                # Create expression file from raw_expression
+                list_expression = [x.lower().split(' ') for x in str(f2.read()).split('\n') if x != '']
+                list_expression = [' '.join(x) + ' => ' + '_' + ''.join(x) + '_, ' + ', '.join(x) for x in list_expression]
+                str_expression = '\n'.join(list_expression)
+                outfile.write(str_expression)
         else:
             outfile.write('')
 

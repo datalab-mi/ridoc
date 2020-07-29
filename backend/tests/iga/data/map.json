@@ -101,10 +101,11 @@
             "lowercase",
             "french_elision",
             "icu_folding",
+            "french_stop",
             "more_stop",
             "minimal_stemmer",
             "my_multiplexer"
-            ]        
+            ]
         },
         "phonetic_analyser": {
           "tokenizer": "standard",
@@ -122,6 +123,16 @@
           "type": "custom",
           "tokenizer": "standard",
           "filter": ["lowercase","reverse"]
+        },
+        "clean_analyser": {
+          "tokenizer": "icu_tokenizer",
+          "filter": [
+            "lowercase",
+            "french_elision",
+            "icu_folding",
+            "french_stop",
+            "more_stop"
+          ]
         }
       }
     },
@@ -156,4 +167,3 @@
       }
   }
 }
-

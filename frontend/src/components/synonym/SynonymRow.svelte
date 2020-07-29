@@ -2,39 +2,24 @@
 
 	import { index_name, list_synonym  } from '../stores.js';
 
-	export let expressionA ;
-	export let expressionB ;
-
+	export let filename ;
+	export let item ;
+	export let meta ;
 	export let admin ;
 
 	let DeletePromise = new Promise(()=>{});
 	let UpdatePromise = new Promise(()=>{});
 	let readonly = true;
 	let send = false;
-	let meta;
 
-	$: meta = [
-						{
-							key: 'expresion1',
-							type: 'text',
-							placeholder: 'DNUM',
-							value: expressionA,
-							innerHtml: 'Acronyme: '
-						},
-						{
-							key: 'expresion2',
-							type: 'text',
-							placeholder: 'Direction du Numérique',
-							value: expressionB,
-							innerHtml: 'Signification: '
-						}
-					]
+	console.log(item)
+
 	async function synonym(method) {
 		let res;
-
-		res = await fetch(`/api/admin/synonym/${expressionA}`, {
+		res = await fetch(`/api/admin/synonym/${item.key}?filename=${filename}`, {
 				method: method,
-				body: JSON.stringify(meta)});
+				body: JSON.stringify(item)});
+
 		$list_synonym = await res.json();
 
 		console.log('Delete/update')
@@ -53,6 +38,7 @@
 		send = !send
 		readonly = !readonly
 		if (readonly & send){
+			console.log('PUT');
 			synonym('PUT')
 		}
 	}
@@ -64,14 +50,15 @@ function handleDelete() {
 </script>
 
 <div class="inline-flex w-full">
+	<div class="inline-flex w-5/6">
+	{#each meta as {key, type, placeholder, value, innerHtml, size} }
+		<div class="flex-grow w-{size} text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
+			<input type="search" bind:value={item[key]} readonly={readonly} >
+		</div>
+	{/each}
+	</div>
 
-	<div class="flex-initial w-1/5  text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
-		<input type='text' bind:value={expressionA} {readonly}>
-	</div>
-	<div class="flex-initial w-4/5 text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
-		<input type='text' bind:value={expressionB} {readonly}>
-	</div>
-	<div class="flex-initial w-1/5 text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
+	<div class="flex-initial w-1/6 text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
 		{#if (readonly & send) }
 			<button on:click={handleSave} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
 				<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>
