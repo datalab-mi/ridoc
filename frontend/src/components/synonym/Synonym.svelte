@@ -61,7 +61,7 @@ function handleAdd() {
 
 $: { // filter $list_synonym with filterRow on its keys (expressionA, expressionB...)
 	list_synonym_filter = $list_synonym.filter(
-		item => Object.keys(filterRow).every((key) => item[key].includes(filterRow[key]))
+		item => Object.keys(filterRow).every((key) => item[key].toLowerCase().includes(filterRow[key].toLowerCase()))
 	)
 }
 

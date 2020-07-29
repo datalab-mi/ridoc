@@ -23,6 +23,8 @@ ES_DATA = os.getenv('ES_DATA')
 
 GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
 EXPRESSION_FILE = os.getenv('EXPRESSION_FILE')
+RAW_EXPRESSION_FILE = os.getenv('RAW_EXPRESSION_FILE')
+
 MAPPING_FILE =  os.getenv('MAPPING_FILE')
 
 PDF_DIR = os.getenv('PDF_DIR')
@@ -43,14 +45,14 @@ def test_create_index():
             name=INDEX_NAME, ignore=[400, 404])
 
 
-    create_index(INDEX_NAME, USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, EXPRESSION_FILE )
+    create_index(INDEX_NAME, USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
 
 @pytest.mark.run(after='test_create_index')
 def test_inject_documents():
     inject_documents(INDEX_NAME, USER_DATA, PDF_DIR, JSON_DIR,
                 meta_path = META_DIR)
 
-    res = es.get(index=INDEX_NAME, id= doc_guyane_eau)
+    res = es.get(index=INDEX_NAME, id=doc_guyane_eau)
     assert len(str(res)) > 1000, res
 
 @pytest.mark.run(after='test_inject_documents')
@@ -83,22 +85,28 @@ def test_analyse_index():
 
     assert 'Jusqu' not in  str(res['tokens'])
     #import pdb; pdb.set_trace()
-    assert 'commandpubliqu' in  str(res['tokens']), 'expression not taken into account'
+    assert 'commandepublique' in  str(res['tokens']), 'expression not taken into account'
     assert 'command' in  str(res['tokens']), 'expression remove command!'
 
 @pytest.mark.run(after='test_inject_documents')
 def test_search():
     glossary_file = Path(USER_DATA) / GLOSSARY_FILE
-    expression_file = Path(USER_DATA) / EXPRESSION_FILE
+    expression_file = Path(USER_DATA) / RAW_EXPRESSION_FILE
 
     req = 'travail illegal'
     #import pdb; pdb.set_trace()
     time.sleep(2)
-    res= search(req, INDEX_NAME, str(glossary_file), str(expression_file))
+    res = search(req, INDEX_NAME, str(glossary_file), str(expression_file))
     #print(hits, length_req, bande)
     assert  res['hits'][0]['_id'] == 'BF2016-08-16010-dfci.pdf', 'Found to result %s'%hits[0]['_id']
     assert res['length'] == 3, res['length']
     assert not res['band']
+
+    # test expression
+    req = "chiffre d'affaire"
+    res= search(req, INDEX_NAME, str(glossary_file), str(expression_file))
+    #import pdb; pdb.set_trace()
+    assert res['hits'][0]['_score']  > 10, 'boosting no taken into account'
 
 """
 @pytest.mark.run(after='test_search')
@@ -198,7 +206,7 @@ def test_blue_green():
     assert new_index == INDEX_NAME + '_green', 'Alias get issue'
 
     create_index(new_index, USER_DATA, ES_DATA, MAPPING_FILE,
-                GLOSSARY_FILE, EXPRESSION_FILE)
+                GLOSSARY_FILE, RAW_EXPRESSION_FILE)
 
     # index time to green
     inject_documents(new_index, USER_DATA, PDF_DIR, JSON_DIR,

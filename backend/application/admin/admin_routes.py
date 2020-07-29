@@ -111,7 +111,7 @@ def index(index_name: str):
                  app.config['ES_DATA'],
                  app.config['MAPPING_FILE'],
                  app.config['GLOSSARY_FILE'],
-                 app.config['EXPRESSION_FILE'])
+                 app.config['RAW_EXPRESSION_FILE'])
 
     # inject only json
     META_DIR = Path(app.config['USER_DATA']) / app.config['META_DIR']
