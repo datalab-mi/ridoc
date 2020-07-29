@@ -106,38 +106,24 @@ def search():
 @common_bp.route('/synonym', methods=['GET'])
 def synonym():
     filename = request.args.get('filename', app.config['GLOSSARY_FILE'])
-    if filename == "glossaire":
-        synonym_file = Path(app.config['USER_DATA']) / app.config['GLOSSARY_FILE']
-    elif filename == "expression":
-        synonym_file = Path(app.config['USER_DATA']) / app.config['EXPRESSION_FILE']
+    synonym_file = Path(app.config['USER_DATA']) / (filename + '.txt')
+
+    if "glossaire" in filename:
+        names = ['expressionB','expressionA']
+        sep = ' => '
+    elif "expression" in filename:
+        names = ['expressionA']
+        sep = ';'
     else:
-        synonym_file = Path(app.config['USER_DATA']) / filename
+        return abort(501)
 
     if synonym_file.exists():
-        with synonym_file.open() as f:
-            content = f.read()
-        if content:
-            synonym_df = pd.read_csv(synonym_file, sep=' => ',header=None, names=['expressionB','expressionA']);
-            synonym_df['key'] = synonym_df.index + 1
-            #list_glossary = [x.split(' => ') for x in str(content).split(
-            #                        '\n') if '=>' in x]
-            #dic_dictionary = {key:value.replace('_','') for key,value in list_glossary}
-            return make_response(synonym_df.to_json(orient='records'), 200)
+        synonym_df = pd.read_csv(synonym_file, header=None, sep=sep, names=names);
+        synonym_df['key'] = synonym_df.index + 1
+        return make_response(synonym_df.to_json(orient='records'), 200)
 
     # In the other cases
-    return make_response('', 204)
-
-@common_bp.route('/expression', methods=['GET'])
-def expression():
-    expression_file = Path(app.config['USER_DATA']) / app.config['RAW_EXPRESSION_FILE']
-
-    if expression_file.exists():
-        expression_df = pd.read_csv(expression_file, header=None, names=['value']);
-        expression_df['key'] = expression_df.index
-        return make_response(expression_df.to_json(orient='records'), 200)
-
-    # In the other cases
-    return make_response('', 204)
+    return make_response('', 404)
 
 @common_bp.route('/suggest', methods=['POST'])
 def suggest():

@@ -9,7 +9,7 @@
 
 	let meta = [
 						{
-							key: 'expressionB',
+							key: 'expressionA',
 							type: 'text',
 							placeholder: 'INNOVATION',
 							value: '',
@@ -21,4 +21,4 @@
 
 </script>
 
-<Synonym {meta} filename='expression'/>
+<Synonym {meta} filename='raw_expression'/>
