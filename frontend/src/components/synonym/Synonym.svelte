@@ -2,16 +2,14 @@
 	import { index_name, list_synonym  } from '../stores.js';
 	import SynonymRow from './SynonymRow.svelte';
 	import VirtualList from '../VirtualList.svelte';
+  import { onDestroy } from 'svelte'
 
 	export let filename;
+	export let meta;
 
 	let GetPromise;
 	let PutPromise = new Promise(()=>{});
 
-	let list_synonym_filter;
-
-	let filterKey = '';
-	let filterValue = '';
 
 	let isAdd = false;
 	let readonly = true;
@@ -19,25 +17,13 @@
 
 	let start;
 	let end;
-	let meta = [
-						{
-							key: 'expresion1',
-							type: 'text',
-							placeholder: 'DNUM',
-							value: '',
-							innerHtml: 'Acronyme: '
-						},
-						{
-							key: 'expresion2',
-							type: 'text',
-							placeholder: 'Direction du Numérique',
-							value: '',
-							innerHtml: 'Signification: '
-						}
-					]
-
 	let key;
 
+	let list_synonym_filter;
+	let filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
+
+	const keys_to_keep = meta.map(item => item.key);
+	keys_to_keep.push('key') // Add row number to the list of key to keep
 
 	async function synonym(method) {
 		let res;
@@ -45,12 +31,13 @@
 			res = await fetch(`/api/common/synonym?filename=${filename}`,
 					{method: 'GET'});
 		} else if (method == 'PUT') {
-			key = filterKey
+			key = 0
 			res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
 					method: 'PUT',
-					body: JSON.stringify([{'value': filterKey}, {'value': filterValue}])});
+					body: JSON.stringify(filterRow)});
 		}
-		$list_synonym = await res.json();
+		let data = await res.json();
+		$list_synonym = data.map(element => Object.assign({}, ...keys_to_keep.map(key => ({[key]: element[key]}))))
 		if (res.ok)  {
 			return res.status
 		} else {
@@ -63,18 +50,23 @@
 
 function handleSubmit() {
 	PutPromise = synonym('PUT')
-	filterKey = ''
-	filterValue = ''
+	// reset filter
+	filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
+
 }
 
 function handleAdd() {
 	isAdd = !isAdd;
 }
 
-$: {
-	console.log($list_synonym.filter(item => typeof(item.value) == 'undefined'))
-	list_synonym_filter = $list_synonym.filter(item => (item.key.includes(filterKey)) & (item.value.includes(filterValue)))
+$: { // filter $list_synonym with filterRow on its keys (expressionA, expressionB...)
+	list_synonym_filter = $list_synonym.filter(
+		item => Object.keys(filterRow).every((key) => item[key].toLowerCase().includes(filterRow[key].toLowerCase()))
+	)
 }
+
+onDestroy(() => $list_synonym = [])
+
 
 </script>
 
@@ -84,16 +76,19 @@ $: {
 	<p>...Attente de la requête</p>
 	{:then status}
 
+
 		<div class="inline-flex bg-{(isAdd) ? 'white': 'gray'}-200 w-full">
-			<div class="flex-initial w-1/5 text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
-				<input type="search" bind:value={filterKey} placeholder={(isAdd) ? 'DNUM': 'recherche'} >
+			<div class="inline-flex w-5/6">
+			{#each meta as {key, type, placeholder, value, innerHtml, size} }
+				<div class="flex-grow w-{size} text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
+					<input type="search" bind:value={filterRow[key]} placeholder={(isAdd) ? placeholder: 'recherche'} >
+				</div>
+			{/each}
 			</div>
-			<div class="flex-initial w-4/5 text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
-				<input type="search" bind:value={filterValue} placeholder={(isAdd) ? 'Direction du numérique': 'recherche'} >
-			</div>
-			<div class="flex-initial w-1/5 px-4 py-2 m-2">
+
+			<div class="flex-initial w-1/6 px-4 py-2 m-2">
 				{#if (isAdd)}
-					{#if (filterKey != '') & (filterValue != '') }
+					{#if Object.keys(filterRow).every((key) => filterRow[key] != '') }
 						<button on:click={handleSubmit} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
 							<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
 							<span>SOUMETTRE</span>
@@ -116,65 +111,19 @@ $: {
 				</button>
 				{/if}
 			</div>
+
 		</div>
 
 		<VirtualList items={list_synonym_filter} let:item>
-			<SynonymRow expressionA={item.key} expressionB={item.value} />
+			<SynonymRow {filename} {item} {meta} />
 		</VirtualList>
 
 
-
 	{:catch error}
 		<p style="color: red">{error.message}</p>
 	{/await}
 
 </div>
-
-	<!--
-	{#if (isAdd)}
-		<div class='synonym-add'>
-
-		{#each meta as {key, type, placeholder, value, innerHtml}, i }
-			<label> {@html innerHtml}
-			<input type='text' bind:value={value} {placeholder}/>
-			</label>
-			<br>
-		{/each}
-
-		{#if meta.every((e) => e.value != '')}
-
-			<button on:click={handleSubmit} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-				<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
-				<span>SOUMETTRE</span>
-			</button>
-		{:else}
-			<button disabled class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-				<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
-				<span>SOUMETTRE</span>
-			</button>
-		{/if}
-	</div>
-	{/if}
-
-
-	{#await PutPromise}
-	{:then status}
-		{#if status == 201 }
-			<p style="color: green">{key} crée</p>
-		{:else if status == 200 }
-			<p style="color: blue" >{key} modifié</p>
-		{:else}
-			<p>Status {status} non connu</p>
-		{/if}
-	{:catch error}
-		<p style="color: red">{error.message}</p>
-	{/await}
-
-</div>
-//-->
-
-
-
 
 <style>
 

@@ -26,7 +26,7 @@ class Config:
     env_path = '/app/tests/iga/.env-iga'
     load_dotenv(dotenv_path=env_path)
     USER_DATA = getenv('USER_DATA')
-    NOM_INDEX = getenv('NOM_INDEX')
+    INDEX_NAME = getenv('INDEX_NAME')
     ES_DATA = getenv('ES_DATA')
     MAPPING_FILE = getenv('MAPPING_FILE')
     GLOSSARY_FILE = getenv('GLOSSARY_FILE')
