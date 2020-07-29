@@ -136,13 +136,15 @@ def synonym(key:int):
 
     if 'glossaire' in filename:
         names = ['expressionB','expressionA']
+        sep = ' => '
     elif 'expression' in filename:
-        names = ['key','value']
+        names = ['expressionA']
+        sep = ';'
     else:
         return abort(501)
 
     if synonym_file.exists():
-        synonym_df = pd.read_csv(synonym_file, sep=' => ',header=None, names=names);
+        synonym_df = pd.read_csv(synonym_file, header=None, sep=sep, names=names);
         synonym_df['key'] = synonym_df.index + 1
 
     else:
@@ -150,31 +152,32 @@ def synonym(key:int):
 
     if request.method == 'PUT':
         body = request.get_json(force=True)
-        expressionA = body.get('expressionA')
-        expressionB = body.get('expressionB')
-        if not expressionA or not expressionB:
+        if any([name not in body for name in names]):
             print('Missing keys')
             return  abort(500)
         else:
             if 'glossaire' in filename:
-                list_token = clean(expressionB, app.config['INDEX_NAME'])
-                expressionB = ' '.join(list_token)
-                if '_' not in expressionA:
-                    expressionA = '_' + expressionA.upper() + '_'
+                list_token = clean(body['expressionB'], app.config['INDEX_NAME'])
+                body['expressionB'] = ' '.join(list_token)
+                if '_' not in body['expressionA']:
+                    body['expressionA'] = '_' + body['expressionA'].upper() + '_'
 
             elif 'expression' in filename:
-                value = '_' + ''.join(list_token) + '_' + ', ' + ', '.join(list_token)
+                list_token = clean(body['expressionA'], app.config['INDEX_NAME'])
+                body['expressionA'] = ' '.join(list_token).upper()
             else:
                 return abort(501)
 
         if key in synonym_df['key'].tolist():
             status = 200 # update
-            synonym_df.loc[synonym_df['key'] == key, 'expressionB'] = expressionB
-            synonym_df.loc[synonym_df['key'] == key, 'expressionA'] = expressionA
+            # assign body value to dataframe
+            for name in names:
+                synonym_df.loc[synonym_df['key'] == key, name] = body[name]
 
         else:
+            body.update({'key': key})
             status = 201 # create
-            synonym_df = pd.concat([pd.DataFrame({'key': key, 'expressionA': expressionA,'expressionB': expressionB},index=[0]),
+            synonym_df = pd.concat([pd.DataFrame(body,index=[0]),
                                     synonym_df], ignore_index=True)
 
     elif request.method == 'DELETE':
@@ -183,14 +186,16 @@ def synonym(key:int):
             synonym_df = synonym_df[synonym_df['key'] != key]
         else:
             status = 404
+    #import pdb; pdb.set_trace()
     #synonym_df.to_csv(synonym_file, sep=str('=>'), header=False, index=False, encoding='utf-8')
-    synonym_df['key'] = synonym_df.index + 1
+    synonym_df['key'] = range(len(synonym_df))
+    synonym_df['key'] += 1
     if 'glossaire' in filename:
         synonym_file.write_text('\n'.join((synonym_df['expressionB'] + ' => ' + synonym_df['expressionA']).tolist()))
         return make_response(synonym_df.to_json(orient='records'), status)
 
     elif 'expression' in filename:
-        synonym_file.write_text('\n'.join((synonym_df['key'] + ' => ' + synonym_df['value']).tolist()))
+        synonym_file.write_text('\n'.join((synonym_df['expressionA']).tolist()))
         return make_response(synonym_df.to_json(orient='records'), status)
 
 @admin_bp.route("/expression/<key>", methods=["DELETE", "PUT"])

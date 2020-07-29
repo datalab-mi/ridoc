@@ -99,7 +99,7 @@ def test_synonym(client, app):
     filename = 'glossaire'
     synonym_file = Path(app.config['USER_DATA']) / (filename + '.txt')
     names = ['expressionB','expressionA']
-
+    sep = ' => '
     key = 0
     body = {"expressionA":"dnum","expressionB":"Direction du numérique"}
     res_body = {"expressionA":"_DNUM_","expressionB":"direction numerique"}
@@ -112,11 +112,12 @@ def test_synonym(client, app):
             data = json.dumps(body))
 
     assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
-    synonym_df = pd.read_csv(synonym_file, sep=' => ',header=None, names=names)
+    synonym_df = pd.read_csv(synonym_file, sep=sep,header=None, names=names)
     #import  pdb; pdb.set_trace()
     assert synonym_df.iloc[0].to_dict() == res_body
 
     # Delete synonym
+    key = 1
     with app.test_client() as c:
         resp = c.delete(
             '/admin/synonym/{key}?filename={filename}'.format(
@@ -124,6 +125,42 @@ def test_synonym(client, app):
             filename=filename))
 
     assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
-    synonym_df = pd.read_csv(synonym_file, sep=' => ',header=None, names=names)
+    synonym_df = pd.read_csv(synonym_file, sep=sep,header=None, names=names)
+    #import  pdb; pdb.set_trace()
+    assert synonym_df.iloc[0].to_dict() != res_body
+
+def test_expression(client, app):
+    # Add synonym
+    filename = 'raw_expression'
+    synonym_file = Path(app.config['USER_DATA']) / (filename + '.txt')
+    names = ['expressionA']
+    sep = ';'
+
+    key = 0
+    body = {"expressionA":"Direction du numérique"}
+    res_body = {"expressionA":"DIRECTION NUMERIQUE"}
+
+    with app.test_client() as c:
+        resp = c.put(
+            '/admin/synonym/{key}?filename={filename}'.format(
+            key=key,
+            filename=filename),
+            data = json.dumps(body))
+
+    assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
+    synonym_df = pd.read_csv(synonym_file, sep=sep,header=None, names=names)
+    #import  pdb; pdb.set_trace()
+    assert synonym_df.iloc[0].to_dict() == res_body
+
+    # Delete synonym
+    key = 1
+    with app.test_client() as c:
+        resp = c.delete(
+            '/admin/synonym/{key}?filename={filename}'.format(
+            key=key,
+            filename=filename))
+
+    assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
+    synonym_df = pd.read_csv(synonym_file, sep=sep,header=None, names=names)
     #import  pdb; pdb.set_trace()
     assert synonym_df.iloc[0].to_dict() != res_body

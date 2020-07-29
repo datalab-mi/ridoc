@@ -88,7 +88,7 @@ onDestroy(() => $list_synonym = [])
 
 			<div class="flex-initial w-1/6 px-4 py-2 m-2">
 				{#if (isAdd)}
-					{#if (filterKey != '') & (filterValue != '') }
+					{#if Object.keys(filterRow).every((key) => filterRow[key] != '') }
 						<button on:click={handleSubmit} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
 							<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
 							<span>SOUMETTRE</span>
