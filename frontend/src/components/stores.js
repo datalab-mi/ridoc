@@ -42,4 +42,3 @@ export const index_name = writable('iga')
 export const isReindex = writable(false)
 
 export const list_synonym = writable([])
-export const list_expression = writable([])
