@@ -2,6 +2,7 @@
 	import { index_name, list_synonym  } from '../stores.js';
 	import SynonymRow from './SynonymRow.svelte';
 	import VirtualList from '../VirtualList.svelte';
+  import { onDestroy } from 'svelte'
 
 	export let filename;
 	export let meta;
@@ -9,22 +10,20 @@
 	let GetPromise;
 	let PutPromise = new Promise(()=>{});
 
-	let list_synonym_filter;
 
-	let filterKey = '';
-	let filterValue = '';
-
-	let filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
-	console.log(filterRow)
 	let isAdd = false;
 	let readonly = true;
 	let send = false;
 
 	let start;
 	let end;
-
 	let key;
 
+	let list_synonym_filter;
+	let filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
+
+	const keys_to_keep = meta.map(item => item.key);
+	keys_to_keep.push('key') // Add row number to the list of key to keep
 
 	async function synonym(method) {
 		let res;
@@ -35,9 +34,10 @@
 			key = 0
 			res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
 					method: 'PUT',
-					body: JSON.stringify({'expressionA': filterKey, 'expressionB': filterValue})});
+					body: JSON.stringify(filterRow)});
 		}
-		$list_synonym = await res.json();
+		let data = await res.json();
+		$list_synonym = data.map(element => Object.assign({}, ...keys_to_keep.map(key => ({[key]: element[key]}))))
 		if (res.ok)  {
 			return res.status
 		} else {
@@ -50,19 +50,23 @@
 
 function handleSubmit() {
 	PutPromise = synonym('PUT')
-	filterKey = ''
-	filterValue = ''
+	// reset filter
+	filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
+
 }
 
 function handleAdd() {
 	isAdd = !isAdd;
 }
 
-$: {
+$: { // filter $list_synonym with filterRow on its keys (expressionA, expressionB...)
 	list_synonym_filter = $list_synonym.filter(
-		item => (item.expressionB.includes(filterRow.expressionB)))
-					//	(item.expressionA.includes(filterRow.expressionA)) &
+		item => Object.keys(filterRow).every((key) => item[key].includes(filterRow[key]))
+	)
 }
+
+onDestroy(() => $list_synonym = [])
+
 
 </script>
 
@@ -72,14 +76,17 @@ $: {
 	<p>...Attente de la requête</p>
 	{:then status}
 
+
 		<div class="inline-flex bg-{(isAdd) ? 'white': 'gray'}-200 w-full">
+			<div class="inline-flex w-5/6">
 			{#each meta as {key, type, placeholder, value, innerHtml, size} }
-				<div class="flex-initial w-{size} text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
+				<div class="flex-grow w-{size} text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
 					<input type="search" bind:value={filterRow[key]} placeholder={(isAdd) ? placeholder: 'recherche'} >
 				</div>
 			{/each}
+			</div>
 
-			<div class="flex-initial w-1/5 px-4 py-2 m-2">
+			<div class="flex-initial w-1/6 px-4 py-2 m-2">
 				{#if (isAdd)}
 					{#if (filterKey != '') & (filterValue != '') }
 						<button on:click={handleSubmit} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
@@ -108,7 +115,7 @@ $: {
 		</div>
 
 		<VirtualList items={list_synonym_filter} let:item>
-			<SynonymRow filename={filename} key={item.key} expressionA={item.expressionA} expressionB={item.expressionB} />
+			<SynonymRow {filename} {item} {meta} />
 		</VirtualList>
 
 
@@ -117,52 +124,6 @@ $: {
 	{/await}
 
 </div>
-
-	<!--
-	{#if (isAdd)}
-		<div class='synonym-add'>
-
-		{#each meta as {key, type, placeholder, value, innerHtml}, i }
-			<label> {@html innerHtml}
-			<input type='text' bind:value={value} {placeholder}/>
-			</label>
-			<br>
-		{/each}
-
-		{#if meta.every((e) => e.value != '')}
-
-			<button on:click={handleSubmit} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-				<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
-				<span>SOUMETTRE</span>
-			</button>
-		{:else}
-			<button disabled class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-				<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
-				<span>SOUMETTRE</span>
-			</button>
-		{/if}
-	</div>
-	{/if}
-
-
-	{#await PutPromise}
-	{:then status}
-		{#if status == 201 }
-			<p style="color: green">{key} crée</p>
-		{:else if status == 200 }
-			<p style="color: blue" >{key} modifié</p>
-		{:else}
-			<p>Status {status} non connu</p>
-		{/if}
-	{:catch error}
-		<p style="color: red">{error.message}</p>
-	{/await}
-
-</div>
-//-->
-
-
-
 
 <style>
 
