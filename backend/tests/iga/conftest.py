@@ -26,7 +26,7 @@ def client(app):
 @pytest.fixture
 def search_data():
     return dict(index_name=INDEX_NAME,
-                content='travail illegal',
+                content='foret',
                 author='GRANJEANT',
                 to_date='2017-06-06',
                 from_date='2015-06-06')
