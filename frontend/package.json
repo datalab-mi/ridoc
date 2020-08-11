@@ -1,7 +1,7 @@
 {
   "name": "browser",
   "description": "browser",
-  "version": "0.0.1",
+  "version": "0.1",
   "scripts": {
     "dev": "sapper dev",
     "dev:tailwindcss": "postcss static/tailwind.css -o static/main.css -w",

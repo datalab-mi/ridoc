@@ -1,6 +1,6 @@
 export APP = browser
 export APP_PATH := $(shell pwd)
-export APP_VERSION	:= 1.0
+export APP_VERSION	:= 0.1
 export DATA_PATH = ${APP_PATH}/backend/tests/iga/data
 #export APP_VERSION	:= $(shell git describe --tags || cat VERSION )
 
@@ -15,13 +15,13 @@ export DC_NETWORK := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]')
 export ES_HOST = elasticsearch
 export ES_PORT = 9200
 export ES_TIMEOUT = 60
-export ES_INDEX = deces
+export ES_INDEX = test
 export ES_DATA = ${APP_PATH}/esdata
 export ES_NODES = 1
 export ES_MEM = 1024m
 export ES_VERSION = 7.6.0
 
-export API_PATH = deces
+export API_PATH = test
 export ES_PROXY_PATH = /${API_PATH}/api/v0/search
 
 export NPM_REGISTRY = $(shell echo $$NPM_REGISTRY )
@@ -38,6 +38,9 @@ export FRONTEND = ${APP_PATH}/frontend
 export FRONTEND_DEV_HOST = frontend-development
 export FILE_FRONTEND_APP_VERSION = $(APP)-$(APP_VERSION)-frontend.tar.gz
 export PDFJS_VERSION=2.3.200
+export DC_BUILD_ARGS = --pull --no-cache
+export BUILD_DIR=${APP_PATH}/${APP}-build
+
 # nginx
 export NGINX = ${APP_PATH}/nginx
 export NGINX_TIMEOUT = 30
@@ -157,8 +160,8 @@ test:
 #  NGINX     #
 ##############
 
-nginx: network
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-nginx.yml up -d #--build --force-recreate
+nginx-dev: network
+	${DC} -f ${DC_FILE}-nginx-dev.yml up -d #--build --force-recreate
 
 ##############
 #  Frontend  #
@@ -166,35 +169,39 @@ nginx: network
 
 
 frontend-dev:
-	@echo docker-compose run ${APP} frontend #--build
-	@echo ${DATA_PATH}
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml up -d # --build --force-recreate
-	$(DC) -f ${DC_FILE}-frontend.yml exec -d frontend npm run dev:tailwindcss
+	@echo docker-compose run ${APP} frontend dev #--build
+	${DC} -f ${DC_FILE}-frontend-dev.yml up -d # --build --force-recreate
+	$(DC) -f ${DC_FILE}-frontend-dev.yml exec -d frontend-dev npm run dev:tailwindcss
+
 frontend-exec:
-	$(DC) -f ${DC_FILE}-frontend.yml exec frontend sh
+	$(DC) -f ${DC_FILE}-frontend-dev.yml exec frontend-dev sh
 
 frontend-dev-stop:
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml down
-
-frontend-stop:
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down
+	${DC} -f ${DC_FILE}-frontend-dev.yml down
 
 ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION):
-	( cd ${FRONTEND} && tar -zcvf $(FILE_FRONTEND_APP_VERSION) --exclude ${APP}.tar.gz \
-		.eslintrc.js \
-		rollup.config.js \
-        src \
-        public )
+	( cd ${FRONTEND} && tar -zcvf $(FILE_FRONTEND_APP_VERSION) __sapper__/export/  )
 
 frontend-check-build:
-	${DC} -f $(DC_FILE)-build.yml config -q
+	${DC} -f $(DC_FILE)-frontend-build.yml config -q
 
 frontend-build-dist: ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION) frontend-check-build
 	@echo building ${APP} frontend in ${FRONTEND}
-	@export EXEC_ENV=prod; ${DC} -f $(DC_FILE)-build.yml build $(DC_BUILD_ARGS)
+	${DC} -f $(DC_FILE)-frontend-build.yml exec frontend npx sapper export
+	${DC} -f $(DC_FILE)-frontend-build.yml exec frontend tar -zcvf $(FILE_FRONTEND_APP_VERSION) __sapper__/export/
 
-dev: network frontend-stop frontend-dev
+frontend-export:
+	${DC} -f $(DC_FILE)-frontend-build.yml config -q
 
-up: network frontend-dev backend-dev elasticsearch nginx
+nginx-check-build:
+	${DC} -f $(DC_RUN_NGINX_FRONTEND) config -q
+
+nginx-build: nginx-check-build
+	@echo building ${APP} nginx
+	cp $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION) ${NGINX}/
+	${DC} -f $(DC_RUN_NGINX_FRONTEND) build $(DC_BUILD_ARGS)
+
+
+dev: network frontend-dev backend-dev elasticsearch nginx
 
 down: frontend-dev-stop backend-dev-stop elasticsearch-stop nginx-stop
