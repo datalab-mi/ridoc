@@ -34,5 +34,5 @@ CMD [ "npm", "run","dev" ]
 # Step 3:   "build" target     #
 ################################
 FROM base as build
-RUN npm run build
-CMD ["npx", "sapper", "export"]
+CMD ["npm", "run", "build"]
+#CMD ["npx", "sapper", "export"]

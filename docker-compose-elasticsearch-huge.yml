@@ -3,7 +3,7 @@ version: '2'
 services:
   elasticsearch:
     #image: docker.elastic.co/elasticsearch/elasticsearch-oss:${ES_VERSION}
-    container_name: ${DC_PREFIX}-elasticsearch
+    container_name: ${ES_HOST}
     build:
       context: ./elasticsearch
       dockerfile: Dockerfile

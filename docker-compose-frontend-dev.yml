@@ -15,7 +15,7 @@ services:
       - NODE_ENV=development
       - SKIP_PREFLIGHT_CHECK=true
 
-    image: ${APP}-frontend-dev:${APP_VERSION}
+    image: ${APP}-frontend-dev
     container_name: ${APP}-frontend-dev
     volumes:
       - ${FRONTEND}/src:/app/src

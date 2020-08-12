@@ -13,8 +13,12 @@ services:
 
     image: ${APP}-frontend-build:${APP_VERSION}
     container_name: ${APP}-frontend-build
-
     environment:
       - http_proxy
       - https_proxy
       - no_proxy
+
+networks:
+  default:
+    external:
+      name: ${DC_NETWORK}

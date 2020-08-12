@@ -1,19 +1,29 @@
-version: '2'
-
+version: '3.4'
 services:
-  nginx:
+  nginx-production:
+    image: ${APP}-nginx-production:${APP_VERSION}
     build:
       context: ${NGINX}
+      target: production
       dockerfile: Dockerfile
       args:
-        http_proxy: ${http_proxy}
-        https_proxy: ${https_proxy}
-        no_proxy: ${no_proxy}
-    container_name: ${APP}-nginx-${EXEC_ENV}
+        app_name: ${APP}
+        app_ver: ${APP_VERSION}
+    container_name: ${DC_PREFIX}-nginx-production
+    environment:
+      - APP
+      - ES_PROXY_PATH
+      - ES_HOST
+      - ES_INDEX
+      - ES_PORT
+      - BACKEND_HOST
+      - BACKEND_PORT
+      - PORT
     ports:
       - "80:80"
+    #restart: always
 
 networks:
   default:
     external:
-      name: browser
+      name: ${DC_NETWORK}

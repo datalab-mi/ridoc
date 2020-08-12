@@ -10,9 +10,10 @@ export DC_DIR=${APP_PATH}
 export DC_FILE=${DC_DIR}/docker-compose
 export DC_PREFIX := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]' | tr '_' '-')
 export DC_NETWORK := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]')
+export DC_BUILD_ARGS = --pull --no-cache
 
 # elasticsearch defaut configuration
-export ES_HOST = elasticsearch
+export ES_HOST = ${APP}-elasticsearch
 export ES_PORT = 9200
 export ES_TIMEOUT = 60
 export ES_INDEX = test
@@ -30,18 +31,20 @@ export NPM_VERBOSE = 1
 # BACKEND dir
 export BACKEND=${APP_PATH}/backend
 export BACKEND_PORT=5000
-export BACKEND_HOST=backend
+export BACKEND_HOST = ${APP}-backend
 
 # frontend dir
 export FRONTEND_PORT=3000
 export FRONTEND = ${APP_PATH}/frontend
 export FRONTEND_DEV_HOST = frontend-development
 export FILE_FRONTEND_APP_VERSION = $(APP)-$(APP_VERSION)-frontend.tar.gz
-export PDFJS_VERSION=2.3.200
-export DC_BUILD_ARGS = --pull --no-cache
-export BUILD_DIR=${APP_PATH}/${APP}-build
+export FILE_FRONTEND_DIST_APP_VERSION = $(APP)-$(APP_VERSION)-frontend-dist.tar.gz
+export FILE_FRONTEND_DIST_LATEST_VERSION = $(APP)-latest-frontend-dist.tar.gz
 
+export PDFJS_VERSION=2.3.200
+export BUILD_DIR = ${APP_PATH}/${APP}-build
 # nginx
+export PORT = 80
 export NGINX = ${APP_PATH}/nginx
 export NGINX_TIMEOUT = 30
 export API_USER_LIMIT_RATE=1r/s
@@ -71,7 +74,7 @@ export
 #endif
 
 #############
-#  Network  #
+#  Network  #npx sapper export
 #############
 
 network-stop:
@@ -81,7 +84,7 @@ network:
 	@docker network create ${DC_NETWORK_OPT} ${DC_NETWORK} 2> /dev/null; true
 
 
-# Elasticsearch
+# Elasticsearchnpx sapper export
 
 elasticsearch: network
 	# vm_max
@@ -170,7 +173,7 @@ nginx-dev: network
 
 frontend-dev:
 	@echo docker-compose run ${APP} frontend dev #--build
-	${DC} -f ${DC_FILE}-frontend-dev.yml up -d # --build --force-recreate
+	${DC} -f ${DC_FILE}-frontend-dev.yml up -d  #--build --force-recreate
 	$(DC) -f ${DC_FILE}-frontend-dev.yml exec -d frontend-dev npm run dev:tailwindcss
 
 frontend-exec:
@@ -178,6 +181,18 @@ frontend-exec:
 
 frontend-dev-stop:
 	${DC} -f ${DC_FILE}-frontend-dev.yml down
+
+###############
+# Build Stage #
+###############
+
+build: frontend-build nginx-build
+
+build-dir:
+	@if [ ! -d "$(BUILD_DIR)" ] ; then mkdir -p $(BUILD_DIR) ; fi
+
+build-dir-clean:
+	@if [ -d "$(BUILD_DIR)" ] ; then (rm -rf $(BUILD_DIR) > /dev/null 2>&1) ; fi
 
 ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION):
 	( cd ${FRONTEND} && tar -zcvf $(FILE_FRONTEND_APP_VERSION) __sapper__/export/  )
@@ -187,20 +202,38 @@ frontend-check-build:
 
 frontend-build-dist: ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION) frontend-check-build
 	@echo building ${APP} frontend in ${FRONTEND}
-	${DC} -f $(DC_FILE)-frontend-build.yml exec frontend npx sapper export
-	${DC} -f $(DC_FILE)-frontend-build.yml exec frontend tar -zcvf $(FILE_FRONTEND_APP_VERSION) __sapper__/export/
+	${DC} -f  $(DC_FILE)-frontend-build.yml  build $(DC_BUILD_ARGS)
+
+$(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION): build-dir
+	${DC} -f $(DC_FILE)-frontend-build.yml run -T --rm frontend-build  sh  -c "npm run export > /dev/null 2>&1 && tar czf - __sapper__/export/ -C /app" > $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION)
+	cp $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION) $(BUILD_DIR)/$(FILE_FRONTEND_DIST_LATEST_VERSION)
+
+
+frontend-build: network frontend-build-dist $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION)
+
+frontend-clean-dist:
+	@rm -rf ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION) > /dev/null 2>&1 || true
+
+frontend-clean-dist-archive:
+	@rm -rf ${FRONTEND}/$(FILE_FRONTEND_DIST_APP_VERSION) > /dev/null 2>&1 || true
+	@rm -rf ${NGINX}/$(FILE_FRONTEND_DIST_APP_VERSION) > /dev/null 2>&1 || true
 
 frontend-export:
 	${DC} -f $(DC_FILE)-frontend-build.yml config -q
 
 nginx-check-build:
-	${DC} -f $(DC_RUN_NGINX_FRONTEND) config -q
+	${DC} -f $(DC_FILE)-nginx.yml config -q
 
 nginx-build: nginx-check-build
 	@echo building ${APP} nginx
 	cp $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION) ${NGINX}/
-	${DC} -f $(DC_RUN_NGINX_FRONTEND) build $(DC_BUILD_ARGS)
+	${DC} -f $(DC_FILE)-nginx.yml build $(DC_BUILD_ARGS)
 
+nginx:
+	${DC} -f $(DC_FILE)-nginx.yml up -d
+
+nginx-exec:
+	${DC} -f $(DC_FILE)-nginx.yml exec nginx-production sh
 
 dev: network frontend-dev backend-dev elasticsearch nginx
 
