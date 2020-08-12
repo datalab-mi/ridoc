@@ -9,14 +9,15 @@ services:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
         no_proxy: ${no_proxy}
-    image: ${APP}-backend-${EXEC_ENV}:${APP_VERSION}
-    container_name: ${APP}-backend-${EXEC_ENV}
+    image: ${BACKEND_HOST}:${APP_VERSION}
+    container_name: ${BACKEND_HOST}
     volumes:
       - ${BACKEND}/:/app/
       - ${DATA_PATH}:/data/user
       - ${ES_DATA}/extra:/usr/share/elasticsearch/data/extra
-    ports:
-      - "${BACKEND_PORT}:5000"
+    expose:
+      - "${BACKEND_PORT}"
+    entrypoint: ./start.sh ${EXEC_ENV}
     environment:
       BACKEND_PORT: ${BACKEND_PORT}
   tika:

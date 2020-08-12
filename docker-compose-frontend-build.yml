@@ -1,0 +1,23 @@
+version: '3.4'
+services:
+  frontend-build:
+    build:
+      context: ${FRONTEND}
+      dockerfile: Dockerfile
+      target: build
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+        no_proxy: ${no_proxy}
+        PDFJS_VERSION: ${PDFJS_VERSION}
+    image: ${APP}-frontend-build:${APP_VERSION}
+    container_name: ${APP}-frontend-build
+    environment:
+      - http_proxy
+      - https_proxy
+      - no_proxy
+
+networks:
+  default:
+    external:
+      name: ${DC_NETWORK}

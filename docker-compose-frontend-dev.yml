@@ -1,10 +1,10 @@
-version: '2'
-
+version: '3.4'
 services:
-  frontend:
+  frontend-dev:
     build:
       context: ${FRONTEND}
       dockerfile: Dockerfile
+      target: dev
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
@@ -14,9 +14,8 @@ services:
     environment:
       - NODE_ENV=development
       - SKIP_PREFLIGHT_CHECK=true
-
-    #image: ${APP}-frontend-${EXEC_ENV}:${APP_VERSION}
-    container_name: ${APP}-frontend-${EXEC_ENV}
+    image: ${FRONTEND_DEV_HOST}
+    container_name: ${FRONTEND_DEV_HOST}
     volumes:
       - ${FRONTEND}/src:/app/src
       - ${DATA_PATH}:/app/public/user
@@ -26,6 +25,11 @@ services:
       - "35729:35729"
       - "3572:3572"
       - "10000:10000"
+
+    environment:
+      - http_proxy
+      - https_proxy
+      - no_proxy
 
 networks:
   default:

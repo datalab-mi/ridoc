@@ -1,6 +1,6 @@
 export APP = browser
 export APP_PATH := $(shell pwd)
-export APP_VERSION	:= 1.0
+export APP_VERSION	:= 0.1
 export DATA_PATH = ${APP_PATH}/backend/tests/iga/data
 #export APP_VERSION	:= $(shell git describe --tags || cat VERSION )
 
@@ -10,18 +10,19 @@ export DC_DIR=${APP_PATH}
 export DC_FILE=${DC_DIR}/docker-compose
 export DC_PREFIX := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]' | tr '_' '-')
 export DC_NETWORK := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]')
+export DC_BUILD_ARGS = --pull --no-cache
 
 # elasticsearch defaut configuration
-export ES_HOST = elasticsearch
+export ES_HOST = ${APP}-elasticsearch
 export ES_PORT = 9200
 export ES_TIMEOUT = 60
-export ES_INDEX = deces
+export ES_INDEX = test
 export ES_DATA = ${APP_PATH}/esdata
 export ES_NODES = 1
 export ES_MEM = 1024m
 export ES_VERSION = 7.6.0
 
-export API_PATH = deces
+export API_PATH = test
 export ES_PROXY_PATH = /${API_PATH}/api/v0/search
 
 export NPM_REGISTRY = $(shell echo $$NPM_REGISTRY )
@@ -30,15 +31,20 @@ export NPM_VERBOSE = 1
 # BACKEND dir
 export BACKEND=${APP_PATH}/backend
 export BACKEND_PORT=5000
-export BACKEND_HOST=backend
+export BACKEND_HOST = ${APP}-backend
 
 # frontend dir
 export FRONTEND_PORT=3000
 export FRONTEND = ${APP_PATH}/frontend
-export FRONTEND_DEV_HOST = frontend-development
+export FRONTEND_DEV_HOST = frontend-dev
 export FILE_FRONTEND_APP_VERSION = $(APP)-$(APP_VERSION)-frontend.tar.gz
+export FILE_FRONTEND_DIST_APP_VERSION = $(APP)-$(APP_VERSION)-frontend-dist.tar.gz
+export FILE_FRONTEND_DIST_LATEST_VERSION = $(APP)-latest-frontend-dist.tar.gz
+
 export PDFJS_VERSION=2.3.200
+export BUILD_DIR = ${APP_PATH}/${APP}-build
 # nginx
+export PORT = 80
 export NGINX = ${APP_PATH}/nginx
 export NGINX_TIMEOUT = 30
 export API_USER_LIMIT_RATE=1r/s
@@ -68,7 +74,7 @@ export
 #endif
 
 #############
-#  Network  #
+#  Network  #npx sapper export
 #############
 
 network-stop:
@@ -78,7 +84,7 @@ network:
 	@docker network create ${DC_NETWORK_OPT} ${DC_NETWORK} 2> /dev/null; true
 
 
-# Elasticsearch
+# Elasticsearchnpx sapper export
 
 elasticsearch: network
 	# vm_max
@@ -122,7 +128,7 @@ backend/.env:
 backend-dev: network backend/.env
 	@echo docker-compose up backend for dev
 	#@export ${DC} -f ${DC_FILE}.yml up -d --build --force-recreate 2>&1 | grep -v orphan
-	@export EXEC_ENV=dev;${DC} -f ${DC_FILE}.yml up -d #--build #--force-recreate
+	@export EXEC_ENV=development;${DC} -f ${DC_FILE}.yml up -d --build #--force-recreate
 
 backend-dev-stop:
 	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down #--remove-orphan
@@ -157,8 +163,18 @@ test:
 #  NGINX     #
 ##############
 
-nginx: network
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-nginx.yml up -d #--build --force-recreate
+nginx-dev: network
+	${DC} -f ${DC_FILE}-nginx-dev.yml up -d --build --force-recreate
+nginx-dev-stop: network
+	${DC} -f ${DC_FILE}-nginx-dev.yml up -d --build --force-recreate
+
+nginx:
+	${DC} -f $(DC_FILE)-nginx.yml up -d
+nginx-stop:
+	${DC} -f $(DC_FILE)-nginx.yml down
+
+nginx-exec:
+	${DC} -f $(DC_FILE)-nginx-dev.yml exec nginx-production sh
 
 ##############
 #  Frontend  #
@@ -166,35 +182,69 @@ nginx: network
 
 
 frontend-dev:
-	@echo docker-compose run ${APP} frontend #--build
-	@echo ${DATA_PATH}
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml up -d # --build --force-recreate
-	$(DC) -f ${DC_FILE}-frontend.yml exec -d frontend npm run dev:tailwindcss
+	@echo docker-compose run ${APP} frontend dev #--build
+	${DC} -f ${DC_FILE}-frontend-dev.yml up -d  #--build --force-recreate
+	$(DC) -f ${DC_FILE}-frontend-dev.yml exec -d frontend-dev npm run dev:tailwindcss
+
 frontend-exec:
-	$(DC) -f ${DC_FILE}-frontend.yml exec frontend sh
+	$(DC) -f ${DC_FILE}-frontend-dev.yml exec frontend-dev sh
 
 frontend-dev-stop:
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}-frontend.yml down
+	${DC} -f ${DC_FILE}-frontend-dev.yml down
 
-frontend-stop:
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down
+###############
+# Build Stage #
+###############
+
+build: frontend-build nginx-build
+
+build-dir:
+	@if [ ! -d "$(BUILD_DIR)" ] ; then mkdir -p $(BUILD_DIR) ; fi
+
+build-dir-clean:
+	@if [ -d "$(BUILD_DIR)" ] ; then (rm -rf $(BUILD_DIR) > /dev/null 2>&1) ; fi
 
 ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION):
-	( cd ${FRONTEND} && tar -zcvf $(FILE_FRONTEND_APP_VERSION) --exclude ${APP}.tar.gz \
-		.eslintrc.js \
-		rollup.config.js \
-        src \
-        public )
+	( cd ${FRONTEND} && tar -zcvf $(FILE_FRONTEND_APP_VERSION) __sapper__/export/  )
 
 frontend-check-build:
-	${DC} -f $(DC_FILE)-build.yml config -q
+	${DC} -f $(DC_FILE)-frontend-build.yml config -q
 
 frontend-build-dist: ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION) frontend-check-build
 	@echo building ${APP} frontend in ${FRONTEND}
-	@export EXEC_ENV=prod; ${DC} -f $(DC_FILE)-build.yml build $(DC_BUILD_ARGS)
+	${DC} -f  $(DC_FILE)-frontend-build.yml  build $(DC_BUILD_ARGS)
 
-dev: network frontend-stop frontend-dev
+$(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION): build-dir
+	${DC} -f $(DC_FILE)-frontend-build.yml run -T --rm frontend-build  sh  -c "npm run export > /dev/null 2>&1 && tar czf - __sapper__/export/ -C /app" > $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION)
+	cp $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION) $(BUILD_DIR)/$(FILE_FRONTEND_DIST_LATEST_VERSION)
 
-up: network frontend-dev backend-dev elasticsearch nginx
 
-down: frontend-dev-stop backend-dev-stop elasticsearch-stop nginx-stop
+frontend-build: network frontend-build-dist $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION)
+
+frontend-clean-dist:
+	@rm -rf ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION) > /dev/null 2>&1 || true
+
+frontend-clean-dist-archive:
+	@rm -rf ${FRONTEND}/$(FILE_FRONTEND_DIST_APP_VERSION) > /dev/null 2>&1 || true
+	@rm -rf ${NGINX}/$(FILE_FRONTEND_DIST_APP_VERSION) > /dev/null 2>&1 || true
+
+frontend-export:
+	${DC} -f $(DC_FILE)-frontend-build.yml config -q
+
+nginx-check-build:
+	${DC} -f $(DC_FILE)-nginx.yml config -q
+
+nginx-build: nginx-check-build
+	@echo building ${APP} nginx
+	cp $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION) ${NGINX}/
+	${DC} -f $(DC_FILE)-nginx.yml build $(DC_BUILD_ARGS)
+
+
+###############
+# General 	  #
+###############
+start: elasticsearch backend-start nginx
+stop: nginx-stop backend-stop elasticsearch-stop
+
+dev: network frontend-dev backend-dev elasticsearch nginx-dev
+down: frontend-dev-stop backend-dev-stop elasticsearch-stop nginx-dev-stop

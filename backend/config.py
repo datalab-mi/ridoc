@@ -23,6 +23,9 @@ class Config:
     COMPRESSOR_DEBUG = environ.get('COMPRESSOR_DEBUG')
 
     """
+
+    FLASK_ENV = environ.get('FLASK_ENV','debug')
+
     env_path = '/app/tests/iga/.env-iga'
     load_dotenv(dotenv_path=env_path)
     USER_DATA = getenv('USER_DATA')
