@@ -128,7 +128,7 @@ backend/.env:
 backend-dev: network backend/.env
 	@echo docker-compose up backend for dev
 	#@export ${DC} -f ${DC_FILE}.yml up -d --build --force-recreate 2>&1 | grep -v orphan
-	@export EXEC_ENV=dev;${DC} -f ${DC_FILE}.yml up -d #--build #--force-recreate
+	@export EXEC_ENV=development;${DC} -f ${DC_FILE}.yml up -d --build #--force-recreate
 
 backend-dev-stop:
 	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down #--remove-orphan
@@ -165,6 +165,16 @@ test:
 
 nginx-dev: network
 	${DC} -f ${DC_FILE}-nginx-dev.yml up -d --build --force-recreate
+nginx-dev-stop: network
+	${DC} -f ${DC_FILE}-nginx-dev.yml up -d --build --force-recreate
+
+nginx:
+	${DC} -f $(DC_FILE)-nginx.yml up -d
+nginx-stop:
+	${DC} -f $(DC_FILE)-nginx.yml down
+
+nginx-exec:
+	${DC} -f $(DC_FILE)-nginx-dev.yml exec nginx-production sh
 
 ##############
 #  Frontend  #
@@ -229,12 +239,12 @@ nginx-build: nginx-check-build
 	cp $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION) ${NGINX}/
 	${DC} -f $(DC_FILE)-nginx.yml build $(DC_BUILD_ARGS)
 
-nginx:
-	${DC} -f $(DC_FILE)-nginx.yml up -d
 
-nginx-exec:
-	${DC} -f $(DC_FILE)-nginx-dev.yml exec nginx-production sh
+###############
+# General 	  #
+###############
+start: elasticsearch backend-start nginx
+stop: nginx-stop backend-stop elasticsearch-stop
 
-dev: network frontend-dev backend-dev elasticsearch nginx
-
-down: frontend-dev-stop backend-dev-stop elasticsearch-stop nginx-stop
+dev: network frontend-dev backend-dev elasticsearch nginx-dev
+down: frontend-dev-stop backend-dev-stop elasticsearch-stop nginx-dev-stop

@@ -17,7 +17,7 @@ services:
       - ${ES_DATA}/extra:/usr/share/elasticsearch/data/extra
     expose:
       - "${BACKEND_PORT}"
-
+    entrypoint: ./start.sh ${EXEC_ENV}
     environment:
       BACKEND_PORT: ${BACKEND_PORT}
   tika:
