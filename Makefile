@@ -36,7 +36,7 @@ export BACKEND_HOST = ${APP}-backend
 # frontend dir
 export FRONTEND_PORT=3000
 export FRONTEND = ${APP_PATH}/frontend
-export FRONTEND_DEV_HOST = frontend-development
+export FRONTEND_DEV_HOST = frontend-dev
 export FILE_FRONTEND_APP_VERSION = $(APP)-$(APP_VERSION)-frontend.tar.gz
 export FILE_FRONTEND_DIST_APP_VERSION = $(APP)-$(APP_VERSION)-frontend-dist.tar.gz
 export FILE_FRONTEND_DIST_LATEST_VERSION = $(APP)-latest-frontend-dist.tar.gz
@@ -164,7 +164,7 @@ test:
 ##############
 
 nginx-dev: network
-	${DC} -f ${DC_FILE}-nginx-dev.yml up -d #--build --force-recreate
+	${DC} -f ${DC_FILE}-nginx-dev.yml up -d --build --force-recreate
 
 ##############
 #  Frontend  #
@@ -233,7 +233,7 @@ nginx:
 	${DC} -f $(DC_FILE)-nginx.yml up -d
 
 nginx-exec:
-	${DC} -f $(DC_FILE)-nginx.yml exec nginx-production sh
+	${DC} -f $(DC_FILE)-nginx-dev.yml exec nginx-production sh
 
 dev: network frontend-dev backend-dev elasticsearch nginx
 

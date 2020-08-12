@@ -10,7 +10,6 @@ services:
         https_proxy: ${https_proxy}
         no_proxy: ${no_proxy}
         PDFJS_VERSION: ${PDFJS_VERSION}
-
     image: ${APP}-frontend-build:${APP_VERSION}
     container_name: ${APP}-frontend-build
     environment:

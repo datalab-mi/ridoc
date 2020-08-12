@@ -22,7 +22,7 @@ ARG app_name
 ARG app_ver
 
 COPY default-dev.template /etc/nginx/conf.d/default.template
-COPY nginx-dev.template /etc/nginx/nginx.template
+#COPY nginx-dev.template /etc/nginx/nginx.template
 
 CMD ["/home/nginx/run.sh"]
 ################################

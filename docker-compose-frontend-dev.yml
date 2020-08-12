@@ -14,9 +14,8 @@ services:
     environment:
       - NODE_ENV=development
       - SKIP_PREFLIGHT_CHECK=true
-
-    image: ${APP}-frontend-dev
-    container_name: ${APP}-frontend-dev
+    image: ${FRONTEND_DEV_HOST}
+    container_name: ${FRONTEND_DEV_HOST}
     volumes:
       - ${FRONTEND}/src:/app/src
       - ${DATA_PATH}:/app/public/user
