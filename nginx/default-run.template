@@ -12,12 +12,13 @@ server {
 
   location / {
     alias /usr/share/nginx/html/export/;
-    try_files $uri $uri/ @rewrites;
+    try_files $uri $uri/ /index.html$is_args$args;
   }
 
-  location @rewrites {
-    rewrite ^(.+)$ /index.html last;
+  location ~* ^.+\.(?:pdf)$ {
+    alias /usr/share/nginx/html/pdfjs/viewer.html?file=/app/public/user/$uri;
   }
+
 
   location /elasticsearch/ {
       proxy_pass http://elasticsearch/;

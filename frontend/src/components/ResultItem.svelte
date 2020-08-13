@@ -12,7 +12,8 @@
 	export let highlight = {'content':''};
 
 	$: filename = _id.replace(/\+/g, " ")
-	$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
+	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
+	$: url = `/api/common/files/pdf/${filename}`
 
 	let promiseDelete = new Promise(()=>{});
 	let promiseDeleteIndex = new Promise(()=>{});

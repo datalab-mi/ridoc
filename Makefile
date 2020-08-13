@@ -166,15 +166,15 @@ test:
 nginx-dev: network
 	${DC} -f ${DC_FILE}-nginx-dev.yml up -d --build --force-recreate
 nginx-dev-stop: network
-	${DC} -f ${DC_FILE}-nginx-dev.yml up -d --build --force-recreate
+	${DC} -f ${DC_FILE}-nginx-dev.yml down
 
-nginx:
+nginx: network
 	${DC} -f $(DC_FILE)-nginx.yml up -d
 nginx-stop:
 	${DC} -f $(DC_FILE)-nginx.yml down
 
 nginx-exec:
-	${DC} -f $(DC_FILE)-nginx-dev.yml exec nginx-production sh
+	${DC} -f $(DC_FILE)-nginx.yml exec nginx-production sh
 
 ##############
 #  Frontend  #

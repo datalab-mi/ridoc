@@ -18,7 +18,6 @@ services:
     container_name: ${FRONTEND_DEV_HOST}
     volumes:
       - ${FRONTEND}/src:/app/src
-      - ${DATA_PATH}:/app/public/user
       - ${ES_DATA}/extra:/usr/share/elasticsearch/data/extra
     ports:
       - "${FRONTEND_PORT}:3000"
