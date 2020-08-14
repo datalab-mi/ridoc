@@ -204,13 +204,11 @@ build-dir:
 build-dir-clean:
 	@if [ -d "$(BUILD_DIR)" ] ; then (rm -rf $(BUILD_DIR) > /dev/null 2>&1) ; fi
 
-${FRONTEND}/$(FILE_FRONTEND_APP_VERSION):
-	( cd ${FRONTEND} && tar -zcvf $(FILE_FRONTEND_APP_VERSION) __sapper__/export/  )
 
 frontend-check-build:
 	${DC} -f $(DC_FILE)-frontend-build.yml config -q
 
-frontend-build-dist: ${FRONTEND}/$(FILE_FRONTEND_APP_VERSION) frontend-check-build
+frontend-build-dist:  frontend-check-build
 	@echo building ${APP} frontend in ${FRONTEND}
 	${DC} -f  $(DC_FILE)-frontend-build.yml  build $(DC_BUILD_ARGS)
 
@@ -228,8 +226,6 @@ frontend-clean-dist-archive:
 	@rm -rf ${FRONTEND}/$(FILE_FRONTEND_DIST_APP_VERSION) > /dev/null 2>&1 || true
 	@rm -rf ${NGINX}/$(FILE_FRONTEND_DIST_APP_VERSION) > /dev/null 2>&1 || true
 
-frontend-export:
-	${DC} -f $(DC_FILE)-frontend-build.yml config -q
 
 nginx-check-build:
 	${DC} -f $(DC_FILE)-nginx.yml config -q
