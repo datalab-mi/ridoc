@@ -41,7 +41,7 @@ def test_create_index():
     # Clear
     for i in range(3): # to be sure alias and indexes are removed
         es.indices.delete(index=INDEX_NAME, ignore=[400, 404])
-        es.indices.delete_alias(index=[INDEX_NAME + '_blue', INDEX_NAME + '_green'],
+        es.indices.delete_alias(index='_all',
             name=INDEX_NAME, ignore=[400, 404])
 
 

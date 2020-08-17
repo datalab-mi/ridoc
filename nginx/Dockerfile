@@ -47,7 +47,7 @@ ARG app_ver
 VOLUME /var/log/nginx
 
 COPY default-run.template /etc/nginx/conf.d/default.template
-#COPY nginx-run.template /etc/nginx/nginx.template
+COPY nginx-run.template /etc/nginx/nginx.template
 
 COPY gzip.conf /etc/nginx/gzip.conf
 COPY ${app_name}-${app_ver}-frontend-dist.tar.gz .
