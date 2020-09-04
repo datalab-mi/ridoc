@@ -1,0 +1,32 @@
+version: '3.4'
+services:
+  nginx-development:
+    image: ${APP}-nginx-dev:${APP_VERSION}
+    build:
+      context: ${NGINX}
+      target: development
+      dockerfile: Dockerfile
+      args:
+        app_name: ${APP}
+        app_ver: ${APP_VERSION}
+      
+
+    container_name: ${DC_PREFIX}-nginx-dev
+
+    environment:
+      - APP
+      - ES_PROXY_PATH
+      - ES_HOST
+      - ES_INDEX
+      - ES_PORT
+      - BACKEND_HOST
+      - BACKEND_PORT
+      - PORT
+    ports:
+      - "80:80"
+    #restart: always
+
+networks:
+  default:
+    external:
+      name: ${DC_NETWORK}

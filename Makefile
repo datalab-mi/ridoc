@@ -182,7 +182,7 @@ nginx-dev-stop: network
 	${DC} -f ${DC_FILE}-nginx-dev.yml down
 
 nginx: network
-	${DC} -f $(DC_FILE)-nginx.yml up -d
+	${DC} -f $(DC_FILE)-nginx.yml up -d --build
 nginx-stop:
 	${DC} -f $(DC_FILE)-nginx.yml down
 

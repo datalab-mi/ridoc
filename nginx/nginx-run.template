@@ -1,3 +1,6 @@
+user  nginx;
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
 
 events {
     worker_connections  1024;
@@ -30,12 +33,17 @@ http {
       '"uri":"$uri",'
       '"status":$status,'
       '"body_bytes_sent":$body_bytes_sent,'
-      'body_request': $body_request'
+      '"request_body": "$request_body"'
       '}';
 
+      #exlude kibana
+      map $uri $loggable {
+          ~^/kibana/.* 0;
+          default 1;
+      }
 
-    access_log  /var/log/nginx/access.log  main;
-    access_log syslog:server=<LOGSTASH_HOST>:1025 main_json;
+    access_log  /var/log/nginx/access.log  main_json if=$loggable;
+    access_log syslog:server=<LOGSTASH_HOST>:1025 main_json if=$loggable;
 
     sendfile        on;
     #tcp_nopush     on;
