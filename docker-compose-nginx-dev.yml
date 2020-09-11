@@ -1,18 +1,16 @@
 version: '3.4'
 services:
-  nginx-development:
-    image: ${APP}-nginx-dev:${APP_VERSION}
+  nginx-dev:
+    image: ${APP}-nginx-dev
+    container_name: ${APP}-nginx-dev
     build:
       context: ${NGINX}
       target: development
       dockerfile: Dockerfile
       args:
-        app_name: ${APP}
-        app_ver: ${APP_VERSION}
-      
-
-    container_name: ${DC_PREFIX}-nginx-dev
-
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+        no_proxy: ${no_proxy}
     environment:
       - APP
       - ES_PROXY_PATH
@@ -21,10 +19,12 @@ services:
       - ES_PORT
       - BACKEND_HOST
       - BACKEND_PORT
+      - FRONTEND_DEV_HOST
+      - FRONTEND_PORT
       - PORT
     ports:
       - "80:80"
-    #restart: always
+
 
 networks:
   default:
