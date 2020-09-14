@@ -6,6 +6,10 @@ upstream backend {
   server <BACKEND_HOST>:<BACKEND_PORT>;
 }
 
+upstream kibana {
+  server <KIBANA_HOST>:<KIBANA_PORT>;
+}
+
 server {
   listen 80;
   server_name  localhost;
@@ -25,10 +29,13 @@ server {
       proxy_set_header Host $host;
       proxy_cache_bypass $http_upgrade;
       break;
-
   }
 
   location /api {
       proxy_pass http://backend/;
+  }
+
+  location /kibana/ {
+    proxy_pass http://kibana/;
   }
 }

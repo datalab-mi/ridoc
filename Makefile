@@ -28,6 +28,13 @@ export ES_PROXY_PATH = /${API_PATH}/api/v0/search
 export NPM_REGISTRY = $(shell echo $$NPM_REGISTRY )
 export NPM_VERBOSE = 1
 
+# KIBANA
+export KIBANA_HOST = ${APP}-kibana
+export KIBANA_PORT = 5601
+
+# LOGSTASH
+export LOGSTASH_HOST = ${APP}-logstash
+export NGINX_MAPPING = $(shell cat logstash/nginx_template.json)
 # BACKEND dir
 export BACKEND=${APP_PATH}/backend
 export BACKEND_PORT=5000
@@ -108,16 +115,22 @@ elasticsearch-exec:
 	$(DC) -f ${DC_FILE}-elasticsearch.yml exec elasticsearch bash
 
 # kibana
-
 kibana: network
 	${DC} -f ${DC_FILE}-kibana.yml up -d
 
 kibana-exec:
 	$(DC) -f ${DC_FILE}-kibana.yml exec kibana bash
-# traefik
 
-traefik/acme.json:
-	touch traefik/acme.json
+# Logstash
+
+create-nginx-index:
+	curl --header "content-type: application/JSON" -XPUT http://localhost/elasticsearch/nginx -d "$$(cat logstash/nginx_template.json)"
+
+logstash: network #create-nginx-index
+	${DC} -f ${DC_FILE}-logstash.yml up -d --force-recreate
+
+logstash-exec:
+	$(DC) -f ${DC_FILE}-logstash.yml exec logstash bash
 
 # backend
 
@@ -169,7 +182,7 @@ nginx-dev-stop: network
 	${DC} -f ${DC_FILE}-nginx-dev.yml down
 
 nginx: network
-	${DC} -f $(DC_FILE)-nginx.yml up -d
+	${DC} -f $(DC_FILE)-nginx.yml up -d --build
 nginx-stop:
 	${DC} -f $(DC_FILE)-nginx.yml down
 
