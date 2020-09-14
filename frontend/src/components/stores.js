@@ -6,7 +6,7 @@ export const searchList = writable([
     {
     bool: "must",
     clause: "multi_match",
-    fields: ["titre", "question" , "reponse"],
+    fields: ["titre", "content"],
     query: "",
     type: "search",
     placeholder: "Recherche par mots clefs",
@@ -25,7 +25,7 @@ export const searchResults = writable({
 
 export const suggestEntry = writable([]);
 
-export const index_name = writable('bld')
+export const index_name = writable('iga')
 export const isReindex = writable(false)
 
 export const list_synonym = writable([])
@@ -34,42 +34,43 @@ export const list_synonym = writable([])
 // The key should match with their elasticsearch counterparts
 export const item = readable({
   multiple: false,
-  accept: '.odt',
+  accept: '.pdf',
   inputs: [
     {
-      key: 'titre',
-      type: 'text',
-      placeholder: 'NA',
-      value: '',
-      innerHtml: '',
-      metadata: false
-    },
-    {
-      key: 'question',
+      key: 'title',
       type: 'textarea',
       placeholder: 'NA',
       value: '',
-      innerHtml: '<b>Question :</b>',
-      highlight: true,
-      metadata: false
-
-    },
-    {
-      key: 'reponse',
-      type: 'textarea',
-      placeholder: 'NA',
-      value: '',
-      innerHtml: '<b>Réponse :</b>',
-      highlight: false,
+      innerHtml: '<b>Titre :</b>',
       metadata: true
     },
     {
-      key: 'pieces jointes',
+      key: 'content',
+      type: 'textarea',
+      placeholder: 'NA',
+      value: '',
+      innerHtml: '',
+      highlight: '<b>Content :</b>',
+      metadata: false
+    },
+    {
+      key: 'author',
       type: 'text',
       placeholder: 'NA',
       value: '',
-      innerHtml: '<b>Pièces jointes :</b>',
-      metadata: false
+      innerHtml: '<b>Auteurs :</b>',
+      highlight: true,
+      metadata: true
+
+    },
+    {
+      key: 'date',
+      type: 'date',
+      placeholder: 'NA',
+      value: '',
+      innerHtml: '<b>Date :</b>',
+      highlight: false,
+      metadata: true
     }
   ]
 

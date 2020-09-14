@@ -3,12 +3,21 @@
     import PutItem from './PutItem.svelte'
     import { index_name } from './stores.js';
     import {upload, index } from  './utils.js'
+    import { onMount, onDestroy } from 'svelte';
 
     export let meta;
     export let cssClass = 'base';
     export let readonly = false;
     export let required = true;
 
+    var copie = [];
+    onMount(() => {
+
+      console.log(meta)
+      console.log(copie)
+    })
+
+    onDestroy(() => console.log('OnDestroy'))
 </script>
 
 <section class="{cssClass}-item">
@@ -30,7 +39,7 @@
             <input type='date' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
           {/if}
         </label>
-      {/if}
+      {:else}
 
       <slot name="highlight">
       </slot>
@@ -65,6 +74,8 @@
           {/if}
         {/if}
       </div>
+      {/if}
+
     {/each}
 
   </div>

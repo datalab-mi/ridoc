@@ -9,7 +9,6 @@
     let files ;
     let fileNameList = [];
     let meta = $item.inputs.filter(obj => obj.metadata);
-    console.log(meta)
 
     let send = false;
 

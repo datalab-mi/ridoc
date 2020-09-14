@@ -130,8 +130,7 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
                         "boundary_scanner" : "sentence",
                         "boundary_scanner_locale" : "fr-FR",
                         "fields":{
-                            "question":{},
-                            "reponse":{}
+                            "content":{},
                             }
                     }
                 }
