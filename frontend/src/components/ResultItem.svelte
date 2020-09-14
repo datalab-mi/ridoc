@@ -26,25 +26,25 @@
 
 	// replace value to the result value contained in _source or in highlight key
 	// if present and if needed
-	$: {
-		if (!highlight) {
-			highlight = {}
-		}
-		meta = []
-			$item.inputs.forEach((item, index) => {
-				console.log(highlight)
-				if (item.highlight && highlight && (item.key in highlight)) {
-					item.value = highlight[item.key].join(' [...] ')
-					item.isHighlight = true
-				} else {
-					item.value = _source[item.key]
-					item.isHighlight = false
 
-				}
-				meta.push(item)
-			})
+	if (!highlight) {
+		highlight = {}
 	}
+		item.inputs.forEach((x, index) => {
+			console.log(highlight)
+			if (x.highlight && highlight && (x.key in highlight)) {
+				x.value = highlight[x.key].join(' [...] ')
+				x.isHighlight = true
+			} else {
+				x.value = _source[x.key]
+				x.isHighlight = false
 
+			}
+			meta.push(x)
+		})
+
+	console.log("ResultItem")
+	console.log(meta)
 	const file = {'name': _id.replace(/\+/g, " ")}
 
 	async function remove() {
@@ -72,11 +72,6 @@
 
 <BaseItem meta={meta} bind:readonly={readonly} cssClass='result'>
 
-	<div slot="highlight">
-		{#if content in highlight && highlight.content != ''}
-			<p> &laquo; {@html highlight.content.join(' [...] ')} &raquo; </p>
-		{/if}
-	</div>
 
 	<div slot="score">
 		{#if _score != 0}

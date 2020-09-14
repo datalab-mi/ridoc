@@ -32,7 +32,7 @@ export const list_synonym = writable([])
 
 // The const item describe the behaviour and the display of an item.
 // The key should match with their elasticsearch counterparts
-export const item = readable({
+export const item = {
   multiple: false,
   accept: '.pdf',
   inputs: [
@@ -74,4 +74,4 @@ export const item = readable({
     }
   ]
 
-})
+}

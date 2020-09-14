@@ -10,11 +10,12 @@
     export let readonly = false;
     export let required = true;
 
-    var copie = [];
-    onMount(() => {
+    var copie = meta;
 
-      console.log(meta)
-      console.log(copie)
+    onMount(() => {
+      console.log('onMount')
+      //console.log(meta)
+      //console.log(copie)
     })
 
     onDestroy(() => console.log('OnDestroy'))
@@ -23,7 +24,7 @@
 <section class="{cssClass}-item">
 
   <div class="mb-4">
-    {#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight}, i }
+    {#each copie as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight}, i }
       {#if (key == "title") || (key == "titre")}
         <h2>
           <textarea class='{cssClass}-title' type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>

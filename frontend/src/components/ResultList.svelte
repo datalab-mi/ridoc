@@ -26,10 +26,10 @@ $: {
 </script>
 
 
-{#if searchResults}
+{#if items}
 	<div class='result-list'>
 	<p>{start}-{end}</p>
-		<VirtualList {items} {height} bind:start bind:end let:item>
+		<VirtualList items={items} {height} bind:start bind:end let:item>
 			{#if  item === "bar"}
 				<div class="bar">
 					<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Nous vous recommandons de contacter  <a href="mailto://iga@interieur.gouv.fr?subject=Demande_de_consultation">[iga@interieur.gouv.fr]</a></p>

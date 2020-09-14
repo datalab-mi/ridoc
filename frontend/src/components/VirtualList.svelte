@@ -25,6 +25,8 @@
 	// whenever `items` changes, invalidate the current heightmap
 	$: if (mounted) refresh(items, viewport_height, itemHeight);
 	async function refresh(items, viewport_height, itemHeight) {
+		console.log("in refresh")
+		console.log(items)
 		const { scrollTop } = viewport;
 		await tick(); // wait until the DOM is up to date
 		let content_height = top - scrollTop;

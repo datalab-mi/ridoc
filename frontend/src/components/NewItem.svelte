@@ -8,14 +8,15 @@
     const required = false;
     let files ;
     let fileNameList = [];
-    let meta = $item.inputs.filter(obj => obj.metadata);
+    let meta = item.inputs.filter(obj => obj.metadata);
 
     let send = false;
 
-
+    console.log("ResultItem")
+  	console.log(meta)
 </script>
 
-<BaseItem {meta} required={required}>
+<BaseItem meta={meta} required={required}>
 
 
   <div slot="button">
@@ -23,7 +24,7 @@
     Choisir un fichier
     </label>
 
-    <input id="fileUpload" type="file" bind:files multiple={$item.multiple} accept={$item.accept}>
+    <input id="fileUpload" type="file" bind:files multiple={item.multiple} accept={item.accept}>
 
     {#if files}
       <button on:click="{() => send = !send}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
