@@ -1,7 +1,7 @@
 import { readable, writable } from 'svelte/store';
 
 // auth: https://www.toptal.com/front-end/svelte-framework-guide
-export const searchList = writable([
+export const searchList = [
   [
     {
     bool: "must",
@@ -14,13 +14,43 @@ export const searchList = writable([
     style: "w-3/4 p-2",
     highlight: true
     }
+  ],
+  [
+    {
+    bool: "filter",
+    fields: "author",
+    query: "",
+    type: "term",
+    placeholder: "Paul Dupond, Anne-Marie",
+    innerHtml: "Nom ou Prénom",
+    style: "w-3/4 p-2",
+    highlight: true
+    },
+    {
+    bool: "filter",
+    fields: "date",
+    query: "",
+    type: "range",
+    innerHtml: "A partir de : ",
+    style: "w-3/4 p-2",
+    highlight: true
+    },
+    {
+    bool: "filter",
+    fields: "date",
+    query: "",
+    type: "range",
+    innerHtml: "Jusqu'à : ",
+    style: "w-3/4 p-2",
+    highlight: true
+    }
   ]
 ]
-)
+
 
 export const searchResults = writable({
   'hits':[],
-  'threshold':1
+  'threshold': 1
 });
 
 export const suggestEntry = writable([]);
@@ -42,6 +72,7 @@ export const item = {
       placeholder: 'NA',
       value: '',
       innerHtml: '<b>Titre :</b>',
+      highlight:  true,
       metadata: true
     },
     {
@@ -49,8 +80,8 @@ export const item = {
       type: 'textarea',
       placeholder: 'NA',
       value: '',
-      innerHtml: '',
-      highlight: '<b>Content :</b>',
+      innerHtml: '<b>Contenu :</b>',
+      highlight:  true,
       metadata: false
     },
     {

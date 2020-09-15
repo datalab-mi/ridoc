@@ -3,28 +3,19 @@
     import PutItem from './PutItem.svelte'
     import { index_name } from './stores.js';
     import {upload, index } from  './utils.js'
-    import { onMount, onDestroy } from 'svelte';
 
     export let meta;
     export let cssClass = 'base';
     export let readonly = false;
     export let required = true;
 
-    var copie = meta;
 
-    onMount(() => {
-      console.log('onMount')
-      //console.log(meta)
-      //console.log(copie)
-    })
-
-    onDestroy(() => console.log('OnDestroy'))
 </script>
 
 <section class="{cssClass}-item">
 
   <div class="mb-4">
-    {#each copie as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight}, i }
+    {#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight}, i }
       {#if (key == "title") || (key == "titre")}
         <h2>
           <textarea class='{cssClass}-title' type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
@@ -57,7 +48,7 @@
                     {#if type == "text"}
                         <input type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                     {:else if type == "textarea"}
-                        <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
+                        <textarea bind:value={val} {placeholder} rows="5" readonly="{readonly || !metadata}"/>
                     {/if}
                   {/if}
                 </li>
@@ -70,7 +61,7 @@
             {#if type == "text"}
               <input type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
             {:else if type == "textarea"}
-              <textarea bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
+              <textarea bind:value={value} {placeholder} rows="5" readonly="{readonly || !metadata}"/>
             {/if}
           {/if}
         {/if}

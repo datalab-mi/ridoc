@@ -20,7 +20,7 @@
 
 	let readonly = true;
 	let send = false;
-	let meta = [];
+	let meta = JSON.parse(JSON.stringify(item.inputs));
 
 	let isResult = true;
 
@@ -30,8 +30,8 @@
 	if (!highlight) {
 		highlight = {}
 	}
-		item.inputs.forEach((x, index) => {
-			console.log(highlight)
+		meta.forEach((x, index) => {
+			//console.log(highlight)
 			if (x.highlight && highlight && (x.key in highlight)) {
 				x.value = highlight[x.key].join(' [...] ')
 				x.isHighlight = true
@@ -40,11 +40,9 @@
 				x.isHighlight = false
 
 			}
-			meta.push(x)
 		})
 
-	console.log("ResultItem")
-	console.log(meta)
+	
 	const file = {'name': _id.replace(/\+/g, " ")}
 
 	async function remove() {

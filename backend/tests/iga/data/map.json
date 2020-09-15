@@ -163,6 +163,10 @@
           "type": "text" ,
           "analyzer" : "phonetic_analyser",
           "search_analyzer" : "phonetic_analyser"
+        },
+        "date": {
+          "type": "date",
+          "format": "yyyy-MM-dd"
         }
       }
   }

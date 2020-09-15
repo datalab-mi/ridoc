@@ -4,7 +4,6 @@
     import PutItem from './PutItem.svelte'
 
     import { index_name, item } from './stores.js';
-    import {upload, index } from  './utils.js'
     const required = false;
     let files ;
     let fileNameList = [];
@@ -12,8 +11,8 @@
 
     let send = false;
 
-    console.log("ResultItem")
-  	console.log(meta)
+    console.log("NewItem")
+  	console.log(item)
 </script>
 
 <BaseItem meta={meta} required={required}>

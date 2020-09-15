@@ -76,8 +76,6 @@ def upload_file(filename: str):
 
 @admin_bp.route("/<index_name>/_doc/<filename>", methods=["DELETE", "PUT"])
 def index_file(index_name: str, filename: str):
-    #index_name = request.args.get('index_name',None)
-    #filename = request.args.get('filename',None)
 
     if not index_name or not filename:
         print('Missing keys')

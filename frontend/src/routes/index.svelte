@@ -7,6 +7,7 @@
 
 	import ResultList from '../components/ResultList.svelte';
 	import SearchBar from '../components/SearchBar.svelte';
+	import { searchResults } from '../components/stores.js';
 
 </script>
 

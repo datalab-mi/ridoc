@@ -7,7 +7,8 @@ async function upload(meta, file) {
   const filename = file.name
   formData.append('file', file);
 
-  meta.forEach(item => formData.append(item.key, JSON.stringify(item.value)));
+  meta.forEach(item => formData.append(item.key,
+    (item.value instanceof Array) ? JSON.stringify(item.value) : item.value));
 
   const upload = await fetch(`/api/admin/${filename}`, {
       method: 'PUT',

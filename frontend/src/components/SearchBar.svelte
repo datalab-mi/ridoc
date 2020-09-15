@@ -5,7 +5,7 @@
 	let promiseSuggest =  new Promise(()=>{});
 
 	let body; // searchList in dict format
-	//let searchListList = $searchListObject.entries($searchList)
+	//let searchListList = searchListObject.entries(searchList)
 	//console.log(searchListList)
 
 	const format2ES = (query_list) => {
@@ -32,13 +32,14 @@
 
 	async function search() {
 
-		body = format2ES($searchList.flat(2))
-		// convert $searchList to post json
-		//body = $searchList.flat(2).reduce(function(map, obj) {
+		body = format2ES(searchList.flat(2))
+		console.log(body)
+		// convert searchList to post json
+		//body = searchList.flat(2).reduce(function(map, obj) {
 		//		map[obj.bool] = {fields: obj.fields, query: obj.query};
 		//		return map;
 		//}, {index_name: $index_name});
-		//console.log($searchList)
+		//console.log(searchList)
 
 		const res = await fetch("/api/common/search",{
 												method: "POST",
@@ -56,12 +57,12 @@
 
 
 	async function suggest() {
-		console.log($searchList.content.value)
+		console.log(searchList.content.value)
 		const res = await fetch("/api/common/suggest",{
 												method: "POST",
 												body: JSON.stringify({
 															 index_name: $index_name,
-															 content: $searchList.content.value,
+															 content: searchList.content.value,
 														 })
 													 });
 
@@ -85,8 +86,8 @@
 	}
 
 	function handleSuggestChosen(v) {
-		//$searchList.content.value = e.target.innerHTML
-		$searchList.content.value = v
+		//searchList.content.value = e.target.innerHTML
+		searchList.content.value = v
 		$suggestEntry = []
 	}
 
@@ -94,7 +95,7 @@ promiseSearch = search();
 
 </script>
 <div class='search-bar'>
-	{#each $searchList as row, i }
+	{#each searchList as row, i }
 	<div class="flex mb-4">
 
 		{#each row as {bool, clause, fields, query, type, placeholder, innerHtml, style}, j}
@@ -131,9 +132,9 @@ promiseSearch = search();
 		<div class="w-3/4 p-2" >
 			<div class="flex flex-col px-2">
 				<div class="px-2" >
-				<label> {@html $searchList.content.innerHtml}
-					<input type="search" bind:value={$searchList.content.value}
-					       placeholder={$searchList.content.placeholder}
+				<label> {@html searchList.content.innerHtml}
+					<input type="search" bind:value={searchList.content.value}
+					       placeholder={searchList.content.placeholder}
 								 on:input={handleSuggest}
 								 class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
 
@@ -148,27 +149,27 @@ promiseSearch = search();
 				</div>
 
 			<div class="flex mb-4">
-				{#if $searchList.author}
+				{#if searchList.author}
 					<div class="w-2/4 px-2">
-						<label> {@html $searchList.author.innerHtml}
-							<input type="search" bind:value={$searchList.author.value}
-										 placeholder={$searchList.author.placeholder}
+						<label> {@html searchList.author.innerHtml}
+							<input type="search" bind:value={searchList.author.value}
+										 placeholder={searchList.author.placeholder}
 										class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
 						</label>
 					</div>
 				{/if}
 
 				<div class="w-1/4 px-2" >
-				<label> {@html $searchList.from_date.innerHtml}
-					<input type="date" bind:value={$searchList.from_date.value}
-					       placeholder={$searchList.from_date.placeholder}
+				<label> {@html searchList.from_date.innerHtml}
+					<input type="date" bind:value={searchList.from_date.value}
+					       placeholder={searchList.from_date.placeholder}
 								  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
 				</label>
 				</div>
 				<div class="w-1/4 px-2" >
-					<label> {@html $searchList.to_date.innerHtml}
-						<input type="date" bind:value={$searchList.to_date.value}
-									 placeholder={$searchList.to_date.placeholder}
+					<label> {@html searchList.to_date.innerHtml}
+						<input type="date" bind:value={searchList.to_date.value}
+									 placeholder={searchList.to_date.placeholder}
 										class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
 					</label>
 				</div>
@@ -186,8 +187,8 @@ promiseSearch = search();
 
 	</div>
 
-	{#if $searchList.content.value!=''}
-		<h1>La recherche est : {$searchList.content.value}</h1>
+	{#if searchList.content.value!=''}
+		<h1>La recherche est : {searchList.content.value}</h1>
 	{/if}
 
 	{#await promiseSearch}
