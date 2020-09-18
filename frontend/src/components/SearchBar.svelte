@@ -15,17 +15,15 @@
 		console.log(query_list)
 		for (obj of query_list) {
 			let clause = {}
-			if (obj.query != "") {
+			if (obj.value != "") {
 				highlight_fields.push(obj.fields)
 
 				if (!(obj.bool in query_dic)) {
 					query_dic[obj.bool] = []
 				}
-				if (obj.bool === "must") {
-					clause[obj.clause] = {fields: obj.fields, query: obj.query}
-				} else if  (obj.bool === "filter") {
-					clause[obj.clause] = {[obj.fields]: obj.query}
-				}
+				console.log(obj.value)
+				clause = JSON.parse(JSON.stringify(obj.query).replace('\$value', obj.value))
+
 				query_dic[obj.bool].push(clause)
 
 
@@ -106,7 +104,7 @@ promiseSearch = search();
 	{#each searchList as row, i }
 	<div class="flex mb-4">
 
-		{#each row as {bool, clause, fields, query, type, placeholder, innerHtml, style}, j}
+		{#each row as {bool, query, value, type, placeholder, innerHtml, style}, j}
 			{#if (i === 0) && (j === 0) }
 				<div class="w-1/6 p-2" >
 					<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded inline-flex items-center">
@@ -116,7 +114,7 @@ promiseSearch = search();
 				</div>
 			{/if}
 
-			<SearchInput {bool} {clause} {fields} bind:query {type} {placeholder} {innerHtml} {style} />
+			<SearchInput bind:value={value} {type} {placeholder} {innerHtml} {style} />
 		{/each}
 		</div>
 

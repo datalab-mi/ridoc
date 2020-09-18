@@ -1,56 +1,6 @@
 import { readable, writable } from 'svelte/store';
 
 // auth: https://www.toptal.com/front-end/svelte-framework-guide
-export const searchList = [
-  [
-    {
-    bool: "must",
-    clause: "multi_match",
-    fields: ["titre", "content"],
-    query: "",
-    type: "search",
-    placeholder: "Recherche par mots clefs",
-    innerHtml: "",
-    style: "w-5/6 p-2",
-    highlight: true
-    }
-  ],
-  [
-    {
-    bool: "filter",
-    fields: "author",
-    clause: "match",
-    query: "",
-    type: "search",
-    placeholder: "Paul Dupond, Anne-Marie",
-    innerHtml: "Nom ou Prénom",
-    style: "w-3/4 p-2",
-    highlight: true
-    },
-    {
-    bool: "filter",
-    fields: "date",
-    clause: "range",
-    query: "",
-    type: "date",
-    innerHtml: "A partir de : ",
-    style: "w-3/4 p-2",
-    highlight: true
-    },
-    {
-    bool: "filter",
-    fields: "date",
-    clause: "range",
-    query: "",
-    type: "date",
-    innerHtml: "Jusqu'à : ",
-    style: "w-3/4 p-2",
-    highlight: true
-    }
-  ]
-]
-
-
 export const searchResults = writable({
   'hits':[],
   'threshold': 1
@@ -62,6 +12,52 @@ export const index_name = writable('iga')
 export const isReindex = writable(false)
 
 export const list_synonym = writable([])
+
+// The searchList const describes the search inputs
+export const searchList  = [
+  [
+    {
+    bool: "must",
+    query: {"multi_match": {"fields":["titre", "content"], "query":"$value"}},
+    value: "",
+    type: "search",
+    placeholder: "Recherche par mots clefs",
+    innerHtml: "",
+    style: "w-5/6 p-2",
+    highlight: true
+    }
+  ],
+  [
+    {
+    bool: "filter",
+    query: {"match": {"fields":"author","query":"$value"}},
+    value: "",
+    type: "search",
+    placeholder: "Paul Dupond, Anne-Marie",
+    innerHtml: "Nom ou Prénom",
+    style: "w-3/4 p-2",
+    highlight: true
+    },
+    {
+    bool: "filter",
+    query: {"range": {"date": {"gte":"$value"}}},
+    value: "",
+    type: "date",
+    innerHtml: "A partir de : ",
+    style: "w-3/4 p-2",
+    highlight: true
+    },
+    {
+    bool: "filter",
+    query: {"range": {"date": {"gte":"$value"}}},
+    value: "",
+    type: "date",
+    innerHtml: "Jusqu'à : ",
+    style: "w-3/4 p-2",
+    highlight: true
+    }
+  ]
+]
 
 // The const item describe the behaviour and the display of an item.
 // The key should match with their elasticsearch counterparts

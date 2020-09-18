@@ -80,25 +80,29 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
         dict
     """
 
-    if expression_file:
-        # process expression
-        with open(expression_file, 'r') as f:
-            content = f.read()
-        list_expression = [x.lower().split(' ') for x in str(content).split('\n')]
-        list_expression = [''.join(x) for x in list_expression]
-    else:
-        list_expression = []
+    length_of_request = 0
+    list_expression = []
     # TODO : process all keyword???
     # Liste_acronyme
+    if must:
+        if expression_file:
+            # process expression
+            with open(expression_file, 'r') as f:
+                content = f.read()
+            list_expression = [x.lower().split(' ') for x in str(content).split('\n')]
+            list_expression = [''.join(x) for x in list_expression]
+        else:
+            list_expression = []
 
-    req = " ".join([_finditem(x, "query") for x in must])
-    #Au début on va analyser la requête
-    body = {'analyzer':"my_analyzer", "text": req}
-    analyse = indices.analyze(index= index_name, body = body)
+        req = " ".join([_finditem(x, "query") for x in must])
+        #Au début on va analyser la requête
+        body = {'analyzer':"my_analyzer", "text": req}
+        analyse = indices.analyze(index= index_name, body = body)
 
-    analyzed = [ananyse_tokens['token'] for ananyse_tokens in analyse["tokens"]]
-    print(analyzed)
-    length_of_request = len(analyzed)
+        analyzed = [ananyse_tokens['token'] for ananyse_tokens in analyse["tokens"]]
+        print(analyzed)
+
+        length_of_request = len(analyzed)
 
 
     #------------------------Application du filtre 1 -----------------------------
