@@ -30,7 +30,7 @@ class Config:
     #env_path = '/app/tests/iga/.env-iga'
 
     print("USER_DATA : " + os.getenv('USER_DATA'))
-    
+
     USER_DATA = getenv('USER_DATA')
     INDEX_NAME = getenv('INDEX_NAME')
     ES_DATA = getenv('ES_DATA')
@@ -39,8 +39,7 @@ class Config:
     EXPRESSION_FILE = getenv('EXPRESSION_FILE')
     RAW_EXPRESSION_FILE = getenv('RAW_EXPRESSION_FILE')
 
-    PDF_DIR = getenv('PDF_DIR')
-    ODT_DIR = getenv('ODT_DIR')
+    DST_DIR = getenv('DST_DIR')
 
     JSON_DIR = getenv('JSON_DIR')
     META_DIR = getenv('META_DIR')

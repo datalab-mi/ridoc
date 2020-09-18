@@ -50,9 +50,9 @@ def test_create_index():
 def test_inject_documents(sections):
 
     doc = 'moteur de recherche.odt'
-    
-    inject_documents(INDEX_NAME, USER_DATA, ODT_DIR, JSON_DIR,
-                meta_path = META_DIR, doc_type='odt', sections=sections)
+
+    inject_documents(INDEX_NAME, USER_DATA, DST_DIR, JSON_DIR,
+                meta_path = META_DIR, sections=sections)
 
     res = es.get(index=INDEX_NAME, id=doc)
     assert len(str(res)) > 100, res

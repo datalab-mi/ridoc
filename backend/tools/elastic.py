@@ -26,6 +26,14 @@ def empty_tree(pth: Path):
         else:
             empty_tree(child)
 
+def _finditem(obj, key):
+    if key in obj: return obj[key]
+    for k, v in obj.items():
+        if isinstance(v,dict):
+            item = _finditem(v, key)
+            if item is not None:
+                return item
+
 
 #On établit une connection
 es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
@@ -83,7 +91,7 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
     # TODO : process all keyword???
     # Liste_acronyme
 
-    req = ""
+    req = " ".join([_finditem(x, "query") for x in must])
     #Au début on va analyser la requête
     body = {'analyzer':"my_analyzer", "text": req}
     analyse = indices.analyze(index= index_name, body = body)
@@ -137,20 +145,24 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
 
 
     if must:
-        body["query"]['bool']['must'].append(must)
+        body["query"]['bool']['must'] += must
 
+    if filter:
+        body['query']['bool']["filter"] += filter
+
+    if should:
+        body["query"]['bool']['should'] += should
+
+    # add boosting in should for expressions
     for key in req_expression:
       body['query']['bool']["should"].append({"match":{
-                                      'mots-cles' :{
+                                      'content' :{
                                           "query" : '_' + key + '_',
                                           "boost" : 5
                                                 }}})
 
 
-    if filter:
-        body['query']['bool']["filter"].append(filter)
-
-
+    #import pdb; pdb.set_trace()
     print(body)
     return body, length_of_request
 
@@ -177,11 +189,13 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
             T = True
             break
     """
-    req = "test"
-    if (req != '') or from_date or to_date or author:
+    #req = [_finditem(x, "query") for x in must]
+    #print(req)
+
+    if (must or should or filter):
         body, length_of_request = build_query(must, should, filter, index_name,
                     highlight,
-                    glossary_file=None, expression_file=None)
+                    glossary_file=glossary_file, expression_file=expression_file)
 
         D = es.search(index = index_name,
                       body = body,
@@ -194,7 +208,7 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
                                 "match_all": {}
                             }
                         },
-                    size = int(10000)
+                    size = int(1000)
                     )
     try: #This try is for the case where no match is found
         if not T and D['hits']['hits'][0]["_score"]/length_of_request < seuil: #The first filter then the second filter
@@ -350,7 +364,7 @@ def create_index(INDEX_NAME,
 
 
 def inject_documents(INDEX_NAME, user_data, dst_path, json_path,
-            meta_path=None, doc_type='pdf', sections=[]):
+            meta_path=None, sections=[]):
 
     no_match = 0
 
@@ -358,14 +372,14 @@ def inject_documents(INDEX_NAME, user_data, dst_path, json_path,
     # empty it in case
     empty_tree(Path(user_data) / json_path)
 
-    for path_document in (Path(user_data) / dst_path).glob('**/*.%s'%doc_type):
+    for path_document in (Path(user_data) / dst_path).iterdir():
         try:
             #path_document = pdf_path / filename
             print('Read %s'%str(path_document))
 
-            index_file(path_document.name, INDEX_NAME, user_data,
-                        dst_path, json_path, meta_path,
-                        doc_type= doc_type, sections=sections)
+            filename = path_document.name
+            index_file(filename, INDEX_NAME, user_data,
+                        dst_path, json_path, meta_path, sections=sections)
             print('Document %s just uploaded'% path_document)
 
         except Exception as e:
@@ -379,20 +393,23 @@ def inject_documents(INDEX_NAME, user_data, dst_path, json_path,
     print("There is %s documents without metadata match"%no_match)
 
 def index_file(filename, INDEX_NAME, user_data, dst_path, json_path,
-            meta_path, doc_type='pdf', sections=[]):
+            meta_path,  sections=[]):
     """
     Index json file to elastic with metadata
     """
-    path_file = Path(user_data) / dst_path / filename
-    if doc_type == 'pdf':
-        data = pdf2json(str(path_file))
-    elif doc_type == 'odt':
-        data = odt2json(str(path_file), sections)
+    filename = Path(filename)
+    path_document = Path(user_data) / dst_path / filename
+    #import pdb; pdb.set_trace()
+    if  filename.suffix == '.pdf':
+        data = pdf2json(str(path_document))
+    elif  filename.suffix == '.odt':
+        data = odt2json(str(path_document), sections)
+    else:
+        raise Exception("Format not supported")
+    #import pdb; pdb.set_trace()
 
-    path_meta =  Path(user_data) / meta_path / filename
-    path_json =  Path(user_data) / json_path / filename
-    path_meta = path_meta.with_suffix('').with_suffix('.json') # replace extension
-    path_json = path_json.with_suffix('').with_suffix('.json') # replace extension
+    path_meta =  Path(user_data) / meta_path / (path_document.stem + '.json')
+    path_json =  Path(user_data) / json_path / (path_document.stem + '.json')
 
     if path_meta.exists():
         with open(path_meta, 'r' , encoding = 'utf-8') as json_file:
@@ -401,7 +418,7 @@ def index_file(filename, INDEX_NAME, user_data, dst_path, json_path,
 
     save_json(data, path_json)
 
-    res = es.index(index = INDEX_NAME, body=data , id = filename)
+    res = es.index(index = INDEX_NAME, body=data , id = path_document.name)
     return res
 
 def delete_file(filename, INDEX_NAME):

@@ -93,7 +93,7 @@ def search():
     glossary_file = Path(USER_DATA) / GLOSSARY_FILE
     expression_file = Path(USER_DATA) / EXPRESSION_FILE
 
-    res = elastic_search(must, should, filter, index_name, highlight, 
+    res = elastic_search(must, should, filter, index_name, highlight,
                 glossary_file = glossary_file,
                 expression_file = expression_file)
 

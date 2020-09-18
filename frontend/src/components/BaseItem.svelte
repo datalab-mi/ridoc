@@ -20,7 +20,6 @@
         <h2>
           <textarea class='{cssClass}-title' type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
         </h2>
-        <br>
 
       {:else if type == "date"}
         <br>
@@ -109,7 +108,7 @@
    }
 
    p {
-     display: inline-block;
+     display: inline;
    }
 
    ul {

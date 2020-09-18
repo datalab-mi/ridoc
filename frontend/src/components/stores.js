@@ -11,7 +11,7 @@ export const searchList = [
     type: "search",
     placeholder: "Recherche par mots clefs",
     innerHtml: "",
-    style: "w-3/4 p-2",
+    style: "w-5/6 p-2",
     highlight: true
     }
   ],
@@ -19,8 +19,9 @@ export const searchList = [
     {
     bool: "filter",
     fields: "author",
+    clause: "match",
     query: "",
-    type: "term",
+    type: "search",
     placeholder: "Paul Dupond, Anne-Marie",
     innerHtml: "Nom ou Prénom",
     style: "w-3/4 p-2",
@@ -29,8 +30,9 @@ export const searchList = [
     {
     bool: "filter",
     fields: "date",
+    clause: "range",
     query: "",
-    type: "range",
+    type: "date",
     innerHtml: "A partir de : ",
     style: "w-3/4 p-2",
     highlight: true
@@ -38,8 +40,9 @@ export const searchList = [
     {
     bool: "filter",
     fields: "date",
+    clause: "range",
     query: "",
-    type: "range",
+    type: "date",
     innerHtml: "Jusqu'à : ",
     style: "w-3/4 p-2",
     highlight: true

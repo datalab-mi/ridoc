@@ -74,7 +74,7 @@ def test_upload_file(client, app, form_to_upload):
     assert resp.status_code == 204, 'Status Code : %s'%resp.status_code
 
 def test_index_file(client, app, index_name, pdf_file):
-    # Add document
+    # Index document
     with app.test_client() as c:
         resp = c.put(
             '/admin/{index_name}/_doc/{filename}'.format(

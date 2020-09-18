@@ -9,7 +9,7 @@
 	//console.log(searchListList)
 
 	const format2ES = (query_list) => {
-		let query_dic = {index_name: $index_name, must: [], should: [], filter: [], highlight: []};
+		let query_dic = {index_name: $index_name};
 		let obj;
 		let highlight_fields = []
 		console.log(query_list)
@@ -17,16 +17,24 @@
 			let clause = {}
 			if (obj.query != "") {
 				highlight_fields.push(obj.fields)
+
+				if (!(obj.bool in query_dic)) {
+					query_dic[obj.bool] = []
+				}
 				if (obj.bool === "must") {
 					clause[obj.clause] = {fields: obj.fields, query: obj.query}
 				} else if  (obj.bool === "filter") {
 					clause[obj.clause] = {[obj.fields]: obj.query}
 				}
 				query_dic[obj.bool].push(clause)
+
+
 			}
 
 		}
-		query_dic["highlight"] = highlight_fields.flat()
+		if (highlight_fields.length >0){
+			query_dic["highlight"] = highlight_fields.flat()
+		}
 		return query_dic
   };
 
@@ -100,8 +108,8 @@ promiseSearch = search();
 
 		{#each row as {bool, clause, fields, query, type, placeholder, innerHtml, style}, j}
 			{#if (i === 0) && (j === 0) }
-				<div class="w-1/4 p-2" >
-					<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+				<div class="w-1/6 p-2" >
+					<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded inline-flex items-center">
 						<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/></svg>
 						<span>Rechercher</span>
 					</button>
