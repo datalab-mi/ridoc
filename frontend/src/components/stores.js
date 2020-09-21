@@ -8,7 +8,7 @@ export const searchResults = writable({
 
 export const suggestEntry = writable([]);
 
-export const index_name = writable('iga')
+export const index_name = writable('bld')
 export const isReindex = writable(false)
 
 export const list_synonym = writable([])
@@ -18,42 +18,12 @@ export const searchList  = [
   [
     {
     bool: "must",
-    query: {"multi_match": {"fields":["titre", "content"], "query":"$value"}},
+    query: {"multi_match": {"fields":["titre", "question","reponse"], "query":"$value"}},
     value: "",
     type: "search",
     placeholder: "Recherche par mots clefs",
     innerHtml: "",
     style: "w-5/6 p-2",
-    highlight: true
-    }
-  ],
-  [
-    {
-    bool: "filter",
-    query: {"match": {"fields":"author","query":"$value"}},
-    value: "",
-    type: "search",
-    placeholder: "Paul Dupond, Anne-Marie",
-    innerHtml: "Nom ou Prénom",
-    style: "w-3/4 p-2",
-    highlight: true
-    },
-    {
-    bool: "filter",
-    query: {"range": {"date": {"gte":"$value"}}},
-    value: "",
-    type: "date",
-    innerHtml: "A partir de : ",
-    style: "w-3/4 p-2",
-    highlight: true
-    },
-    {
-    bool: "filter",
-    query: {"range": {"date": {"gte":"$value"}}},
-    value: "",
-    type: "date",
-    innerHtml: "Jusqu'à : ",
-    style: "w-3/4 p-2",
     highlight: true
     }
   ]
@@ -63,45 +33,44 @@ export const searchList  = [
 // The key should match with their elasticsearch counterparts
 export const item = {
   multiple: false,
-  accept: '.pdf',
+  accept: '.odt',
   inputs: [
     {
-      key: 'title',
-      type: 'textarea',
-      placeholder: 'NA',
-      value: '',
-      innerHtml: '<b>Titre :</b>',
-      highlight:  true,
-      metadata: true
-    },
-    {
-      key: 'content',
-      type: 'textarea',
-      placeholder: 'NA',
-      value: '',
-      innerHtml: '<b>Contenu :</b>',
-      highlight:  true,
-      metadata: false
-    },
-    {
-      key: 'author',
+      key: 'titre',
       type: 'text',
       placeholder: 'NA',
       value: '',
-      innerHtml: '<b>Auteurs :</b>',
+      innerHtml: '',
+      highlight: false,
+      metadata: false
+    },
+    {
+      key: 'question',
+      type: 'text',
+      placeholder: 'NA',
+      value: '',
+      innerHtml: '<b>Question :</b>',
       highlight: true,
-      metadata: true
+      metadata: false
 
     },
     {
-      key: 'date',
-      type: 'date',
+      key: 'reponse',
+      type: 'textarea',
       placeholder: 'NA',
       value: '',
-      innerHtml: '<b>Date :</b>',
+      innerHtml: '<b>Réponse :</b>',
       highlight: false,
       metadata: true
+    },
+    {
+      key: 'pieces jointes',
+      type: 'text',
+      placeholder: 'NA',
+      value: '',
+      innerHtml: '<b>Pièces jointes :</b>',
+      highlight: true,
+      metadata: false
     }
   ]
-
 }

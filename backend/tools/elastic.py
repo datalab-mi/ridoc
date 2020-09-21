@@ -133,17 +133,15 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
                         "must_not": []
                                 }
                         },
-                    "highlight" : {
-                        "pre_tags" : ["<mark>"],
-                        "post_tags" : ["</mark>"],
-                        "fragment_size" : 300,
-                        "number_of_fragments" : 3,
-                        "order" : "score",
-                        "boundary_scanner" : "sentence",
-                        "boundary_scanner_locale" : "fr-FR",
-                        "fields":{
-                            "content":{},
-                            }
+            "highlight" : {
+                "pre_tags" : ["<mark>"],
+                "post_tags" : ["</mark>"],
+                "fragment_size" : 300,
+                "number_of_fragments" : 3,
+                "order" : "score",
+                "boundary_scanner" : "sentence",
+                "boundary_scanner_locale" : "fr-FR",
+                "fields":{}
                     }
                 }
 
@@ -165,9 +163,13 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
                                           "boost" : 5
                                                 }}})
 
-
+    if highlight:
+        for field in highlight:
+            body['highlight']['fields'].update({field: {}})
     #import pdb; pdb.set_trace()
+
     print(body)
+
     return body, length_of_request
 
 def search(must: dict, should: dict, filter: dict, index_name: str,

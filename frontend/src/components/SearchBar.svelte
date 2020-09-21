@@ -1,5 +1,5 @@
 <script>
-	import { searchList, searchResults, suggestEntry,  index_name } from '../components/stores.js';
+	import { searchList, item, searchResults, suggestEntry,  index_name } from '../components/stores.js';
 	import SearchInput from  '../components/SearchInput.svelte';
 	let promiseSearch =  new Promise(()=>{});
 	let promiseSuggest =  new Promise(()=>{});
@@ -11,12 +11,13 @@
 	const format2ES = (query_list) => {
 		let query_dic = {index_name: $index_name};
 		let obj;
-		let highlight_fields = []
-		console.log(query_list)
+		let highlight_fields = item.inputs.filter(obj => obj.highlight).map(x => x.key)
+		console.log(highlight_fields)
+		console.log(item.inputs.filter(obj => obj.highlight));
 		for (obj of query_list) {
 			let clause = {}
 			if (obj.value != "") {
-				highlight_fields.push(obj.fields)
+				//highlight_fields.push(obj.fields)
 
 				if (!(obj.bool in query_dic)) {
 					query_dic[obj.bool] = []

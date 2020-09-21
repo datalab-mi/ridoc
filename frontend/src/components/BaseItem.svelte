@@ -47,7 +47,7 @@
                     {#if type == "text"}
                         <input type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                     {:else if type == "textarea"}
-                        <textarea bind:value={val} {placeholder} rows="5" readonly="{readonly || !metadata}"/>
+                        <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                     {/if}
                   {/if}
                 </li>
@@ -60,7 +60,7 @@
             {#if type == "text"}
               <input type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
             {:else if type == "textarea"}
-              <textarea bind:value={value} {placeholder} rows="5" readonly="{readonly || !metadata}"/>
+              <textarea bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
             {/if}
           {/if}
         {/if}
