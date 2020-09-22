@@ -141,7 +141,7 @@ backend/.env:
 backend-dev: network backend/.env
 	@echo docker-compose up backend for dev
 	#@export ${DC} -f ${DC_FILE}.yml up -d --build --force-recreate 2>&1 | grep -v orphan
-	@export EXEC_ENV=development;${DC} -f ${DC_FILE}.yml up -d 
+	@export EXEC_ENV=development;${DC} -f ${DC_FILE}.yml up -d --build  --force-recreate
 
 backend-dev-stop:
 	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down #--remove-orphan
@@ -196,7 +196,7 @@ nginx-exec:
 
 frontend-dev:
 	@echo docker-compose run ${APP} frontend dev #--build
-	${DC} -f ${DC_FILE}-frontend-dev.yml up -d  #--build --force-recreate
+	${DC} -f ${DC_FILE}-frontend-dev.yml up -d  --build --force-recreate
 	$(DC) -f ${DC_FILE}-frontend-dev.yml exec -d frontend-dev npm run dev:tailwindcss
 
 frontend-exec:

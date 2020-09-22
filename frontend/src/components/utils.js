@@ -42,4 +42,15 @@ async function index(index_name, filename, method) {
 		}
 }
 
-export { index, upload };
+async function config(filename) {
+	const res = await fetch(`/api/common/files/${filename}`);
+	const data = await res.json();
+	if (res.ok)  {
+		return data
+	} else {
+		console.log('error')
+		throw new Error('Oups');
+	}
+}
+
+export { index, upload, config };

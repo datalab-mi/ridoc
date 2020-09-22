@@ -1,35 +1,30 @@
 <script>
-	import { searchList, item, searchResults, suggestEntry,  index_name } from '../components/stores.js';
+	import { searchResults, suggestEntry,  index_name } from '../components/stores.js';
+	import { config } from '../components/utils.js';
+
 	import SearchInput from  '../components/SearchInput.svelte';
+
 	let promiseSearch =  new Promise(()=>{});
 	let promiseSuggest =  new Promise(()=>{});
 
+	let searchList = []
 	let body; // searchList in dict format
 	//let searchListList = searchListObject.entries(searchList)
 	//console.log(searchListList)
-
-	const format2ES = (query_list) => {
+	const format2ES = (item, query_list) => {
 		let query_dic = {index_name: $index_name};
 		let obj;
 		let highlight_fields = item.inputs.filter(obj => obj.highlight).map(x => x.key)
-		console.log(highlight_fields)
-		console.log(item.inputs.filter(obj => obj.highlight));
 		for (obj of query_list) {
 			let clause = {}
 			if (obj.value != "") {
 				//highlight_fields.push(obj.fields)
-
 				if (!(obj.bool in query_dic)) {
 					query_dic[obj.bool] = []
 				}
-				console.log(obj.value)
 				clause = JSON.parse(JSON.stringify(obj.query).replace('\$value', obj.value))
-
 				query_dic[obj.bool].push(clause)
-
-
 			}
-
 		}
 		if (highlight_fields.length >0){
 			query_dic["highlight"] = highlight_fields.flat()
@@ -38,16 +33,10 @@
   };
 
 	async function search() {
+		const item = await config('item.json')
+		searchList = await config('search.json')
 
-		body = format2ES(searchList.flat(2))
-		console.log(body)
-		// convert searchList to post json
-		//body = searchList.flat(2).reduce(function(map, obj) {
-		//		map[obj.bool] = {fields: obj.fields, query: obj.query};
-		//		return map;
-		//}, {index_name: $index_name});
-		//console.log(searchList)
-
+		body =  format2ES(item, searchList.flat(2))
 		const res = await fetch("/api/common/search",{
 												method: "POST",
 												body: JSON.stringify(body)
@@ -64,7 +53,6 @@
 
 
 	async function suggest() {
-		console.log(searchList.content.value)
 		const res = await fetch("/api/common/suggest",{
 												method: "POST",
 												body: JSON.stringify({

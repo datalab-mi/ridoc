@@ -3,27 +3,34 @@
     import BaseItem from './BaseItem.svelte'
     import PutItem from './PutItem.svelte'
 
-    import { index_name, item } from './stores.js';
+    import { config } from '../components/utils.js';
+
     const required = false;
     let files ;
     let fileNameList = [];
-    let meta = item.inputs.filter(obj => obj.metadata);
+
+
+    async function filterItem() {
+      let item = await config()
+      return item.inputs.filter(obj => obj.metadata)
+    }
+    let promise = filterItem()
 
     let send = false;
 
-    console.log("NewItem")
-  	console.log(item)
 </script>
 
+{#await promise}
+<p>... Récuperation de la configuration</p>
+{:then meta}
 <BaseItem meta={meta} required={required}>
-
 
   <div slot="button">
     <label for="fileUpload" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
     Choisir un fichier
     </label>
 
-    <input id="fileUpload" type="file" bind:files multiple={item.multiple} accept={item.accept}>
+    <input id="fileUpload" type="file" bind:files multiple={meta.multiple} accept={meta.accept}>
 
     {#if files}
       <button on:click="{() => send = !send}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
@@ -50,6 +57,7 @@
   </div>
 
 </BaseItem>
+{/await}
 
 <style>
 

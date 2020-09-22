@@ -2,31 +2,30 @@
 	import BaseItem from './BaseItem.svelte'
 	import PutItem from './PutItem.svelte'
 
-	import { index_name, item } from './stores.js';
+	import { index_name } from './stores.js';
 	import { index, upload } from './utils.js'
+
+	export let meta;
 
 	export let _id;
 	export let _source;
 	export let _score;
-
 	export let highlight = {};
 
 	$: filename = _id.replace(/\+/g, " ")
 	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
 	$: url = `/api/common/files/pdf/${filename}`
+	const file = {'name': _id.replace(/\+/g, " ")}
 
 	let promiseDelete = new Promise(()=>{});
 	let promiseDeleteIndex = new Promise(()=>{});
 
 	let readonly = true;
 	let send = false;
-	let meta = JSON.parse(JSON.stringify(item.inputs));
-
 	let isResult = true;
 
 	// replace value to the result value contained in _source or in highlight key
 	// if present and if needed
-
 	if (!highlight) {
 		highlight = {}
 	}
@@ -41,9 +40,6 @@
 
 			}
 		})
-
-	
-	const file = {'name': _id.replace(/\+/g, " ")}
 
 	async function remove() {
 		const res = await fetch(`/api/admin/${filename}`,

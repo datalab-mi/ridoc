@@ -1,14 +1,12 @@
 <script>
 
     import PutItem from './PutItem.svelte'
-    import { index_name } from './stores.js';
     import {upload, index } from  './utils.js'
 
     export let meta;
     export let cssClass = 'base';
     export let readonly = false;
     export let required = true;
-
 
 </script>
 

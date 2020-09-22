@@ -27,6 +27,7 @@ services:
       - http_proxy
       - https_proxy
       - no_proxy
+      - INDEX_NAME
 
 networks:
   default:

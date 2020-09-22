@@ -1,5 +1,7 @@
 <script>
-import { searchResults, index_name } from '../components/stores.js';
+import { searchResults } from '../components/stores.js';
+import { config } from '../components/utils.js';
+
 import { onMount } from 'svelte';
 
 import ResultItem from '../components/ResultItem.svelte';
@@ -9,6 +11,10 @@ let end;
 let height = '90%';
 let items = []
 let threshold
+
+
+let promise = config('item.json')
+
 $: {
 	let i = 0;
 	items = [];
@@ -30,7 +36,9 @@ $: {
 
 </script>
 
-
+{#await promise}
+<p>... Récuperation de la configuration</p>
+{:then meta}
 {#if items.length > 0}
 	<div class='result-list'>
 	{#each items as item (item.key)}
@@ -41,11 +49,12 @@ $: {
 				</p>
 			</div>
 		{:else}
-			<ResultItem {...item}/>
+			<ResultItem meta={meta.inputs} {...item}/>
 		{/if}
 	{/each}
 	</div>
 {/if}
+{/await}
 
 <style>
 	.result-list {
