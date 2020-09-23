@@ -34,7 +34,6 @@ export KIBANA_PORT = 5601
 
 # LOGSTASH
 export LOGSTASH_HOST = ${APP}-logstash
-export NGINX_MAPPING = $(shell cat logstash/nginx_template.json)
 # BACKEND dir
 export BACKEND=${APP_PATH}/backend
 export BACKEND_PORT=5000
@@ -127,7 +126,7 @@ create-nginx-index:
 	curl --header "content-type: application/JSON" -XPUT http://localhost/elasticsearch/nginx -d "$$(cat logstash/nginx_template.json)"
 
 logstash: network #create-nginx-index
-	${DC} -f ${DC_FILE}-logstash.yml up -d --force-recreate
+	${DC} -f ${DC_FILE}-logstash.yml up -d
 
 logstash-exec:
 	$(DC) -f ${DC_FILE}-logstash.yml exec logstash bash
