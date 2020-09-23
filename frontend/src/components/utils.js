@@ -1,11 +1,14 @@
-async function upload(meta, files) {
+async function upload(meta, file) {
   //for (var i = 0; i < files.length; i++) {
     //var file = files[i];
   const formData = new FormData();
-  const filename = files[0].name
-  formData.append('file', files[0]);
+  console.log('upload :')
+  console.log(file)
+  const filename = file.name
+  formData.append('file', file);
 
-  meta.forEach(item => formData.append(item.key, item.value));
+  meta.forEach(item => formData.append(item.key,
+    (item.value instanceof Array) ? JSON.stringify(item.value) : item.value));
 
   const upload = await fetch(`/api/admin/${filename}`, {
       method: 'PUT',
@@ -39,4 +42,15 @@ async function index(index_name, filename, method) {
 		}
 }
 
-export { index, upload };
+async function config(filename) {
+	const res = await fetch(`/api/common/files/${filename}`);
+	const data = await res.json();
+	if (res.ok)  {
+		return data
+	} else {
+		console.log('error')
+		throw new Error('Oups');
+	}
+}
+
+export { index, upload, config };

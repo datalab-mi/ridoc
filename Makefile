@@ -6,8 +6,8 @@ export DATA_PATH = ${APP_PATH}/backend/tests/iga/data
 
 # docker compose
 export DC := /usr/local/bin/docker-compose
-export DC_DIR=${APP_PATH}
-export DC_FILE=${DC_DIR}/docker-compose
+export DC_DIR = ${APP_PATH}
+export DC_FILE = ${DC_DIR}/docker-compose
 export DC_PREFIX := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]' | tr '_' '-')
 export DC_NETWORK := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]')
 export DC_BUILD_ARGS = --pull --no-cache
@@ -28,6 +28,12 @@ export ES_PROXY_PATH = /${API_PATH}/api/v0/search
 export NPM_REGISTRY = $(shell echo $$NPM_REGISTRY )
 export NPM_VERBOSE = 1
 
+# KIBANA
+export KIBANA_HOST = ${APP}-kibana
+export KIBANA_PORT = 5601
+
+# LOGSTASH
+export LOGSTASH_HOST = ${APP}-logstash
 # BACKEND dir
 export BACKEND=${APP_PATH}/backend
 export BACKEND_PORT=5000
@@ -108,16 +114,22 @@ elasticsearch-exec:
 	$(DC) -f ${DC_FILE}-elasticsearch.yml exec elasticsearch bash
 
 # kibana
-
 kibana: network
 	${DC} -f ${DC_FILE}-kibana.yml up -d
 
 kibana-exec:
 	$(DC) -f ${DC_FILE}-kibana.yml exec kibana bash
-# traefik
 
-traefik/acme.json:
-	touch traefik/acme.json
+# Logstash
+
+create-nginx-index:
+	curl --header "content-type: application/JSON" -XPUT http://localhost/elasticsearch/nginx -d "$$(cat logstash/nginx_template.json)"
+
+logstash: network #create-nginx-index
+	${DC} -f ${DC_FILE}-logstash.yml up -d
+
+logstash-exec:
+	$(DC) -f ${DC_FILE}-logstash.yml exec logstash bash
 
 # backend
 
@@ -128,7 +140,7 @@ backend/.env:
 backend-dev: network backend/.env
 	@echo docker-compose up backend for dev
 	#@export ${DC} -f ${DC_FILE}.yml up -d --build --force-recreate 2>&1 | grep -v orphan
-	@export EXEC_ENV=development;${DC} -f ${DC_FILE}.yml up -d --build #--force-recreate
+	@export EXEC_ENV=development;${DC} -f ${DC_FILE}.yml up -d --build  --force-recreate
 
 backend-dev-stop:
 	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down #--remove-orphan
@@ -169,7 +181,7 @@ nginx-dev-stop: network
 	${DC} -f ${DC_FILE}-nginx-dev.yml down
 
 nginx: network
-	${DC} -f $(DC_FILE)-nginx.yml up -d
+	${DC} -f $(DC_FILE)-nginx.yml up -d --build
 nginx-stop:
 	${DC} -f $(DC_FILE)-nginx.yml down
 
@@ -183,7 +195,7 @@ nginx-exec:
 
 frontend-dev:
 	@echo docker-compose run ${APP} frontend dev #--build
-	${DC} -f ${DC_FILE}-frontend-dev.yml up -d  #--build --force-recreate
+	${DC} -f ${DC_FILE}-frontend-dev.yml up -d  --build --force-recreate
 	$(DC) -f ${DC_FILE}-frontend-dev.yml exec -d frontend-dev npm run dev:tailwindcss
 
 frontend-exec:

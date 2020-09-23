@@ -14,6 +14,7 @@
 	<br>
 	<p>Renseignez des champs et selectionnez un fichier. Le document va être indexé
 	automatiquement dans le moteur, il est inutile de reconstruire l'index Elasticsearch.</p>
+	<br>
 	<NewItem />
 </div>
 

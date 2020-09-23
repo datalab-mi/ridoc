@@ -1,12 +1,10 @@
 <script>
 
     import PutItem from './PutItem.svelte'
-    import { index_name } from './stores.js';
     import {upload, index } from  './utils.js'
 
     export let meta;
     export let cssClass = 'base';
-
     export let readonly = false;
     export let required = true;
 
@@ -15,32 +13,60 @@
 <section class="{cssClass}-item">
 
   <div class="mb-4">
-    {#each meta as {key, type, placeholder, value, innerHtml}, i }
-      {#if key == "title"}
+    {#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight}, i }
+      {#if (key == "title") || (key == "titre")}
         <h2>
-          <textarea class='{cssClass}-title' type='text' bind:value={value} {placeholder} {readonly}/>
+          <textarea class='{cssClass}-title' type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
         </h2>
-
-        <slot name="highlight">
-        </slot>
-
-      <br>
-      {:else if type == "text"}
-        <label> {@html innerHtml}
-          <input type='text' bind:value={value} {placeholder} {readonly}/>
-        </label>
 
       {:else if type == "date"}
         <br>
         <label> {@html innerHtml}
           {#if required}
-            <input type='date' bind:value={value} {placeholder} {readonly} required />
+            <input type='date' bind:value={value} {placeholder} readonly="{readonly || !metadata}" required />
           {:else}
-            <input type='date' bind:value={value} {placeholder} {readonly} />
+            <input type='date' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
           {/if}
         </label>
+      {:else}
+
+      <slot name="highlight">
+      </slot>
+
+      <div>
+      <label> {@html innerHtml} </label>
+        {#if value instanceof Array}
+          <ul>
+            {#each value as val}
+                <li>
+                  {#if highlight && isHighlight}
+                      <p> &laquo; {@html val} &raquo; </p>
+                  {:else}
+                    {#if type == "text"}
+                        <input type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
+                    {:else if type == "textarea"}
+                        <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
+                    {/if}
+                  {/if}
+                </li>
+            {/each}
+          </ul>
+        {:else}
+          {#if highlight && isHighlight}
+              <p> &laquo; {@html value} &raquo; </p>
+          {:else}
+            {#if type == "text"}
+              <input type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
+            {:else if type == "textarea"}
+              <textarea bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
+            {/if}
+          {/if}
+        {/if}
+      </div>
       {/if}
+
     {/each}
+
   </div>
 
   <div class="flex justify-between">
@@ -72,12 +98,20 @@
 		margin: 0 0 1em 0;
 	}
 
-  input,textarea {
+  input, textarea{
     border:none;
     width: 90%;
     resize: none;
+    vertical-align: top;
    }
 
+   p {
+     display: inline;
+   }
+
+   ul {
+     list-style: disc inside;
+   }
  .base-title {
 	 font-weight: bold;
 	 margin: 0;

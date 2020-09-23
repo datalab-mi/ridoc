@@ -1,6 +1,6 @@
 <script>
 
-	import { index_name, list_synonym  } from '../stores.js';
+	import { list_synonym  } from '../stores.js';
 
 	export let filename ;
 	export let item ;

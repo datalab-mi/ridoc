@@ -1,22 +1,45 @@
 <script>
-	import { searchInput, searchResults, suggestEntry,  index_name } from '../components/stores.js';
+	import { searchResults, suggestEntry,  index_name } from '../components/stores.js';
+	import { config } from '../components/utils.js';
+
+	import SearchInput from  '../components/SearchInput.svelte';
 
 	let promiseSearch =  new Promise(()=>{});
 	let promiseSuggest =  new Promise(()=>{});
 
-	//let searchInputList = $searchInputObject.entries($searchInput)
-	//console.log(searchInputList)
+	let searchList = []
+	let body; // searchList in dict format
+	//let searchListList = searchListObject.entries(searchList)
+	//console.log(searchListList)
+	const format2ES = (item, query_list) => {
+		let query_dic = {index_name: $index_name};
+		let obj;
+		let highlight_fields = item.inputs.filter(obj => obj.highlight).map(x => x.key)
+		for (obj of query_list) {
+			let clause = {}
+			if (obj.value != "") {
+				//highlight_fields.push(obj.fields)
+				if (!(obj.bool in query_dic)) {
+					query_dic[obj.bool] = []
+				}
+				clause = JSON.parse(JSON.stringify(obj.query).replace('\$value', obj.value))
+				query_dic[obj.bool].push(clause)
+			}
+		}
+		if (highlight_fields.length >0){
+			query_dic["highlight"] = highlight_fields.flat()
+		}
+		return query_dic
+  };
 
 	async function search() {
+		const item = await config('item.json')
+		searchList = await config('search.json')
+
+		body =  format2ES(item, searchList.flat(2))
 		const res = await fetch("/api/common/search",{
 												method: "POST",
-												body: JSON.stringify({
-															 index_name: $index_name,
-															 content: $searchInput.content.value,
-															 author: $searchInput.author.value,
-															 to_date: $searchInput.to_date.value,
-															 from_date: $searchInput.from_date.value,
-														 })
+												body: JSON.stringify(body)
 													 });
 
 		const items = await res.json();
@@ -28,13 +51,13 @@
 		}
 	}
 
+
 	async function suggest() {
-		console.log($searchInput.content.value)
 		const res = await fetch("/api/common/suggest",{
 												method: "POST",
 												body: JSON.stringify({
 															 index_name: $index_name,
-															 content: $searchInput.content.value,
+															 content: searchList.content.value,
 														 })
 													 });
 
@@ -58,24 +81,55 @@
 	}
 
 	function handleSuggestChosen(v) {
-		//$searchInput.content.value = e.target.innerHTML
-		$searchInput.content.value = v
+		//searchList.content.value = e.target.innerHTML
+		searchList.content.value = v
 		$suggestEntry = []
 	}
 
 promiseSearch = search();
 
 </script>
+<div class='search-bar'>
+	{#each searchList as row, i }
+	<div class="flex mb-4">
 
+		{#each row as {bool, query, value, type, placeholder, innerHtml, style}, j}
+			{#if (i === 0) && (j === 0) }
+				<div class="w-1/6 p-2" >
+					<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded inline-flex items-center">
+						<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/></svg>
+						<span>Rechercher</span>
+					</button>
+				</div>
+			{/if}
+
+			<SearchInput bind:value={value} {type} {placeholder} {innerHtml} {style} />
+		{/each}
+		</div>
+
+	{/each}
+
+{#await promiseSearch}
+	<p>...Attente de la requête</p>
+
+{:then length}
+	<p>{length} documents trouvés</p>
+
+{:catch error}
+	<p style="color: red">{error.message}</p>
+{/await}
+
+</div>
+<!--
 <div class='search-bar'>
 
 	<div class="flex mb-4">
 		<div class="w-3/4 p-2" >
 			<div class="flex flex-col px-2">
 				<div class="px-2" >
-				<label> {@html $searchInput.content.innerHtml}
-					<input type="search" bind:value={$searchInput.content.value}
-					       placeholder={$searchInput.content.placeholder}
+				<label> {@html searchList.content.innerHtml}
+					<input type="search" bind:value={searchList.content.value}
+					       placeholder={searchList.content.placeholder}
 								 on:input={handleSuggest}
 								 class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
 
@@ -90,24 +144,27 @@ promiseSearch = search();
 				</div>
 
 			<div class="flex mb-4">
-				<div class="w-2/4 px-2">
-					<label> {@html $searchInput.author.innerHtml}
-						<input type="search" bind:value={$searchInput.author.value}
-									 placeholder={$searchInput.author.placeholder}
-									class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
-					</label>
-				</div>
+				{#if searchList.author}
+					<div class="w-2/4 px-2">
+						<label> {@html searchList.author.innerHtml}
+							<input type="search" bind:value={searchList.author.value}
+										 placeholder={searchList.author.placeholder}
+										class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
+						</label>
+					</div>
+				{/if}
+
 				<div class="w-1/4 px-2" >
-				<label> {@html $searchInput.from_date.innerHtml}
-					<input type="date" bind:value={$searchInput.from_date.value}
-					       placeholder={$searchInput.from_date.placeholder}
+				<label> {@html searchList.from_date.innerHtml}
+					<input type="date" bind:value={searchList.from_date.value}
+					       placeholder={searchList.from_date.placeholder}
 								  class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
 				</label>
 				</div>
 				<div class="w-1/4 px-2" >
-					<label> {@html $searchInput.to_date.innerHtml}
-						<input type="date" bind:value={$searchInput.to_date.value}
-									 placeholder={$searchInput.to_date.placeholder}
+					<label> {@html searchList.to_date.innerHtml}
+						<input type="date" bind:value={searchList.to_date.value}
+									 placeholder={searchList.to_date.placeholder}
 										class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal">
 					</label>
 				</div>
@@ -125,8 +182,8 @@ promiseSearch = search();
 
 	</div>
 
-	{#if $searchInput.content.value!=''}
-		<h1>La recherche est : {$searchInput.content.value}</h1>
+	{#if searchList.content.value!=''}
+		<h1>La recherche est : {searchList.content.value}</h1>
 	{/if}
 
 	{#await promiseSearch}
@@ -140,7 +197,7 @@ promiseSearch = search();
 	{/await}
 
 </div>
-
+ //-->
 <style>
 	.search-bar {
 		width: 100%;

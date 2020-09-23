@@ -1,5 +1,5 @@
 <script>
-	import { index_name, list_synonym  } from '../stores.js';
+	import { list_synonym  } from '../stores.js';
 	import SynonymRow from './SynonymRow.svelte';
 	import VirtualList from '../VirtualList.svelte';
   import { onDestroy } from 'svelte'

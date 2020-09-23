@@ -20,7 +20,9 @@ export default {
 		plugins: [
 			replace({
 				'process.browser': true,
-				'process.env.NODE_ENV': JSON.stringify(mode)
+				'process.env.NODE_ENV': JSON.stringify(mode),
+				'INDEX_NAME': process.env.INDEX_NAME
+
 			}),
 			svelte({
 				dev,
@@ -65,7 +67,9 @@ export default {
 		plugins: [
 			replace({
 				'process.browser': false,
-				'process.env.NODE_ENV': JSON.stringify(mode)
+				'process.env.NODE_ENV': JSON.stringify(mode),
+				'INDEX_NAME': process.env.INDEX_NAME
+
 			}),
 			svelte({
 				generate: 'ssr',
@@ -91,7 +95,8 @@ export default {
 			resolve(),
 			replace({
 				'process.browser': true,
-				'process.env.NODE_ENV': JSON.stringify(mode)
+				'process.env.NODE_ENV': JSON.stringify(mode),
+				'INDEX_NAME': process.env.INDEX_NAME
 			}),
 			commonjs(),
 			!dev && terser()
