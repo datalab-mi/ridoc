@@ -21,7 +21,7 @@ export default {
 			replace({
 				'process.browser': true,
 				'process.env.NODE_ENV': JSON.stringify(mode),
-				'INDEX_NAME': 'bld'
+				'INDEX_NAME': process.env.INDEX_NAME
 
 			}),
 			svelte({
@@ -68,7 +68,7 @@ export default {
 			replace({
 				'process.browser': false,
 				'process.env.NODE_ENV': JSON.stringify(mode),
-				'INDEX_NAME': 'bld'
+				'INDEX_NAME': process.env.INDEX_NAME
 
 			}),
 			svelte({
@@ -96,7 +96,7 @@ export default {
 			replace({
 				'process.browser': true,
 				'process.env.NODE_ENV': JSON.stringify(mode),
-				'INDEX_NAME': 'bld'
+				'INDEX_NAME': process.env.INDEX_NAME
 			}),
 			commonjs(),
 			!dev && terser()

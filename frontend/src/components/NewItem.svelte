@@ -11,7 +11,7 @@
 
 
     async function filterItem() {
-      let item = await config()
+      let item = await config('item.json')
       return item.inputs.filter(obj => obj.metadata)
     }
     let promise = filterItem()
