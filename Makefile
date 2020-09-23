@@ -6,8 +6,8 @@ export DATA_PATH = ${APP_PATH}/backend/tests/iga/data
 
 # docker compose
 export DC := /usr/local/bin/docker-compose
-export DC_DIR=${APP_PATH}
-export DC_FILE=${DC_DIR}/docker-compose
+export DC_DIR = ${APP_PATH}
+export DC_FILE = ${DC_DIR}/docker-compose
 export DC_PREFIX := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]' | tr '_' '-')
 export DC_NETWORK := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]')
 export DC_BUILD_ARGS = --pull --no-cache
@@ -34,7 +34,6 @@ export KIBANA_PORT = 5601
 
 # LOGSTASH
 export LOGSTASH_HOST = ${APP}-logstash
-export NGINX_MAPPING = $(shell cat logstash/nginx_template.json)
 # BACKEND dir
 export BACKEND=${APP_PATH}/backend
 export BACKEND_PORT=5000
@@ -127,7 +126,7 @@ create-nginx-index:
 	curl --header "content-type: application/JSON" -XPUT http://localhost/elasticsearch/nginx -d "$$(cat logstash/nginx_template.json)"
 
 logstash: network #create-nginx-index
-	${DC} -f ${DC_FILE}-logstash.yml up -d --force-recreate
+	${DC} -f ${DC_FILE}-logstash.yml up -d
 
 logstash-exec:
 	$(DC) -f ${DC_FILE}-logstash.yml exec logstash bash
@@ -141,7 +140,7 @@ backend/.env:
 backend-dev: network backend/.env
 	@echo docker-compose up backend for dev
 	#@export ${DC} -f ${DC_FILE}.yml up -d --build --force-recreate 2>&1 | grep -v orphan
-	@export EXEC_ENV=development;${DC} -f ${DC_FILE}.yml up -d --build #--force-recreate
+	@export EXEC_ENV=development;${DC} -f ${DC_FILE}.yml up -d --build  --force-recreate
 
 backend-dev-stop:
 	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down #--remove-orphan
@@ -196,7 +195,7 @@ nginx-exec:
 
 frontend-dev:
 	@echo docker-compose run ${APP} frontend dev #--build
-	${DC} -f ${DC_FILE}-frontend-dev.yml up -d  #--build --force-recreate
+	${DC} -f ${DC_FILE}-frontend-dev.yml up -d  --build --force-recreate
 	$(DC) -f ${DC_FILE}-frontend-dev.yml exec -d frontend-dev npm run dev:tailwindcss
 
 frontend-exec:

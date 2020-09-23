@@ -9,7 +9,7 @@ from application import create_app
 INDEX_NAME = 'iga'
 
 USER_DATA = 'tests/iga/data'
-filename = 'ignit_pnigitis.pdf'
+filename = 'ignit_pnigitis'
 
 @pytest.fixture
 def app():
@@ -25,12 +25,11 @@ def client(app):
 
 @pytest.fixture
 def search_data():
-    return dict(index_name = INDEX_NAME,
-    must = [{"multi_match":{"fields":["titre","content"],"query":"foret"}}],
-    filter= [{"match":{"author":"GRANJEANT"}},
-                        {"range":{"date":{"gte": "2015-06-06"}}},
-                        {"range":{"date":{"lte": "2017-06-06"}}}],
-    highlight = ["titre","content","author","date","date"])
+    return dict(index_name=INDEX_NAME,
+                content='foret',
+                author='GRANJEANT',
+                to_date='2017-06-06',
+                from_date='2015-06-06')
 
 @pytest.fixture
 def es():
@@ -74,8 +73,8 @@ def dummy_index():
 def form_to_upload():
     yield dict(author= 'babar',
                 date= '2020-05-04',
-                filename=filename ,
-                file=(open(USER_DATA + '/' + filename , "rb"), filename) )
+                filename=filename + '.pdf',
+                file=(open(USER_DATA + '/' + filename + '.pdf', "rb"), filename) )
 
 @pytest.fixture
 def file_name():
@@ -88,3 +87,19 @@ def index_name():
 @pytest.fixture
 def pdf_file():
     yield filename
+
+@pytest.fixture
+def sections():
+    yield [{'key': 'SITE', 'array':False},
+            {'key': 'DIRECTION', 'array':False},
+            {'key': 'DOMAINE', 'array':False},
+            {'key': 'TITRE', 'array':False},
+            {'key': 'Mots clés', 'array':True},
+            {'key': 'Date', 'array':False},
+            {'key': 'Question', 'array':False},
+            {'key': 'Réponse', 'array':False},
+            {'key': 'Réponse', 'array':False},
+            {'key': 'Pièces jointes', 'array':True},
+            {'key': 'Liens', 'array':False},
+            {'key': 'Références', 'array':False}
+            ]

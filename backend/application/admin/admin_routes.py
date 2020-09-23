@@ -32,7 +32,7 @@ def allowed_file(filename):
 @admin_bp.route("/<filename>", methods=["PUT","DELETE"])
 def upload_file(filename: str):
 
-    path_file = Path(app.config['USER_DATA']) / app.config['PDF_DIR'] / filename
+    path_file = Path(app.config['USER_DATA']) / app.config['DST_DIR'] / filename
     path_meta = Path(app.config['USER_DATA']) / app.config['META_DIR'] / filename
     path_json = Path(app.config['USER_DATA']) / app.config['JSON_DIR'] / filename
 
@@ -64,10 +64,11 @@ def upload_file(filename: str):
         if file and allowed_file(filename):
             # save file
             file.save(path_file)
+            print("save %s"%path_file)
         # save meta
         with open(path_meta , 'w', encoding='utf-8') as f:
             json.dump(request.form, f, ensure_ascii=False)
-
+            print("save %s"%path_file)
         return  make_response(jsonify(sucess=True), status)
 
     else:
@@ -76,8 +77,7 @@ def upload_file(filename: str):
 
 @admin_bp.route("/<index_name>/_doc/<filename>", methods=["DELETE", "PUT"])
 def index_file(index_name: str, filename: str):
-    #index_name = request.args.get('index_name',None)
-    #filename = request.args.get('filename',None)
+
 
     if not index_name or not filename:
         print('Missing keys')
@@ -85,7 +85,7 @@ def index_file(index_name: str, filename: str):
     if request.method == 'PUT':
         res = elastic_index_file(filename, index_name,
                     app.config['USER_DATA'],
-                    app.config['PDF_DIR'],
+                    app.config['DST_DIR'],
                     app.config['JSON_DIR'],
                     app.config['META_DIR'])
         status = 201 if res['result'] == 'created' else 200 if res['result'] == 'updated' else 500
@@ -118,7 +118,7 @@ def index(index_name: str):
 
     inject_documents(new_index,
                     app.config['USER_DATA'],
-                    pdf_path = app.config['PDF_DIR'],
+                    dst_path = app.config['DST_DIR'],
                     json_path = app.config['JSON_DIR'],
                     meta_path = META_DIR)
 

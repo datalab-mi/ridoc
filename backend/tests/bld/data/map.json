@@ -144,30 +144,35 @@
   },
   "mappings":{
     "properties": {
-       "content": {
-          "type": "text",
-          "analyzer" : "my_analyzer",
-          "search_analyzer" : "my_search_analyzer",
-          "fields" :{
-            "trigram": {
-              "type": "text",
-              "analyzer": "trigram"
-            },
-            "reverse": {
-              "type": "text",
-              "analyzer": "reverse"
-            }
+        "titre":{
+            "type": "text",
+            "analyzer" : "my_analyzer",
+            "search_analyzer" : "my_search_analyzer"
+          },
+         "domaine": {
+            "type": "text",
+            "analyzer" : "my_analyzer",
+            "search_analyzer" : "my_search_analyzer"
+          },
+          "question":{
+            "type": "text",
+            "analyzer" : "my_analyzer",
+            "search_analyzer" : "my_search_analyzer"
+          },
+          "reponse":{
+            "type": "text",
+            "analyzer" : "my_analyzer",
+            "search_analyzer" : "my_search_analyzer"
+          },
+          "mots-cles":{
+            "type": "text",
+            "analyzer" : "my_analyzer",
+            "search_analyzer" : "my_search_analyzer"
+          },
+          "date": {
+            "type": "date",
+            "format": "yyyy-MM-dd||dd/MM/yyyy"
           }
-        },
-        "author": {
-          "type": "text" ,
-          "analyzer" : "phonetic_analyser",
-          "search_analyzer" : "phonetic_analyser"
-        },
-        "date": {
-          "type": "date",
-          "format": "yyyy-MM-dd"
-        }
       }
   }
 }

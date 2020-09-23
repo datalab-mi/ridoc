@@ -27,7 +27,7 @@ RAW_EXPRESSION_FILE = os.getenv('RAW_EXPRESSION_FILE')
 
 MAPPING_FILE =  os.getenv('MAPPING_FILE')
 
-PDF_DIR = os.getenv('PDF_DIR')
+DST_DIR = os.getenv('DST_DIR')
 JSON_DIR = os.getenv('JSON_DIR')
 META_DIR =  os.getenv('META_DIR')
 
@@ -49,7 +49,7 @@ def test_create_index():
 
 @pytest.mark.run(after='test_create_index')
 def test_inject_documents():
-    inject_documents(INDEX_NAME, USER_DATA, PDF_DIR, JSON_DIR,
+    inject_documents(INDEX_NAME, USER_DATA, DST_DIR, JSON_DIR,
                 meta_path = META_DIR)
 
     res = es.get(index=INDEX_NAME, id=doc_guyane_eau)
@@ -94,31 +94,35 @@ def test_search():
     expression_file = Path(USER_DATA) / RAW_EXPRESSION_FILE
 
     req = 'travail illegal'
+    must = [{"multi_match":{"fields":["titre","content"],"query":req}}]
     #import pdb; pdb.set_trace()
     time.sleep(2)
-    res = search(req, INDEX_NAME, str(glossary_file), str(expression_file))
+    res = search(must, [], [], INDEX_NAME, [],
+                glossary_file = glossary_file,
+                expression_file = expression_file)
     #print(hits, length_req, bande)
     assert  res['hits'][0]['_id'] == 'BF2016-08-16010-dfci.pdf', 'Found to result %s'%hits[0]['_id']
-    assert res['length'] == 3, res['length']
+    assert res['length']>= 2, res['length']
     assert not res['band']
 
     # test expression
     req = "chiffre d'affaire"
-    res= search(req, INDEX_NAME, str(glossary_file), str(expression_file))
-    #import pdb; pdb.set_trace()
+    must = [{"multi_match":{"fields":["titre","content"],"query":req}}]
+    res = search(must, [], [], INDEX_NAME, [],
+                glossary_file = glossary_file,
+                expression_file = expression_file)
     assert res['hits'][0]['_score']  > 10, 'boosting no taken into account'
 
 """
 @pytest.mark.run(after='test_search')
 def test_index_file(index_name, pdf_file):
     # Index ignit_pnigitis inside USER_DATA
-    PDF_DIR = ''
+    DST_DIR = ''
     JSON_DIR = ''
     META_DIR = ''
-    data = index_file(str(pdf_file), index_name, USER_DATA, PDF_DIR, JSON_DIR, META_DIR)
+    data = index_file(str(pdf_file), index_name, USER_DATA, DST_DIR, JSON_DIR, META_DIR)
     assert data['author'] == 'babar', data
 """
-
 @pytest.mark.run(after='test_search')
 def test_reindex(client, app, es, dummy_index):
     # test reindex after a change of synonym data without downtime, using alias
@@ -126,7 +130,7 @@ def test_reindex(client, app, es, dummy_index):
 
     # test with very basic index
     es.indices.delete(index='dummy_index', ignore=[400, 404])
-    # create index
+    # create index
     es.indices.create(index='dummy_index', body=dummy_index)
     # create alias
     #es.indices.delete_alias(index='dummy_index', name='dummy_alias',ignore=[400, 404])
@@ -145,7 +149,7 @@ def test_reindex(client, app, es, dummy_index):
     #es.indices.open(index='dummy_index')
 
     es.indices.delete(index='dummy_index2', ignore=[400, 404])
-    # create index
+    # create index
     es.indices.create(index='dummy_index2', body=dummy_index)
     # index a document
     es.index(index='dummy_index2', body=data, id=name_document)
@@ -188,18 +192,21 @@ def test_blue_green():
     assert old_index == INDEX_NAME + '_blue', 'Alias get issue'
 
     # index time to blue
-    inject_documents(old_index, USER_DATA, PDF_DIR, JSON_DIR,
+    inject_documents(old_index, USER_DATA, DST_DIR, JSON_DIR,
                 meta_path = META_DIR)
 
     # Test search
-    res = search(req, INDEX_NAME)
+    must = [{"multi_match":{"fields":["titre","content"],"query":req}}]
+    res_blue = search(must, [], [], INDEX_NAME, [])
     #print(hits, length_req, bande)
     time.sleep(2)
-    assert [hits['_id'] for hits in res['hits']] == ['BF2014-08-13069+-+Plan+submersions+rapides.pdf',
+    assert [hits['_id'] for hits in res_blue['hits']] == ['BF2014-08-13069+-+Plan+submersions+rapides.pdf',
                                                     'BF2015-09-14124+-+Accueil+ressortissants+étrangers.pub.pdf']  , 'Found to result %s'%res['hits'][0]['_id']
-    print([hits['_id'] for hits in res['hits']])
+    print([hits['_id'] for hits in res_blue['hits']])
 
     ####  Switch to new index #####
+    glossary_file = Path(USER_DATA) / GLOSSARY_FILE
+    expression_file = Path(USER_DATA) / RAW_EXPRESSION_FILE
 
     # Create green index with synonym
     new_index = replace_blue_green(old_index, INDEX_NAME)
@@ -209,22 +216,26 @@ def test_blue_green():
                 GLOSSARY_FILE, RAW_EXPRESSION_FILE)
 
     # index time to green
-    inject_documents(new_index, USER_DATA, PDF_DIR, JSON_DIR,
+    inject_documents(new_index, USER_DATA, DST_DIR, JSON_DIR,
                 meta_path = META_DIR)
 
     # Switch index in alias
     put_alias(new_index, INDEX_NAME)
     delete_alias(old_index, INDEX_NAME)
-    res = search(req, INDEX_NAME)
+    must = [{"multi_match":{"fields":["titre","content"],"query":req}}]
+    res_green = search(must, [], [], INDEX_NAME, [],
+                glossary_file = glossary_file,
+                expression_file = expression_file)
     #import pdb; pdb.set_trace()
     # should be equal rather than in, but doesn't work with test_app.py. WHY??
     time.sleep(2)
-    assert  'BF2015-15-15034-action-sociale-du-mi.pdf' in [hits['_id'] for hits in res['hits']], 'Found to result %s'%res['hits'][0]['_id']
+    assert  'BF2015-15-15034-action-sociale-du-mi.pdf' in [hits['_id'] for hits in res_green['hits']], 'Found to result %s'%res['hits'][0]['_id']
 
-    print([hits['_id'] for hits in res['hits']])
+    print([hits['_id'] for hits in res_green['hits']])
 
 
     assert get_alias(INDEX_NAME) == {INDEX_NAME + '_green': {'aliases': {INDEX_NAME: {}}}}
+
 
 @pytest.mark.run(after='test_search')
 def test_suggest():

@@ -1,0 +1,43 @@
+{
+  "multiple": false,
+  "accept": ".odt",
+  "inputs": [
+    {
+      "key": "titre",
+      "type": "text",
+      "placeholder": "NA",
+      "value": "",
+      "innerHtml": "",
+      "highlight": false,
+      "metadata": false
+    },
+    {
+      "key": "question",
+      "type": "text",
+      "placeholder": "NA",
+      "value": "",
+      "innerHtml": "<b>Question :</b>",
+      "highlight": true,
+      "metadata": false
+
+    },
+    {
+      "key": "reponse",
+      "type": "textarea",
+      "placeholder": "NA",
+      "value": "",
+      "innerHtml": "<b>Réponse :</b>",
+      "highlight": false,
+      "metadata": false
+    },
+    {
+      "key": "pieces jointes",
+      "type": "text",
+      "placeholder": "NA",
+      "value": "",
+      "innerHtml": "<b>Pièces jointes :</b>",
+      "highlight": true,
+      "metadata": false
+    }
+  ]
+}

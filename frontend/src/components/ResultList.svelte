@@ -1,42 +1,60 @@
 <script>
-import { searchInput, searchResults, index_name } from '../components/stores.js';
+import { searchResults } from '../components/stores.js';
+import { config } from '../components/utils.js';
+
+import { onMount } from 'svelte';
+
 import ResultItem from '../components/ResultItem.svelte';
 import VirtualList from '../components/VirtualList.svelte';
 let start;
 let end;
-let items
 let height = '90%';
+let items = []
+let threshold
+
+
+let promise = config('item.json')
 
 $: {
 	let i = 0;
-	items = $searchResults.hits
+	items = [];
+	threshold = true
 	for (const hits of $searchResults.hits){
-		if (hits._score < $searchResults.threshold){
-			break
+		let item = {}
+		if (hits._score < $searchResults.threshold && threshold){
+			threshold = false
+			item = {'_id': "bar"}
+		} else {
+			item = hits
 		}
-		i += 1
-	}
-	items.splice(i, 0, "bar")
-}
 
+	item['key'] =  Math.random() *10000 | 0 // Choose random key
+	items.push(item)
+	}
+	//items.splice(i, 0, "bar")
+}
 
 </script>
 
-
-{#if searchResults}
+{#await promise}
+<p>... Récuperation de la configuration</p>
+{:then meta}
+{#if items.length > 0}
 	<div class='result-list'>
-	<p>{start}-{end}</p>
-		<VirtualList {items} {height} bind:start bind:end let:item>
-			{#if  item === "bar"}
-				<div class="bar">
-					<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Nous vous recommandons de contacter  <a href="mailto://iga@interieur.gouv.fr?subject=Demande_de_consultation">[iga@interieur.gouv.fr]</a></p>
-				</div>
-			{:else}
-				<ResultItem {...item}/>
-			{/if}
-		</VirtualList>
+	{#each items as item (item.key)}
+		{#if  item._id === "bar"}
+			<div class="bar">
+				<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Nous vous recommandons de contacter
+					<a href="mailto://iga@interieur.gouv.fr?subject=Demande_de_consultation">l'administrateur</a>
+				</p>
+			</div>
+		{:else}
+			<ResultItem meta={meta.inputs} {...item}/>
+		{/if}
+	{/each}
 	</div>
 {/if}
+{/await}
 
 <style>
 	.result-list {
@@ -46,7 +64,6 @@ $: {
 		box-shadow: 2px 2px 8px rgba(255,0,0,1);
 		padding: 1em;
 		margin: 0 0 1em 0;
-		height: calc(200vh - 15em);
 		min-height: 200px;
 	}
 .bar {

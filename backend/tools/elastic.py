@@ -16,7 +16,7 @@ from copy import deepcopy
 from pathlib import Path
 from shutil import copyfile
 import pandas as pd
-from tools.converter import pdf2json, save_json
+from tools.converter import pdf2json, odt2json, save_json
 
 
 def empty_tree(pth: Path):
@@ -25,6 +25,14 @@ def empty_tree(pth: Path):
             child.unlink()
         else:
             empty_tree(child)
+
+def _finditem(obj, key):
+    if key in obj: return obj[key]
+    for k, v in obj.items():
+        if isinstance(v,dict):
+            item = _finditem(v, key)
+            if item is not None:
+                return item
 
 
 #On établit une connection
@@ -58,9 +66,9 @@ def clean(expression:str, index_name:str, analyzer="clean_analyser"):
     return list_token
 
 
-def build_query(req:str, index_name:str,
-        glossary_file=None, expression_file=None,
-        from_date=None, to_date=None, author=None) -> dict:
+def build_query(must: dict, should: dict, filter: dict, index_name: str,
+            highlight: list,
+            glossary_file=None, expression_file=None) -> dict:
     """
     Build the body of the query
     Args:
@@ -72,25 +80,29 @@ def build_query(req:str, index_name:str,
         dict
     """
 
-    if expression_file:
-        # process expression
-        with open(expression_file, 'r') as f:
-            content = f.read()
-        list_expression = [x.lower().split(' ') for x in str(content).split('\n')]
-        list_expression = [''.join(x) for x in list_expression]
-    else:
-        list_expression = []
+    length_of_request = 0
+    list_expression = []
     # TODO : process all keyword???
     # Liste_acronyme
+    if must:
+        if expression_file:
+            # process expression
+            with open(expression_file, 'r') as f:
+                content = f.read()
+            list_expression = [x.lower().split(' ') for x in str(content).split('\n')]
+            list_expression = [''.join(x) for x in list_expression]
+        else:
+            list_expression = []
 
-    print(req)
-    #Au début on va analyser la requête
-    body = {'analyzer':"my_analyzer", "text": req}
-    analyse = indices.analyze(index= index_name, body = body)
+        req = " ".join([_finditem(x, "query") for x in must])
+        #Au début on va analyser la requête
+        body = {'analyzer':"my_analyzer", "text": req}
+        analyse = indices.analyze(index= index_name, body = body)
 
-    analyzed = [ananyse_tokens['token'] for ananyse_tokens in analyse["tokens"]]
-    print(analyzed)
-    length_of_request = len(analyzed)
+        analyzed = [ananyse_tokens['token'] for ananyse_tokens in analyse["tokens"]]
+        print(analyzed)
+
+        length_of_request = len(analyzed)
 
 
     #------------------------Application du filtre 1 -----------------------------
@@ -121,28 +133,29 @@ def build_query(req:str, index_name:str,
                         "must_not": []
                                 }
                         },
-                    "highlight" : {
-                        "pre_tags" : ["<mark>"],
-                        "post_tags" : ["</mark>"],
-                        "fragment_size" : 300,
-                        "number_of_fragments" : 3,
-                        "order" : "score",
-                        "boundary_scanner" : "sentence",
-                        "boundary_scanner_locale" : "fr-FR",
-                        "fields":{
-                            "content":{}
-                            }
+            "highlight" : {
+                "pre_tags" : ["<mark>"],
+                "post_tags" : ["</mark>"],
+                "fragment_size" : 300,
+                "number_of_fragments" : 3,
+                "order" : "score",
+                "boundary_scanner" : "sentence",
+                "boundary_scanner_locale" : "fr-FR",
+                "fields":{}
                     }
                 }
 
 
-    if len(req.strip()) > 0:
-        body["query"]['bool']['must'].append({"simple_query_string": {
-                                    "fields" : ["content" , "title"],
-                                    "query": req ,
-                                    "analyze_wildcard": False
-                                                }})
+    if must:
+        body["query"]['bool']['must'] += must
 
+    if filter:
+        body['query']['bool']["filter"] += filter
+
+    if should:
+        body["query"]['bool']['should'] += should
+
+    # add boosting in should for expressions
     for key in req_expression:
       body['query']['bool']["should"].append({"match":{
                                       'content' :{
@@ -150,26 +163,18 @@ def build_query(req:str, index_name:str,
                                           "boost" : 5
                                                 }}})
 
-
-    if from_date:
-        body['query']['bool']["filter"].append({"range" :
-                                {"date" : {"gte" : from_date}}
-                                             })
-    if  to_date:
-        body['query']['bool']["filter"].append({"range" :
-                                {"date" : {"lte" : to_date}}
-                                            })
-
-    if author:
-      body['query']['bool']["filter"].append({"match" :
-                        {"author" : {"query" : author}}})
+    if highlight:
+        for field in highlight:
+            body['highlight']['fields'].update({field: {}})
+    #import pdb; pdb.set_trace()
 
     print(body)
+
     return body, length_of_request
 
-def search(req, index_name,
-            glossary_file=None, expression_file=None,
-            from_date=None, to_date=None, author=None):
+def search(must: dict, should: dict, filter: dict, index_name: str,
+            highlight: list,
+            glossary_file=None, expression_file=None):
 
     """Fonction qui permet de faire la recherche Elastic dans notre index
 
@@ -190,12 +195,13 @@ def search(req, index_name,
             T = True
             break
     """
-    if (req != '') or from_date or to_date or author:
-        body, length_of_request = build_query(req,
-                            index_name,
-                            glossary_file,
-                            expression_file,
-                            from_date, to_date, author)
+    #req = [_finditem(x, "query") for x in must]
+    #print(req)
+
+    if (must or should or filter):
+        body, length_of_request = build_query(must, should, filter, index_name,
+                    highlight,
+                    glossary_file=glossary_file, expression_file=expression_file)
 
         D = es.search(index = index_name,
                       body = body,
@@ -208,7 +214,7 @@ def search(req, index_name,
                                 "match_all": {}
                             }
                         },
-                    size = int(10000)
+                    size = int(1000)
                     )
     try: #This try is for the case where no match is found
         if not T and D['hits']['hits'][0]["_score"]/length_of_request < seuil: #The first filter then the second filter
@@ -363,8 +369,8 @@ def create_index(INDEX_NAME,
     es.indices.create(index=INDEX_NAME, body=map)
 
 
-def inject_documents(INDEX_NAME, user_data, pdf_path, json_path,
-            meta_path=None):
+def inject_documents(INDEX_NAME, user_data, dst_path, json_path,
+            meta_path=None, sections=[]):
 
     no_match = 0
 
@@ -372,13 +378,14 @@ def inject_documents(INDEX_NAME, user_data, pdf_path, json_path,
     # empty it in case
     empty_tree(Path(user_data) / json_path)
 
-    for path_document in (Path(user_data) / pdf_path).glob('**/*.pdf'):
+    for path_document in (Path(user_data) / dst_path).iterdir():
         try:
             #path_document = pdf_path / filename
             print('Read %s'%str(path_document))
 
-            index_file(path_document.name, INDEX_NAME, user_data, pdf_path, json_path,
-                        meta_path)
+            filename = path_document.name
+            index_file(filename, INDEX_NAME, user_data,
+                        dst_path, json_path, meta_path, sections=sections)
             print('Document %s just uploaded'% path_document)
 
         except Exception as e:
@@ -391,19 +398,24 @@ def inject_documents(INDEX_NAME, user_data, pdf_path, json_path,
 
     print("There is %s documents without metadata match"%no_match)
 
-def index_file(filename, INDEX_NAME, user_data, pdf_path, json_path,
-            meta_path):
+def index_file(filename, INDEX_NAME, user_data, dst_path, json_path,
+            meta_path,  sections=[]):
     """
     Index json file to elastic with metadata
-    Todo : substitue this function in inject_document
     """
-    path_file = Path(user_data) / pdf_path / filename
-    data = pdf2json(str(path_file))
+    filename = Path(filename)
+    path_document = Path(user_data) / dst_path / filename
+    #import pdb; pdb.set_trace()
+    if  filename.suffix == '.pdf':
+        data = pdf2json(str(path_document))
+    elif  filename.suffix == '.odt':
+        data = odt2json(str(path_document), sections)
+    else:
+        raise Exception("Format not supported")
+    #import pdb; pdb.set_trace()
 
-    path_meta =  Path(user_data) / meta_path / filename
-    path_json =  Path(user_data) / json_path / filename
-    path_meta = path_meta.with_suffix('').with_suffix('.json') # replace extension
-    path_json = path_json.with_suffix('').with_suffix('.json') # replace extension
+    path_meta =  Path(user_data) / meta_path / (path_document.stem + '.json')
+    path_json =  Path(user_data) / json_path / (path_document.stem + '.json')
 
     if path_meta.exists():
         with open(path_meta, 'r' , encoding = 'utf-8') as json_file:
@@ -412,7 +424,7 @@ def index_file(filename, INDEX_NAME, user_data, pdf_path, json_path,
 
     save_json(data, path_json)
 
-    res = es.index(index = INDEX_NAME, body=data , id = filename)
+    res = es.index(index = INDEX_NAME, body=data , id = path_document.name)
     return res
 
 def delete_file(filename, INDEX_NAME):

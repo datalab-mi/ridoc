@@ -1,0 +1,14 @@
+[
+  [
+    {
+    "bool": "must",
+    "query": {"multi_match": {"fields":["titre", "question","reponse"], "query":"$value"}},
+    "value": "",
+    "type": "search",
+    "placeholder": "Recherche par mots clefs",
+    "innerHtml": "",
+    "style": "w-5/6 p-2",
+    "highlight": true
+    }
+  ]
+]
