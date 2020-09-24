@@ -10,6 +10,11 @@ from elasticsearch import Elasticsearch
 
 es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
 
+import elasticsearch
+from elasticsearch import Elasticsearch
+
+es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
+
 env_path = '/app/tests/iga/.env-iga'
 load_dotenv(dotenv_path=env_path)
 
@@ -43,6 +48,10 @@ def test_reindex(client, app):
 
     create_index(INDEX_NAME + '_blue', USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
     put_alias(INDEX_NAME + '_blue', INDEX_NAME)
+
+    for i in range(3):
+        es.indices.delete_alias(index=[new_index],
+                name=INDEX_NAME, ignore=[400, 404])
 
     with app.test_client() as c:
         resp = c.get(
