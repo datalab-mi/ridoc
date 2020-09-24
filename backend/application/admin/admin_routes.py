@@ -104,6 +104,7 @@ def index(index_name: str):
     #content = request.get_json(force=True)
     #index_name = content.get('index_name', app.config['INDEX_NAME'])
     #index_name  = index_name if index_name else app.config['INDEX_NAME']
+
     old_index = get_index_name(index_name)
     new_index = replace_blue_green(old_index, index_name)
     print(new_index)

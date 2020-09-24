@@ -29,6 +29,7 @@ MAPPING_FILE =  os.getenv('MAPPING_FILE')
 
 PDF_DIR = os.getenv('PDF_DIR')
 ODT_DIR = os.getenv('ODT_DIR')
+DST_DIR = os.getenv('DST_DIR')
 JSON_DIR = os.getenv('JSON_DIR')
 META_DIR =  os.getenv('META_DIR')
 
@@ -93,20 +94,27 @@ def test_search():
 
     doc = 'création+de+la+DNUM.odt'
     req = 'Depuis quand date la direction du Numérique?'
+    must = [{"multi_match":{"fields":["question","reponse","titre","mots-cles"],"query":req}}]
     time.sleep(2)
-    res = search(req, INDEX_NAME, str(glossary_file), str(expression_file))
+    res = search(must, [], [], INDEX_NAME, [],
+                glossary_file = glossary_file,
+                expression_file = expression_file)
     #import pdb; pdb.set_trace()
-
     #print(hits, length_req, bande)
     assert  res['hits'][0]['_id'] == doc, 'Found to result %s'%res['hits'][0]['_id']
     assert res['length'] == 4, res['length']
     assert not res['band']
 
     # test expression
-    req = "transformation numérique"
-    res= search(req, INDEX_NAME, str(glossary_file), str(expression_file))
+    req = " moteur de recherche"
+    must = [{"multi_match":{"fields":["question","reponse","titre","mots-cles"],"query":req}}]
+    time.sleep(2)
+    res1 = search(must, [], [], INDEX_NAME, [],
+                glossary_file = glossary_file,
+                expression_file = expression_file)
+    res2 = search(must, [], [], INDEX_NAME, [])
     #import pdb; pdb.set_trace()
-    assert res['hits'][0]['_score']  > 6, 'boosting no taken into account'
+    assert res1['hits'][0]['_score']  > res2['hits'][0]['_score'], 'boosting no taken into account'
 
 # Test test_reindex and suggest already in iga test folder
 

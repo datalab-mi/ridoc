@@ -3,7 +3,7 @@ import json, os, time
 from pathlib import Path
 import pandas as pd
 from dotenv import load_dotenv
-from tools.elastic import get_index_name, replace_blue_green
+from tools.elastic import get_index_name, replace_blue_green, create_index, put_alias
 
 import elasticsearch
 from elasticsearch import Elasticsearch
@@ -19,7 +19,7 @@ USER_DATA = os.getenv('USER_DATA')
 ES_DATA = os.getenv('ES_DATA')
 
 GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
-EXPRESSION_FILE = os.getenv('EXPRESSION_FILE')
+RAW_EXPRESSION_FILE = os.getenv('RAW_EXPRESSION_FILE')
 MAPPING_FILE =  os.getenv('MAPPING_FILE')
 
 PDF_DIR = os.getenv('PDF_DIR')
@@ -33,20 +33,23 @@ def test_healthcheck(client, app):
     assert res.status_code == 200,res
 
 def test_reindex(client, app):
+    # Clear
+    for i in range(3): # to be sure alias and indexes are removed
+        es.indices.delete(index=INDEX_NAME, ignore=[400, 404])
+        es.indices.delete(index=INDEX_NAME + '_green', ignore=[400, 404])
+        es.indices.delete(index=INDEX_NAME + '_blue', ignore=[400, 404])
+        es.indices.delete_alias(index=[INDEX_NAME + '_blue', INDEX_NAME + '_green'],
+            name=INDEX_NAME, ignore=[400, 404])
 
-    old_index = get_index_name(INDEX_NAME)
-    new_index = replace_blue_green(old_index, INDEX_NAME)
-
-    for i in range(3):
-        es.indices.delete_alias(index=[new_index],
-                name=INDEX_NAME, ignore=[400, 404])
+    create_index(INDEX_NAME + '_blue', USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
+    put_alias(INDEX_NAME + '_blue', INDEX_NAME)
 
     with app.test_client() as c:
         resp = c.get(
             '/admin/%s/reindex'%INDEX_NAME)
 
     assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
-    assert resp.json['color'] == new_index
+    assert resp.json['color'] == INDEX_NAME + '_green'
 
 def test_search(client, app, search_data):
     with app.test_client() as c:

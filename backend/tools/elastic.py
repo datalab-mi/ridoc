@@ -123,6 +123,7 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
             req_expression.append(expression)
             print('req_expression :')
             print(req_expression)
+
     #import pdb; pdb.set_trace()
 
     body = { "query": {
@@ -156,12 +157,13 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
         body["query"]['bool']['should'] += should
 
     # add boosting in should for expressions
+    #import pdb; pdb.set_trace()
     for key in req_expression:
-      body['query']['bool']["should"].append({"match":{
-                                      'content' :{
-                                          "query" : '_' + key + '_',
-                                          "boost" : 5
-                                                }}})
+      body['query']['bool']["should"].append({"multi_match":{
+                                        'fields': [_finditem(x, "fields") for x in must][0],
+                                        'boost': 5, # can be boosted per fields with ^
+                                         "query" : '_' + key + '_',
+                                                }})
 
     if highlight:
         for field in highlight:
