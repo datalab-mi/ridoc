@@ -5,6 +5,11 @@ import pandas as pd
 from dotenv import load_dotenv
 from tools.elastic import get_index_name, replace_blue_green
 
+import elasticsearch
+from elasticsearch import Elasticsearch
+
+es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
+
 env_path = '/app/tests/iga/.env-iga'
 load_dotenv(dotenv_path=env_path)
 
@@ -32,6 +37,10 @@ def test_reindex(client, app):
     old_index = get_index_name(INDEX_NAME)
     new_index = replace_blue_green(old_index, INDEX_NAME)
 
+    for i in range(3):
+        es.indices.delete_alias(index=[new_index],
+                name=INDEX_NAME, ignore=[400, 404])
+
     with app.test_client() as c:
         resp = c.get(
             '/admin/%s/reindex'%INDEX_NAME)
@@ -56,11 +65,11 @@ def test_search(client, app, search_data):
     time.sleep(2)
     assert [hits['_id'] for hits in res['hits']] == ['BF2016-08-16010-dfci.pdf'], 'Find %s'%[hits['_id'] for hits in res['hits']]
 
-def test_upload_file(client, app, form_to_upload):
+def test_upload_file(client, app, form_to_upload, file_name):
     # Add document
     with app.test_client() as c:
         resp = c.put(
-            '/admin/%s'%form_to_upload['filename'],
+            '/admin/%s'%file_name,
             content_type = 'multipart/form-data',
             data = form_to_upload)
 
@@ -69,7 +78,7 @@ def test_upload_file(client, app, form_to_upload):
     # Delete document
     with app.test_client() as c:
         resp = c.delete(
-            '/admin/%s'%form_to_upload['filename'])
+            '/admin/%s'%file_name)
 
     assert resp.status_code == 204, 'Status Code : %s'%resp.status_code
 

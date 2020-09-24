@@ -39,7 +39,6 @@ def upload_file(filename: str):
     path_meta = path_meta.with_suffix('').with_suffix('.json') # replace extension
     path_json = path_json.with_suffix('').with_suffix('.json') # replace extension
 
-
     if request.method == 'DELETE':
         if path_file.exists():
             path_file.unlink()
@@ -66,9 +65,11 @@ def upload_file(filename: str):
             file.save(path_file)
             print("save %s"%path_file)
         # save meta
-        with open(path_meta , 'w', encoding='utf-8') as f:
-            json.dump(request.form, f, ensure_ascii=False)
-            print("save %s"%path_file)
+        if path_meta.parent.exists():
+            with open(path_meta , 'w', encoding='utf-8') as f:
+                json.dump(request.form, f, ensure_ascii=False)
+                print("save %s"%path_file)
+
         return  make_response(jsonify(sucess=True), status)
 
     else:

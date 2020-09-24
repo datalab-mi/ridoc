@@ -32,7 +32,7 @@
     },
     {
       "key": "pieces jointes",
-      "type": "text",
+      "type": "link",
       "placeholder": "NA",
       "value": "",
       "innerHtml": "<b>Pièces jointes :</b>",

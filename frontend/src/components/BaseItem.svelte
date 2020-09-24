@@ -45,7 +45,9 @@
                     {#if type == "text"}
                         <input type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                     {:else if type == "textarea"}
-                        <textarea bind:value={val} {placeholder} {rows} readonly="{readonly || !metadata}"/>
+                        <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
+                    {:else if type == "link"}
+                        <p class="clickable" on:click={window.open(`/api/common/files/${val}`,'_blank')}> {val}  </p>
                     {/if}
                   {/if}
                 </li>
@@ -97,6 +99,12 @@
 		padding: 1em;
 		margin: 0 0 1em 0;
 	}
+  .clickable {
+    color: blue;
+    font-weight: normal;
+    cursor: pointer;
+  }
+
 
   input, textarea{
     border:none;
