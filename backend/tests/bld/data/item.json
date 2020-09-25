@@ -37,7 +37,7 @@
       "value": "",
       "innerHtml": "<b>Pièces jointes :</b>",
       "highlight": true,
-      "metadata": false
+      "metadata": true
     }
   ]
 }
