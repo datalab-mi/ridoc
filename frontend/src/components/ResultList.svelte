@@ -28,7 +28,7 @@ $: {
 			item = hits
 		}
 
-	item['key'] =  Math.random() *10000 | 0 // Choose random key
+	item['key'] =  Math.random() * 1e6  | 0 // Choose random key
 	items.push(item)
 	}
 	//items.splice(i, 0, "bar")
