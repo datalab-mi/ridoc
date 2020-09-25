@@ -8,6 +8,7 @@
     export let readonly = false;
     export let required = true;
 
+    let rows = 4
 </script>
 
 <section class="{cssClass}-item">
@@ -20,7 +21,6 @@
         </h2>
 
       {:else if type == "date"}
-        <br>
         <label> {@html innerHtml}
           {#if required}
             <input type='date' bind:value={value} {placeholder} readonly="{readonly || !metadata}" required />
@@ -45,7 +45,7 @@
                     {#if type == "text"}
                         <input type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                     {:else if type == "textarea"}
-                        <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
+                        <textarea bind:value={val} {placeholder} {rows} readonly="{readonly || !metadata}"/>
                     {/if}
                   {/if}
                 </li>
@@ -58,7 +58,7 @@
             {#if type == "text"}
               <input type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
             {:else if type == "textarea"}
-              <textarea bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
+              <textarea bind:value={value} {placeholder} {rows} readonly="{readonly || !metadata}"/>
             {/if}
           {/if}
         {/if}
