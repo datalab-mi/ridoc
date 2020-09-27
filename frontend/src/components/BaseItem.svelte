@@ -8,6 +8,8 @@
     export let readonly = false;
     export let required = true;
 
+
+
     let rows = 4
 </script>
 
@@ -53,14 +55,8 @@
                   {/if}
                 </li>
             {/each}
-
-          {#if !readonly  && metadata}
-            <button on:click={value=[...value, "newValue"] } class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-            <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M11 9h4v2h-4v4H9v-4H5V9h4V5h2v4zm-1 11a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"/></svg>
-            </button>
-          {/if}
-
           </ul>
+
         {:else}
           {#if highlight && isHighlight}
               <p> &laquo; {@html value} &raquo; </p>
