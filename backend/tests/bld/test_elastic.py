@@ -9,6 +9,7 @@ from shutil import copyfile
 
 from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file, suggest
 from tools.converter import pdf2json
+from tools.utils import empty_tree
 
 import pytest
 #import pdb; pdb.set_trace()
@@ -63,6 +64,8 @@ def test_inject_documents(sections):
 def test_analyse_index():
 
     # create elasticsearch index
+    for path in [JSON_DIR, META_DIR]:
+        empty_tree(Path(path))
 
     indices = elasticsearch.client.IndicesClient(es)
 

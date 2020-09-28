@@ -1,4 +1,5 @@
 import json
+from json.decoder import JSONDecodeError
 from pathlib import Path  # python3 only
 import pandas as pd
 from os import environ
@@ -67,7 +68,14 @@ def upload_file(filename: str):
         # save meta
         if path_meta.parent.exists():
             with open(path_meta , 'w', encoding='utf-8') as f:
-                json.dump(request.form, f, ensure_ascii=False)
+                form_to_save = {}
+                # Need to format array in request.form ...
+                for k, v in request.form.items():
+                    try :
+                        form_to_save[k] = json.loads(v)
+                    except JSONDecodeError as e:
+                        form_to_save[k] = v
+                json.dump(form_to_save, f, ensure_ascii=False)
                 print("save %s"%path_file)
 
         return  make_response(jsonify(sucess=True), status)

@@ -37,6 +37,15 @@
       "value": "",
       "innerHtml": "<b>Pièces jointes :</b>",
       "highlight": true,
+      "metadata": false
+    },
+    {
+      "key": "mots cles",
+      "type": "text",
+      "placeholder": "NA",
+      "value": "",
+      "innerHtml": "<b>Mots clés :</b>",
+      "highlight": true,
       "metadata": true
     }
   ]

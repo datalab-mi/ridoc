@@ -47,7 +47,6 @@
                     {:else if type == "textarea"}
                         <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                     {:else if type == "link"}
-                        <p class="clickable" on:click={window.open(`/api/common/files/${val}`,'_blank')}> {val}  </p>
                         <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={(readonly || !metadata) ? window.open(`/api/common/files/${val}`,'_blank'): ()=>{}} type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                     {/if}
 

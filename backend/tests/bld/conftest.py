@@ -71,7 +71,9 @@ def dummy_index():
 
 @pytest.fixture
 def form_to_upload():
-    yield dict(file=(open(USER_DATA + '/' + filename, "rb"), filename))
+    yield {"file": (open(USER_DATA + '/' + filename, "rb"), filename),
+            "mots cles": '["- docker","- python","babar"]'
+                }
 
 @pytest.fixture
 def file_name():

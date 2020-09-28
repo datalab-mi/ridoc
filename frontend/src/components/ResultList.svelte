@@ -49,7 +49,7 @@ $: {
 				</p>
 			</div>
 		{:else}
-			<ResultItem meta={meta.inputs} {...item}/>
+			<ResultItem meta={JSON.parse(JSON.stringify(meta.inputs))} {...item}/>
 		{/if}
 	{/each}
 	</div>
