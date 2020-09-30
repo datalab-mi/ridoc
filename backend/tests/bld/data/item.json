@@ -43,7 +43,7 @@
       "key": "mots cles",
       "type": "text",
       "placeholder": "NA",
-      "value": "",
+      "value": [],
       "innerHtml": "<b>Mots clés :</b>",
       "highlight": true,
       "metadata": true

@@ -1,6 +1,6 @@
 <script>
 
-    import BaseItem from './BaseItem.svelte'
+    import Entry from './Entry.svelte'
     import PutItem from './PutItem.svelte'
 
     import { config } from '../components/utils.js';
@@ -23,9 +23,14 @@
 {#await promise}
 <p>... Récuperation de la configuration</p>
 {:then meta}
-<BaseItem meta={meta} required={required}>
 
-  <div slot="button">
+  <section class="new-item">
+
+  {#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight}, i }
+    <Entry required={required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight}}/>
+  {/each}
+
+  <div>
     <label for="fileUpload" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
     Choisir un fichier
     </label>
@@ -55,8 +60,8 @@
     {/each}
     {/if}
   </div>
+  </section>
 
-</BaseItem>
 {/await}
 
 <style>

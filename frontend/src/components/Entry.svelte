@@ -1,28 +1,35 @@
 <script>
 
-    import PutItem from './PutItem.svelte'
-    import {upload, index } from  './utils.js'
+    export let key
+    export let type
+    export let  placeholder
+    export let   value
+    export let  innerHtml
+    export let   highlight
+    export let  metadata
+    export let  isHighlight
 
-    export let key;
-    export let type;
-    export let placeholder;
-    export let value;
-    export let innerHtml;
-    export let highlight;
-    export let metadata;
-    export let isHighlight;
+    export let readonly = false;
+    export let required = true
 
-    export let readonly;
+    let cssClass = 'base'
 
-    let cssClass = "result"
+
     let rows = 4
+    let newValue = ""
 
-    function onClick() {
-  		value=[...value, "babar"]
+    function onDelete(val){
+      value = value.filter(item => item !== val)
+    }
+
+    function onAdd(){
+      value = [...value, newValue]
+      newValue = ""
     }
 
 </script>
 
+<div>
 {#if (key == "title") || (key == "titre")}
   <h2>
     <textarea class='{cssClass}-title' type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
@@ -55,15 +62,22 @@
               {:else if type == "link"}
                   <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={(readonly || !metadata) ? window.open(`/api/common/files/${val}`,'_blank'): ()=>{}} type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
               {/if}
-
+              {#if !readonly  && metadata}
+              <button on:click={() => onDelete(val)} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+                <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 2l2-2h4l2 2h4v2H2V2h4zM3 6h14l-1 14H4L3 6zm5 2v10h1V8H8zm3 0v10h1V8h-1z"/></svg>
+                </button>
+              {/if}
             {/if}
           </li>
       {/each}
 
     {#if !readonly  && metadata}
-      <button on:click={onClick} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-      <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M11 9h4v2h-4v4H9v-4H5V9h4V5h2v4zm-1 11a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"/></svg>
-      </button>
+      <li>
+        <input type='text' bind:value={newValue} placeholder="Nouvelle entrée"/>
+        <button on:click={onAdd} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M11 9h4v2h-4v4H9v-4H5V9h4V5h2v4zm-1 11a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"/></svg>
+        </button>
+      </li>
     {/if}
 
     </ul>
@@ -80,7 +94,7 @@
   {/if}
 </div>
 {/if}
-
+</div>
 
 
 <style>
