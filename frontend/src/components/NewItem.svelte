@@ -1,22 +1,21 @@
 <script>
 
-    import Entry from './Entry.svelte'
-    import PutItem from './PutItem.svelte'
+  import Entry from './Entry.svelte'
+  import PutItem from './PutItem.svelte'
 
-    import { config } from '../components/utils.js';
+  import { config } from '../components/utils.js';
 
-    const required = false;
-    let files ;
-    let fileNameList = [];
+  let files ;
+  let fileNameList = [];
+  let send = false;
 
+  const required = false;
 
-    async function filterItem() {
-      let item = await config('item.json')
-      return item.inputs.filter(obj => obj.metadata)
-    }
-    let promise = filterItem()
-
-    let send = false;
+  async function filterItem() {
+    let item = await config('item.json')
+    return item.inputs.filter(obj => obj.metadata)
+  }
+  let promise = filterItem()
 
 </script>
 
@@ -24,44 +23,43 @@
 <p>... Récuperation de la configuration</p>
 {:then meta}
 
-  <section class="new-item">
+<section class="new-item">
 
-  {#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight}, i }
-    <Entry required={required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight}}/>
-  {/each}
+{#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight}, i }
+  <Entry required={required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight}}/>
+{/each}
 
-  <div>
-    <label for="fileUpload" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-    Choisir un fichier
-    </label>
+<div>
+  <label for="fileUpload" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+  Choisir un fichier
+  </label>
 
-    <input id="fileUpload" type="file" bind:files multiple={meta.multiple} accept={meta.accept}>
+  <input id="fileUpload" type="file" bind:files multiple={meta.multiple} accept={meta.accept}>
 
-    {#if files}
-      <button on:click="{() => send = !send}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
-        <span>SOUMETTRE</span>
-      </button>
-      <br>
-      {#each files as file}
-        <li>{file.name}</li>
-      {/each}
-    {:else}
-      <button disabled class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
-        <span>SOUMETTRE</span>
-      </button>
-
-    {/if}
-
-    {#if send}
+  {#if files}
+    <button on:click="{() => send = !send}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+      <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
+      <span>SOUMETTRE</span>
+    </button>
+    <br>
     {#each files as file}
-      <PutItem {meta} file={file} />
+      <li>{file.name}</li>
     {/each}
-    {/if}
-  </div>
-  </section>
+  {:else}
+    <button disabled class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+      <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
+      <span>SOUMETTRE</span>
+    </button>
 
+  {/if}
+
+  {#if send}
+  {#each files as file}
+    <PutItem {meta} file={file} />
+  {/each}
+  {/if}
+</div>
+</section>
 {/await}
 
 <style>
