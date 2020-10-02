@@ -1,5 +1,6 @@
 _Dépot boite à outils pour un moteur de recherche._
 
+---
 
 ## Présentation
  Makefile : Contient les commandes et variables du projet.<br />
@@ -12,23 +13,23 @@ _Dépot boite à outils pour un moteur de recherche._
  - Installer Docker et Docker-Compose localement.
  - Installer Make.
  - Télécharger les données : `make download-data`
+ - Créer le fichier artifacts pour choisir `INDEX_NAME`, `DATA_PATH` et `ENV_FILE`. Par exemple `mv artifacts.sample artifacts`
 
-### Les micro-services
+## Les micro-services
 
 ### Elasticsearch
  - Fabriquer l'image docker : `make elasticsearch`. Lance ES et crée un réseau docker.
- - Tester la base ayant une route nginx: `curl http://elasticsearch`
+ - Tester la base ayant une route nginx: `curl http://localhost/elasticsearch`
 
 ### Backend
  - Fabriquer l'image docker du backend : `make backend-dev`. Cela aura pour effet de lancer l'application **Flask**.
  - Rentrer dans le container : `make backend-exec`.
- - Lancer les tests unitaires, qui va indexer les données tests `pytest tests/iga`.
+ - Lancer les tests unitaires, qui va indexer les données tests `pytest tests/iga/test_elastic.py -s`.
  - Tester le back : http://localhost/api/common/healthcheck
-
 
 ### Frontend
   - **Sapper** pour le routage, **Svelte** pour l'UI et **Tailwindcss** pour la mise en forme.
-  - Fabriquer l'image docker du frontend : `make frontend-dev`.
+  - Fabriquer l'image docker du frontend : `make frontend-dev`. (En mode `dev`)
   - Se rendre à http://localhost (Le hot-reloading est configuré)
 
 ### Nginx
@@ -36,4 +37,12 @@ _Dépot boite à outils pour un moteur de recherche._
 
 ### Kibana
   - Pour tester efficacement des changements de mapping dans l'index, la console dev de **Kibana** peut être utile.
-  - Lancer Kibana avec `make kibana`. Le container Elasticsearch doit tourner. Se rendre à l'adresse http://localhost/5601
+  - Lancer Kibana avec `make kibana`. Le container Elasticsearch doit tourner. Se rendre à l'adresse http://localhost/kibana
+
+### Logstash
+  -  **Nginx** envoie les logs utilisateurs  au service **Logstash** qui les sauvegarde dans  **ElasticSearch**.
+
+
+## Commandes utiles
+ - Lancer l'environement de dev `make dev`.
+ - Compiler le frontend pour la `prod` et mettre le contenu statique dans **nginx** : `make  build`

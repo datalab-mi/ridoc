@@ -11,7 +11,7 @@ export DC_FILE = ${DC_DIR}/docker-compose
 export DC_PREFIX := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]' | tr '_' '-')
 export DC_NETWORK := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]')
 export DC_BUILD_ARGS = --pull --no-cache
-export DC_UP_ARGS = #--build --force-recreate
+export DC_UP_ARGS = --build --force-recreate
 
 # elasticsearch defaut configuration
 export ES_HOST = ${APP}-elasticsearch
@@ -180,6 +180,8 @@ nginx-dev: network
 	${DC} -f ${DC_FILE}-nginx-dev.yml up -d $(DC_UP_ARGS)
 nginx-dev-stop: network
 	${DC} -f ${DC_FILE}-nginx-dev.yml down
+nginx-dev-exec:
+	${DC} -f $(DC_FILE)-nginx-dev.yml exec nginx-dev sh
 
 nginx: network
 	${DC} -f $(DC_FILE)-nginx.yml up -d --build
@@ -192,7 +194,6 @@ nginx-exec:
 ##############
 #  Frontend  #
 ##############
-
 
 frontend-dev:
 	@echo docker-compose run ${APP} frontend dev #--build

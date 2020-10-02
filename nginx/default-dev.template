@@ -11,6 +11,10 @@ upstream backend {
   server <BACKEND_HOST>:<BACKEND_PORT>;
 }
 
+upstream kibana {
+  server <KIBANA_HOST>:<KIBANA_PORT>;
+}
+
 server {
     listen 80;
     listen 35729;
@@ -39,7 +43,6 @@ server {
         proxy_set_header Host $host;
         proxy_cache_bypass $http_upgrade;
         break;
-
     }
 
     location ~ "/livereload.*" {
@@ -50,6 +53,10 @@ server {
       proxy_set_header Host $http_host;
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection "upgrade";
+    }
+
+    location /kibana/ {
+      proxy_pass http://kibana/;
     }
 
     error_page   500 502 503 504  /50x.html;
