@@ -11,6 +11,7 @@ export DC_FILE = ${DC_DIR}/docker-compose
 export DC_PREFIX := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]' | tr '_' '-')
 export DC_NETWORK := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]')
 export DC_BUILD_ARGS = --pull --no-cache
+export DC_UP_ARGS = --build --force-recreate
 
 # elasticsearch defaut configuration
 export ES_HOST = ${APP}-elasticsearch
@@ -104,7 +105,7 @@ elasticsearch: network
 		i=`expr $$i - 1`; \
 	done;\
 	true)
-	${DC} -f ${DC_FILE}-elasticsearch-huge.yml up --build -d
+	${DC} -f ${DC_FILE}-elasticsearch-huge.yml up -d  $(DC_UP_ARGS)
 
 elasticsearch-stop:
 	@echo docker-compose down elasticsearch
@@ -139,8 +140,8 @@ backend/.env:
 
 backend-dev: network backend/.env
 	@echo docker-compose up backend for dev
-	#@export ${DC} -f ${DC_FILE}.yml up -d --build --force-recreate 2>&1 | grep -v orphan
-	@export EXEC_ENV=development;${DC} -f ${DC_FILE}.yml up -d --build  --force-recreate
+	#@export ${DC} -f ${DC_FILE}.yml up -d $(DC_UP_ARGS) 2>&1 | grep -v orphan
+	@export EXEC_ENV=development;${DC} -f ${DC_FILE}.yml up -d $(DC_UP_ARGS)
 
 backend-dev-stop:
 	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down #--remove-orphan
@@ -176,9 +177,11 @@ test:
 ##############
 
 nginx-dev: network
-	${DC} -f ${DC_FILE}-nginx-dev.yml up -d --build --force-recreate
+	${DC} -f ${DC_FILE}-nginx-dev.yml up -d $(DC_UP_ARGS)
 nginx-dev-stop: network
 	${DC} -f ${DC_FILE}-nginx-dev.yml down
+nginx-dev-exec:
+	${DC} -f $(DC_FILE)-nginx-dev.yml exec nginx-dev sh
 
 nginx: network
 	${DC} -f $(DC_FILE)-nginx.yml up -d --build
@@ -192,10 +195,9 @@ nginx-exec:
 #  Frontend  #
 ##############
 
-
 frontend-dev:
 	@echo docker-compose run ${APP} frontend dev #--build
-	${DC} -f ${DC_FILE}-frontend-dev.yml up -d  --build --force-recreate
+	${DC} -f ${DC_FILE}-frontend-dev.yml up -d  $(DC_UP_ARGS)
 	$(DC) -f ${DC_FILE}-frontend-dev.yml exec -d frontend-dev npm run dev:tailwindcss
 
 frontend-exec:

@@ -9,7 +9,7 @@ from application import create_app
 INDEX_NAME = 'iga'
 
 USER_DATA = 'tests/iga/data'
-filename = 'ignit_pnigitis'
+filename = 'ignit_pnigitis.pdf'
 
 @pytest.fixture
 def app():
@@ -71,10 +71,9 @@ def dummy_index():
 
 @pytest.fixture
 def form_to_upload():
-    yield dict(author= 'babar',
-                date= '2020-05-04',
-                filename=filename + '.pdf',
-                file=(open(USER_DATA + '/' + filename + '.pdf', "rb"), filename) )
+    yield {"file": (open(USER_DATA + '/' + filename, "rb"), filename),
+            "mots cles": '["- docker","- python","babar"]'
+                }
 
 @pytest.fixture
 def file_name():

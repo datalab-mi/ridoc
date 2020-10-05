@@ -9,6 +9,7 @@ from shutil import copyfile
 
 from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file, suggest
 from tools.converter import pdf2json
+from tools.utils import empty_tree
 
 import pytest
 #import pdb; pdb.set_trace()
@@ -29,6 +30,7 @@ MAPPING_FILE =  os.getenv('MAPPING_FILE')
 
 PDF_DIR = os.getenv('PDF_DIR')
 ODT_DIR = os.getenv('ODT_DIR')
+DST_DIR = os.getenv('DST_DIR')
 JSON_DIR = os.getenv('JSON_DIR')
 META_DIR =  os.getenv('META_DIR')
 
@@ -40,9 +42,10 @@ def test_create_index():
     # Clear
     for i in range(3): # to be sure alias and indexes are removed
         es.indices.delete(index=INDEX_NAME, ignore=[400, 404])
+        es.indices.delete(index=INDEX_NAME + '_green', ignore=[400, 404])
+        es.indices.delete(index=INDEX_NAME + '_blue', ignore=[400, 404])
         es.indices.delete_alias(index=[INDEX_NAME + '_blue', INDEX_NAME + '_green'],
             name=INDEX_NAME, ignore=[400, 404])
-
 
     create_index(INDEX_NAME, USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
 
@@ -61,6 +64,8 @@ def test_inject_documents(sections):
 def test_analyse_index():
 
     # create elasticsearch index
+    for path in [JSON_DIR, META_DIR]:
+        empty_tree(Path(path))
 
     indices = elasticsearch.client.IndicesClient(es)
 
@@ -92,20 +97,27 @@ def test_search():
 
     doc = 'création+de+la+DNUM.odt'
     req = 'Depuis quand date la direction du Numérique?'
+    must = [{"multi_match":{"fields":["question","reponse","titre","mots-cles"],"query":req}}]
     time.sleep(2)
-    res = search(req, INDEX_NAME, str(glossary_file), str(expression_file))
+    res = search(must, [], [], INDEX_NAME, [],
+                glossary_file = glossary_file,
+                expression_file = expression_file)
     #import pdb; pdb.set_trace()
-
     #print(hits, length_req, bande)
     assert  res['hits'][0]['_id'] == doc, 'Found to result %s'%res['hits'][0]['_id']
     assert res['length'] == 4, res['length']
     assert not res['band']
 
     # test expression
-    req = "transformation numérique"
-    res= search(req, INDEX_NAME, str(glossary_file), str(expression_file))
+    req = " moteur de recherche"
+    must = [{"multi_match":{"fields":["question","reponse","titre","mots-cles"],"query":req}}]
+    time.sleep(2)
+    res1 = search(must, [], [], INDEX_NAME, [],
+                glossary_file = glossary_file,
+                expression_file = expression_file)
+    res2 = search(must, [], [], INDEX_NAME, [])
     #import pdb; pdb.set_trace()
-    assert res['hits'][0]['_score']  > 6, 'boosting no taken into account'
+    assert res1['hits'][0]['_score']  > res2['hits'][0]['_score'], 'boosting no taken into account'
 
 # Test test_reindex and suggest already in iga test folder
 
