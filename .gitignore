@@ -11,8 +11,14 @@ artifacts
 Data
 .mypy_cache
 *.xlsx
-
+*.tar.gz
 # production
 frontend/public/build
 bundle.*
 acme.json
+# working space
+my-env
+backend/tests/iga/data/meta
+backend/tests/iga/data/json
+esdata
+IGA-BF

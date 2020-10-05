@@ -1,4 +1,5 @@
 import json
+from json.decoder import JSONDecodeError
 from pathlib import Path  # python3 only
 import pandas as pd
 from os import environ
@@ -39,7 +40,6 @@ def upload_file(filename: str):
     path_meta = path_meta.with_suffix('').with_suffix('.json') # replace extension
     path_json = path_json.with_suffix('').with_suffix('.json') # replace extension
 
-
     if request.method == 'DELETE':
         if path_file.exists():
             path_file.unlink()
@@ -66,9 +66,18 @@ def upload_file(filename: str):
             file.save(path_file)
             print("save %s"%path_file)
         # save meta
-        with open(path_meta , 'w', encoding='utf-8') as f:
-            json.dump(request.form, f, ensure_ascii=False)
-            print("save %s"%path_file)
+        if path_meta.parent.exists():
+            with open(path_meta , 'w', encoding='utf-8') as f:
+                form_to_save = {}
+                # Need to format array in request.form ...
+                for k, v in request.form.items():
+                    try :
+                        form_to_save[k] = json.loads(v)
+                    except JSONDecodeError as e:
+                        form_to_save[k] = v
+                json.dump(form_to_save, f, ensure_ascii=False)
+                print("save %s"%path_file)
+
         return  make_response(jsonify(sucess=True), status)
 
     else:
@@ -103,6 +112,7 @@ def index(index_name: str):
     #content = request.get_json(force=True)
     #index_name = content.get('index_name', app.config['INDEX_NAME'])
     #index_name  = index_name if index_name else app.config['INDEX_NAME']
+
     old_index = get_index_name(index_name)
     new_index = replace_blue_green(old_index, index_name)
     print(new_index)

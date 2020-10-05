@@ -3,7 +3,17 @@ import json, os, time
 from pathlib import Path
 import pandas as pd
 from dotenv import load_dotenv
-from tools.elastic import get_index_name, replace_blue_green
+from tools.elastic import get_index_name, replace_blue_green, create_index, put_alias
+
+import elasticsearch
+from elasticsearch import Elasticsearch
+
+es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
+
+import elasticsearch
+from elasticsearch import Elasticsearch
+
+es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
 
 env_path = '/app/tests/iga/.env-iga'
 load_dotenv(dotenv_path=env_path)
@@ -14,7 +24,7 @@ USER_DATA = os.getenv('USER_DATA')
 ES_DATA = os.getenv('ES_DATA')
 
 GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
-EXPRESSION_FILE = os.getenv('EXPRESSION_FILE')
+RAW_EXPRESSION_FILE = os.getenv('RAW_EXPRESSION_FILE')
 MAPPING_FILE =  os.getenv('MAPPING_FILE')
 
 PDF_DIR = os.getenv('PDF_DIR')
@@ -28,16 +38,27 @@ def test_healthcheck(client, app):
     assert res.status_code == 200,res
 
 def test_reindex(client, app):
+    # Clear
+    for i in range(3): # to be sure alias and indexes are removed
+        es.indices.delete(index=INDEX_NAME, ignore=[400, 404])
+        es.indices.delete(index=INDEX_NAME + '_green', ignore=[400, 404])
+        es.indices.delete(index=INDEX_NAME + '_blue', ignore=[400, 404])
+        es.indices.delete_alias(index=[INDEX_NAME + '_blue', INDEX_NAME + '_green'],
+            name=INDEX_NAME, ignore=[400, 404])
 
-    old_index = get_index_name(INDEX_NAME)
-    new_index = replace_blue_green(old_index, INDEX_NAME)
+    create_index(INDEX_NAME + '_blue', USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
+    put_alias(INDEX_NAME + '_blue', INDEX_NAME)
+
+    for i in range(3):
+        es.indices.delete_alias(index=[new_index],
+                name=INDEX_NAME, ignore=[400, 404])
 
     with app.test_client() as c:
         resp = c.get(
             '/admin/%s/reindex'%INDEX_NAME)
 
     assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
-    assert resp.json['color'] == new_index
+    assert resp.json['color'] == INDEX_NAME + '_green'
 
 def test_search(client, app, search_data):
     with app.test_client() as c:
@@ -56,20 +77,21 @@ def test_search(client, app, search_data):
     time.sleep(2)
     assert [hits['_id'] for hits in res['hits']] == ['BF2016-08-16010-dfci.pdf'], 'Find %s'%[hits['_id'] for hits in res['hits']]
 
-def test_upload_file(client, app, form_to_upload):
+def test_upload_file(client, app, form_to_upload, file_name):
     # Add document
     with app.test_client() as c:
         resp = c.put(
-            '/admin/%s'%form_to_upload['filename'],
+            '/admin/%s'%file_name,
             content_type = 'multipart/form-data',
             data = form_to_upload)
 
     assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
+    import pdb; pdb.set_trace()
 
     # Delete document
     with app.test_client() as c:
         resp = c.delete(
-            '/admin/%s'%form_to_upload['filename'])
+            '/admin/%s'%file_name)
 
     assert resp.status_code == 204, 'Status Code : %s'%resp.status_code
 

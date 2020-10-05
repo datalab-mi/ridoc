@@ -45,7 +45,7 @@ def test_create_index():
             name=INDEX_NAME, ignore=[400, 404])
 
 
-    create_index(INDEX_NAME, USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
+    #create_index(INDEX_NAME, USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
 
 @pytest.mark.run(after='test_create_index')
 def test_inject_documents():

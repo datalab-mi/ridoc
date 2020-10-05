@@ -22,6 +22,9 @@ services:
       - FRONTEND_DEV_HOST
       - FRONTEND_PORT
       - PORT
+      - KIBANA_PORT
+      - KIBANA_HOST
+      - LOGSTASH_HOST
     ports:
       - "80:80"
 

@@ -8,6 +8,9 @@
     export let readonly = false;
     export let required = true;
 
+
+
+    let rows = 4
 </script>
 
 <section class="{cssClass}-item">
@@ -20,7 +23,6 @@
         </h2>
 
       {:else if type == "date"}
-        <br>
         <label> {@html innerHtml}
           {#if required}
             <input type='date' bind:value={value} {placeholder} readonly="{readonly || !metadata}" required />
@@ -46,11 +48,15 @@
                         <input type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                     {:else if type == "textarea"}
                         <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
+                    {:else if type == "link"}
+                        <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={(readonly || !metadata) ? window.open(`/api/common/files/${val}`,'_blank'): ()=>{}} type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                     {/if}
+
                   {/if}
                 </li>
             {/each}
           </ul>
+
         {:else}
           {#if highlight && isHighlight}
               <p> &laquo; {@html value} &raquo; </p>
@@ -58,7 +64,7 @@
             {#if type == "text"}
               <input type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
             {:else if type == "textarea"}
-              <textarea bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
+              <textarea bind:value={value} {placeholder} {rows} readonly="{readonly || !metadata}"/>
             {/if}
           {/if}
         {/if}
@@ -97,6 +103,16 @@
 		padding: 1em;
 		margin: 0 0 1em 0;
 	}
+  .clickable {
+    color: blue;
+    font-weight: normal;
+    cursor: pointer;
+  }
+
+  .no-clickable {
+    color: blue;
+    font-weight: normal;
+  }
 
   input, textarea{
     border:none;

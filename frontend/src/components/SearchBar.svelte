@@ -6,8 +6,21 @@
 
 	let promiseSearch =  new Promise(()=>{});
 	let promiseSuggest =  new Promise(()=>{});
+	let getInit =  new Promise(()=>{});
 
 	let searchList = []
+	let item = {}
+
+	async function init() {
+		item = await config('item.json')
+		searchList = await config('search.json')
+		promiseSearch = await search()
+		return searchList
+	}
+
+	// init variables
+	getInit = init()
+
 	let body; // searchList in dict format
 	//let searchListList = searchListObject.entries(searchList)
 	//console.log(searchListList)
@@ -33,9 +46,6 @@
   };
 
 	async function search() {
-		const item = await config('item.json')
-		searchList = await config('search.json')
-
 		body =  format2ES(item, searchList.flat(2))
 		const res = await fetch("/api/common/search",{
 												method: "POST",
@@ -86,10 +96,14 @@
 		$suggestEntry = []
 	}
 
-promiseSearch = search();
 
 </script>
 <div class='search-bar'>
+{#await getInit}
+<p>...Initialisation</p>
+
+{:then searchList}
+
 	{#each searchList as row, i }
 	<div class="flex mb-4">
 
@@ -108,6 +122,7 @@ promiseSearch = search();
 		</div>
 
 	{/each}
+	{/await}
 
 {#await promiseSearch}
 	<p>...Attente de la requête</p>

@@ -28,7 +28,7 @@ $: {
 			item = hits
 		}
 
-	item['key'] =  Math.random() *10000 | 0 // Choose random key
+	item['key'] =  Math.random() * 1e6  | 0 // Choose random key
 	items.push(item)
 	}
 	//items.splice(i, 0, "bar")
@@ -49,7 +49,7 @@ $: {
 				</p>
 			</div>
 		{:else}
-			<ResultItem meta={meta.inputs} {...item}/>
+			<ResultItem meta={JSON.parse(JSON.stringify(meta.inputs))} {...item}/>
 		{/if}
 	{/each}
 	</div>
