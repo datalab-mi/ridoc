@@ -1,7 +1,6 @@
 import json, os
 from pathlib import Path  # python3 only
 import pandas as pd
-import glob
 import time
 
 from flask import Blueprint, render_template, request, make_response, abort, jsonify, send_from_directory
@@ -20,27 +19,31 @@ if not Path(app.config['USER_DATA']).exists():
 def healthcheck():
     return json.dumps({"status": "ok"})
 
-@common_bp.route("/files/<path:path>")
-def get_file(path):
-    """Download a file."""
-    return send_from_directory(app.config['USER_DATA'], path, as_attachment=True)
-
 @common_bp.route("/files")
-def list_files():
-    """Endpoint to list files on the server."""
-    files = []
-    for filename in glob.glob(app.config['USER_DATA'] + '/**',recursive=True):
-        filename = Path(filename)
-        if filename.is_file():
-            #filename = Path(filename).relative_to(Path(app.config['USER_DATA']))
-            #dict(modified = os.path.getmtime(filename),
-            #key=str(filename)
+@common_bp.route("/files/<path:path>")
+def get_file(path=''):
+    """Download a file or  list files on the server"""
+    dir = Path(app.config['USER_DATA']) / path
 
-            files.append(dict(key=str(filename.relative_to(Path(app.config['USER_DATA']))),
-                              modified=time.ctime(round(filename.stat().st_mtime)),
-                              size=filename.stat().st_size * 1024/1000)) # k bytes to kB
+    if dir.is_file():
+        return send_from_directory(app.config['USER_DATA'], path, as_attachment=True)
 
-    return jsonify(files)
+    elif dir.is_dir():
+        files = []
+        for filename in dir.glob("**/*"):
+            if filename.is_file():
+                #filename = Path(filename).relative_to(Path(app.config['USER_DATA']))
+                #dict(modified = os.path.getmtime(filename),
+                #key=str(filename)
+                files.append(dict(key=str(filename.relative_to(Path(dir))),
+                                  modified=time.ctime(round(filename.stat().st_mtime)),
+                                  size=filename.stat().st_size * 1024/1000)) # k bytes to kB
+
+        return jsonify(files)
+    else:
+        return make_response('', 404)
+
+
 
 @common_bp.route('/build_query', methods=['POST','OPTIONS'])
 def build_query():

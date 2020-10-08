@@ -11,6 +11,8 @@ from tools.elastic import index_file as elastic_index_file
 from tools.elastic import delete_file as elastic_delete_file
 from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, clean
 
+from tools.utils import empty_tree
+
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','md'}
 
 # Blueprint Configuration
@@ -29,10 +31,44 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+@admin_bp.route("/files")
+@admin_bp.route("/files/<path:path>", methods=["PUT","DELETE"])
+def get_file(path=''):
+    """Add or replace a file or folder name"""
+    dir = Path(app.config['USER_DATA']) / path
+    if request.method == 'DELETE':
+        if dir.is_file():
+            dir.unlink()
+            return make_response(jsonify(sucess=True), 204)
+
+        elif dir.is_dir():
+            empty_tree(dir)
+            return make_response(jsonify(sucess=True), 204)
+
+        else:
+            return make_response(jsonify(sucess=False), 404)
+    elif request.method == 'PUT':
+        if  dir.is_dir():
+            # TODO: replace dir name
+            status = 201
+        elif dir.is_file():
+            if dir.exists():
+                status = 200
+            else:
+                status = 201
+            file = request.files.get('file', False)
+            if file and allowed_file(dir):
+                # save file
+                file.save(dir)
+                print("save %s"%dir)
+            else:
+                status = 404
+        return  make_response(jsonify(sucess=True), status)
+
 
 @admin_bp.route("/<filename>", methods=["PUT","DELETE"])
 def upload_file(filename: str):
-
+    """Add or replace the indexed documents with eventually the metadata"""
     path_file = Path(app.config['USER_DATA']) / app.config['DST_DIR'] / filename
     path_meta = Path(app.config['USER_DATA']) / app.config['META_DIR'] / filename
     path_json = Path(app.config['USER_DATA']) / app.config['JSON_DIR'] / filename

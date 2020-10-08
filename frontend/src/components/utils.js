@@ -53,4 +53,31 @@ async function config(filename) {
 	}
 }
 
-export { index, upload, config };
+
+	async function files(method, baseDir, file={'name':''}) {
+		let res;
+    const filename = file.name
+
+    const url = filename === "" ? baseDir :  `${baseDir}/${filename}`
+
+		if (method == 'GET') {
+			res = await fetch(`/api/common/files/${url}`,
+					{method: 'GET'})
+		} else if (method == 'PUT') {
+      const formData = new FormData();
+      formData.append('file', file);
+			res = await fetch(`/api/admin/files/${url}`, {
+					method: 'PUT', body: formData})
+		} else if (method == 'DELETE') {
+			res = await fetch(`/api/admin/files/${url}`, {
+					method: 'DELETE'})
+	}
+		if (res.ok)  {
+			return res
+		} else {
+			console.log('error')
+			throw new Error('Oups');
+		}
+	}
+
+export { index, upload, config, files };
