@@ -39,13 +39,14 @@ doc_guyane_eau = "les-bonnes-feuilles-IGA-eau-potable-en-guadeloupe.pdf"
 
 def test_create_index():
     # Clear
+    #import pdb; pdb.set_trace()
     for i in range(3): # to be sure alias and indexes are removed
         es.indices.delete(index=INDEX_NAME, ignore=[400, 404])
         es.indices.delete_alias(index='_all',
             name=INDEX_NAME, ignore=[400, 404])
 
 
-    #create_index(INDEX_NAME, USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
+    create_index(INDEX_NAME, USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
 
 @pytest.mark.run(after='test_create_index')
 def test_inject_documents():

@@ -110,7 +110,6 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
             print(req_expression)
 
     #import pdb; pdb.set_trace()
-
     body = { "query": {
                     "bool": {
                         "must": [],
