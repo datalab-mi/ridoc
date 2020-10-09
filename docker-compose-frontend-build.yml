@@ -15,9 +15,9 @@ services:
       - http_proxy
       - https_proxy
       - no_proxy
-      - INDEX_NAME
-      - DST_DIR
-      - PJ_DIR
+    env_file:
+      - $ENV_FILE
+
 
 networks:
   default:

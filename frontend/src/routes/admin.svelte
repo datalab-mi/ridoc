@@ -6,9 +6,9 @@
 	import { onMount } from 'svelte';
 	import Reindex from '../components/Reindex.svelte';
 	import NewItem from '../components/NewItem.svelte';
-	import File from '../components/browser/File.svelte';
+	import File from '../components/file-browser/File.svelte';
 
-	let pjPir = 'pj'
+	import { pjDir } from '../components/stores.js';
 
 	let meta = [
 						{
