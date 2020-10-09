@@ -64,7 +64,7 @@
 	<h1>Gestion des pièces-jointes</h1>
 	<br>
 	<p>Vous pouvez ajouter, modifier ou supprimer des pièces-jointes </p>
-	<File baseDir={pjPir} {meta}/>
+	<File baseDir={pjDir} {meta}/>
 
 </div>
 
