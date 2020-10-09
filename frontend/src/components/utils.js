@@ -54,18 +54,17 @@ async function config(filename) {
 }
 
 
-	async function files(method, baseDir, file={'name':''}) {
+	async function files(method, baseDir,file = {'name': ""}) {
 		let res;
-    const filename = file.name
-
+    const filename = file.name//file !== "undefined" ? file.name : ""
     const url = filename === "" ? baseDir :  `${baseDir}/${filename}`
 
 		if (method == 'GET') {
 			res = await fetch(`/api/common/files/${url}`,
 					{method: 'GET'})
 		} else if (method == 'PUT') {
-      const formData = new FormData();
-      formData.append('file', file);
+      const formData = new FormData()
+      formData.append('file', file)
 			res = await fetch(`/api/admin/files/${url}`, {
 					method: 'PUT', body: formData})
 		} else if (method == 'DELETE') {

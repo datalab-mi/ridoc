@@ -5,38 +5,43 @@
 	import VirtualList from '../VirtualList.svelte';
   import { onDestroy } from 'svelte'
 
-	export let baseDir;
-	export let meta;
+	export let baseDir
+	export let meta
 
 	let GetPromise = new Promise(()=>{})
 	let PutPromise = new Promise(()=>{})
 
-	let isAdd = false;
-	let readonly = true;
-	let send = false;
+	let isAdd = false
+	let readonly = true
+	let send = false
 
-	let start;
-	let end;
-	let key;
+	let start
+	let end
+	let key = "name"
+	let file = {'name': ""}
 
-	let list_synonym_filter;
+	let list_files_filter;
 	let filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
 
-	const keys_to_keep = meta.map(item => item.key);
-	keys_to_keep.push('key') // Add row number to the list of key to keep
+	const keys_to_filter = meta.filter(item => item.type == 'text').map(item => item.key);
 
-	async function handleFiles(method) {
+	async function handleFiles() {
 		const res = await files('GET', baseDir)
-		$list_files = await res.json()
+		//const data = await res.json()
+		$list_files = await res.json()//data.map(element => Object.assign({}, ...keys_to_filter.map(key => ({[key]: element[key]}))))
+
 		return res.status
 	}
 
-	GetPromise = handleFiles('GET')
+	GetPromise = handleFiles()
 
-function handleSubmit() {
-	PutPromise = handleFiles('PUT')
-	// reset filter
-	filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
+async function handleSubmit() {
+	console.log(file[0])
+	await files('PUT', baseDir, file[0])
+	PutPromise = handleFiles()
+	// reset filter and file
+	filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})))
+	file = {'name': ""}
 
 }
 
@@ -46,9 +51,8 @@ function handleAdd() {
 
 $: { // filter $list_files with filterRow on its keys (expressionA, expressionB...)
 	console.log($list_files)
-	list_synonym_filter = $list_files.filter(
-		item => Object.keys(filterRow).every((key) => item[key].toLowerCase().includes(filterRow[key].toLowerCase()))
-	)
+	list_files_filter = $list_files.filter((item) => keys_to_filter.every((key) => item[key].toLowerCase().includes(filterRow[key].toLowerCase())))
+
 }
 
 onDestroy(() => $list_files = [])
@@ -67,22 +71,22 @@ onDestroy(() => $list_files = [])
 			<div class="inline-flex w-5/6">
 			{#each meta as {key, type, placeholder, value, innerHtml, size} }
 				<div class="flex-grow w-{size} text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
-					<input type="search" bind:value={filterRow[key]} placeholder={(isAdd) ? placeholder: 'recherche'} >
+					<input type="search" bind:value={filterRow[key]} placeholder={(isAdd) ? '': placeholder} >
 				</div>
 			{/each}
 			</div>
 
 			<div class="flex-initial w-1/6 px-4 py-2 m-2">
 				{#if (isAdd)}
-					{#if Object.keys(filterRow).every((key) => filterRow[key] != '') }
+					{#if (file.name === "")}
+					<label for="pjUplaod" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+					Choisir un fichier
+					</label>
+					<input id="pjUplaod" class="fileUpload" type="file" bind:files={file}>
+
+					{:else}
 						<button on:click={handleSubmit} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
 							<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
-							<span>SOUMETTRE</span>
-						</button>
-					{:else}
-						<button disabled class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-							<svg class="fill-curr
-							ent w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
 							<span>SOUMETTRE</span>
 						</button>
 					{/if}
@@ -96,12 +100,14 @@ onDestroy(() => $list_files = [])
 					<span>AJOUTER</span>
 				</button>
 				{/if}
+
+
 			</div>
 
 		</div>
 
-		<VirtualList items={list_synonym_filter} {key} let:item>
-			<FileRow {item} {meta} {baseDir} />
+		<VirtualList items={list_files_filter} {key} let:item>
+			<FileRow {item} {meta} {baseDir} {key}/>
 		</VirtualList>
 
 
@@ -113,14 +119,14 @@ onDestroy(() => $list_files = [])
 
 <style>
 
-.container {
+	.container {
 	width: 90%;
-}
+	}
 
-.containerVL {
+	.containerVL {
 	min-height: 200px;
 	height: calc(100vh - 15em);
-}
+	}
 
 
 	.synonym-list {
@@ -153,7 +159,7 @@ onDestroy(() => $list_files = [])
 	}
 	th input
 	{
-    width: 100%;
+	  width: 100%;
 	}
 	input {
 		border:none;
@@ -162,21 +168,23 @@ onDestroy(() => $list_files = [])
 		background-color: inherit;
 	 }
 	table {
-  border-collapse: separate;
+	border-collapse: separate;
 	table-layout: fixed;
-  width: 100%;
+	width: 100%;
 	}
 
 	th, td {
-  text-align: left;
-  padding: 8px;
+	text-align: left;
+	padding: 8px;
 	white-space:wrap;
-}
+	}
 
 	thead th {
 		 position: sticky; top: 0;
 	 }
 
-
+	.fileUpload {
+	 display: none;
+	}
 
 </style>

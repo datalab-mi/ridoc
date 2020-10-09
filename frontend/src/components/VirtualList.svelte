@@ -129,7 +129,7 @@
 		bind:this={contents}
 		style="padding-top: {top}px; padding-bottom: {bottom}px;"
 	>
-		{#each visible as row (row.data.key)}
+		{#each visible as row (row.data[key])}
 			<svelte-virtual-list-row>
 				<slot item={row.data}>Missing template</slot>
 			</svelte-virtual-list-row>

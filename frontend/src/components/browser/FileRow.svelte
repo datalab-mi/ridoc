@@ -7,12 +7,13 @@
 	export let meta
 	export let admin
 	export let baseDir
+	export let key
 
 	let DeletePromise = new Promise(()=>{})
 	let UpdatePromise = new Promise(()=>{})
 	let readonly = true
 	let send = false
-	const file =  {"name": item.key}
+	const file =  {"name": item[key]}
 
 	async function handleFiles(method) {
 		await files(method, baseDir, file)

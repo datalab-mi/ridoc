@@ -48,21 +48,17 @@ def get_file(path=''):
         else:
             return make_response(jsonify(sucess=False), 404)
     elif request.method == 'PUT':
-        if  dir.is_dir():
-            # TODO: replace dir name
+        if dir.is_file():
+            status = 200
+        else:
             status = 201
-        elif dir.is_file():
-            if dir.exists():
-                status = 200
-            else:
-                status = 201
-            file = request.files.get('file', False)
-            if file and allowed_file(dir):
-                # save file
-                file.save(dir)
-                print("save %s"%dir)
-            else:
-                status = 404
+        file = request.files.get('file', False)
+        if file and allowed_file(str(dir)):
+            # save file
+            file.save(dir)
+            print("save %s"%dir)
+        else:
+            status = 404
         return  make_response(jsonify(sucess=True), status)
 
 

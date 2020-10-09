@@ -35,9 +35,9 @@ def get_file(path=''):
                 #filename = Path(filename).relative_to(Path(app.config['USER_DATA']))
                 #dict(modified = os.path.getmtime(filename),
                 #key=str(filename)
-                files.append(dict(key=str(filename.relative_to(Path(dir))),
-                                  modified=time.ctime(round(filename.stat().st_mtime)),
-                                  size=filename.stat().st_size * 1024/1000)) # k bytes to kB
+                files.append(dict(name=str(filename.relative_to(Path(dir))),
+                                  lastModified=time.ctime(round(filename.stat().st_mtime)),
+                                  size="%d kB"%( filename.stat().st_size * 1024//10e3)) ) # k bytes to kB
 
         return jsonify(files)
     else:

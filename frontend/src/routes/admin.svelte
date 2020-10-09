@@ -12,12 +12,28 @@
 
 	let meta = [
 						{
-							key: 'key',
+							key: 'name',
 							type: 'text',
-							placeholder: 'Chercher une pièce jointe',
+							placeholder: 'Rechercher une pièce jointe',
 							value: '',
-							innerHtml: 'nom: ',
-							size: '5/5'
+							innerHtml: '',
+							size: '5/6'
+						},
+						{
+							key: 'size',
+							type: 'int',
+							placeholder: 'Taille (kB)',
+							value: '',
+							innerHtml: '',
+							size: '1/6'
+						},
+						{
+							key: 'lastModified',
+							type: 'int',
+							placeholder: 'Modifié',
+							value: '',
+							innerHtml: '',
+							size: '1/6'
 						}
 					]
 
@@ -49,7 +65,7 @@
 	<br>
 	<p>Vous pouvez ajouter, modifier ou supprimer des pièces-jointes </p>
 	<File baseDir={pjPir} {meta}/>
-	
+
 </div>
 
 
