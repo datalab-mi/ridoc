@@ -40,7 +40,7 @@ def simple_request(index_name, size):
 
     D = es.search(index=str(INDEX_NAME_prop), size=size, body=request)
     return D['hits']['hits']
-must
+
 def clean(expression:str, index_name:str, analyzer="clean_analyser"):
     """
     Apply lowercase, filter and stop word
@@ -252,7 +252,7 @@ def suggest(req: str , index_name: str):
 
     res = []
     for suggestion in D['suggest']['simple_phrase'][0]['options']:
-    res.append(suggestion)
+        res.append(suggestion)
     return res
 
 
