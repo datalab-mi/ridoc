@@ -26,7 +26,6 @@ def cluster():
     return json.dumps(elastic_info, indent=4 )
 
 
-
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -34,7 +33,16 @@ def allowed_file(filename):
 @admin_bp.route("/files")
 @admin_bp.route("/files/<path:path>", methods=["PUT","DELETE"])
 def get_file(path=''):
-    """Add or replace a file or folder name"""
+    """Add, replace or delete a file or folder name in the file system USER_DATA
+    Args:
+        path (str): The relative path of the document or folder
+    Returns: Usual HTTP status code
+        204: Delete successful
+        404: Delete unsuccessful
+        200: Create
+        201: Update
+        TODO : Create/update for folder
+    """
     dir = Path(app.config['USER_DATA']) / path
     if request.method == 'DELETE':
         if dir.is_file():
@@ -61,10 +69,21 @@ def get_file(path=''):
             status = 404
         return  make_response(jsonify(sucess=True), status)
 
-
 @admin_bp.route("/<filename>", methods=["PUT","DELETE"])
 def upload_file(filename: str):
-    """Add or replace the indexed documents with eventually the metadata"""
+    """Add, replace or delete a document in order to index it in ES
+     in the file system USER_DATA,
+    Args:
+        filename (str): The relative path of the document
+        file (binary): Inside the HTTP POST request
+        meta (form): HTTP form data
+    Returns: Usual HTTP status code
+        204: Delete successful
+        404: Delete unsuccessful
+        200: Create
+        201: Update
+        500: Server abort
+    """
     path_file = Path(app.config['USER_DATA']) / app.config['DST_DIR'] / filename
     path_meta = Path(app.config['USER_DATA']) / app.config['META_DIR'] / filename
     path_json = Path(app.config['USER_DATA']) / app.config['JSON_DIR'] / filename
@@ -118,7 +137,16 @@ def upload_file(filename: str):
 
 @admin_bp.route("/<index_name>/_doc/<filename>", methods=["DELETE", "PUT"])
 def index_file(index_name: str, filename: str):
-
+    """Add, replace or delete a document in Elastic Search (ES)
+    Args:
+        index_name (str): ES index
+        filename (str): The file name
+    Returns: Usual HTTP status codes
+        204: Delete
+        200: Create
+        201: Update
+        500: Server abort
+    """
 
     if not index_name or not filename:
         print('Missing keys')
@@ -140,6 +168,8 @@ def index_file(index_name: str, filename: str):
 @admin_bp.route('/<index_name>/reindex', methods=['GET'])
 def index(index_name: str):
     """(Re)index after a mapping change
+    Args:
+        index_name (str): ES index
     """
     #content = request.get_json(force=True)
     #index_name = content.get('index_name', app.config['INDEX_NAME'])
@@ -173,6 +203,16 @@ def index(index_name: str):
 
 @admin_bp.route("/synonym/<int:key>", methods=["DELETE", "PUT"])
 def synonym(key:int):
+    """ Add,replace or delete a synonym in its file. If a creation, append
+        at the beginning.
+    Args:
+        key (int): The row number of the synonym in the synonym file
+    Returns: Usual HTTP status codes
+        204: Delete
+        200: Create
+        201: Update
+        500: Server abort
+    """
     filename = request.args.get('filename', app.config['GLOSSARY_FILE'])
     synonym_file = Path(app.config['USER_DATA']) / (filename + '.txt')
 
@@ -242,6 +282,16 @@ def synonym(key:int):
 
 @admin_bp.route("/expression/<key>", methods=["DELETE", "PUT"])
 def expression(key: str):
+    """ Add,replace or delete an expression in its file. If a creation, append
+        at the beginning.
+    Args:
+        key (int): The row number of the expression in the expression file
+    Returns: Usual HTTP status codes
+        204: Delete
+        200: Create
+        201: Update
+        500: Server abort
+    """
     body = request.get_json(force=True)
     expression_file = Path(app.config['USER_DATA']) / app.config['RAW_EXPRESSION_FILE']
     if 'value' not in body[0] or 'value' not in body[1]:
