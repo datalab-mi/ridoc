@@ -27,7 +27,9 @@ services:
       - http_proxy
       - https_proxy
       - no_proxy
-      - INDEX_NAME
+
+    env_file:
+      - $ENV_FILE
 
 networks:
   default:

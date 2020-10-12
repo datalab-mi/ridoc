@@ -186,3 +186,16 @@ def test_expression(client, app):
     synonym_df = pd.read_csv(synonym_file, sep=sep,header=None, names=names)
     #import  pdb; pdb.set_trace()
     assert synonym_df.iloc[0].to_dict() != res_body
+
+def test_get_files(client, app):
+    doc_name = "moteur de recherche"
+    with app.test_client() as c:
+        resp = c.get(
+            '/common/files')
+    assert resp.status_code == 200
+    path = 'json/%s.json'% doc_name
+    with app.test_client() as c:
+        req = c.get(
+            '/common/files/{path}'.format(path=path))
+        resp = json.loads(req.get_data())
+        assert doc_name in resp['titre'], resp
