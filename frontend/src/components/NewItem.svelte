@@ -13,7 +13,8 @@
 
   async function filterItem() {
     let item = await config('item.json')
-    return item.inputs.filter(obj => obj.metadata)
+    item.inputs = item.inputs.filter(obj => obj.metadata)
+    return item
   }
   let promise = filterItem()
 
@@ -21,20 +22,20 @@
 
 {#await promise}
 <p>... Récuperation de la configuration</p>
-{:then meta}
+{:then item}
 
 <section class="new-item">
 
-{#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight}, i }
+{#each item.inputs as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight}, i }
   <Entry required={required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight}}/>
 {/each}
 
 <div>
-  <label for="fileUpload" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+  <label for="docUpload" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
   Choisir un fichier
   </label>
 
-  <input id="fileUpload" type="file" bind:files multiple={meta.multiple} accept={meta.accept}>
+  <input id="docUpload" class="fileUpload" type="file" bind:files multiple={item.multiple} accept={item.accept}>
 
   {#if files}
     <button on:click="{() => send = !send}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
@@ -55,7 +56,7 @@
 
   {#if send}
   {#each files as file}
-    <PutItem {meta} file={file} />
+    <PutItem meta={item.inputs} file={file} />
   {/each}
   {/if}
 </div>
@@ -64,7 +65,7 @@
 
 <style>
 
-  #fileUpload {
+  .fileUpload {
     display: none;
   }
 

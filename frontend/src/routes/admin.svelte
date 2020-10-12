@@ -6,6 +6,36 @@
 	import { onMount } from 'svelte';
 	import Reindex from '../components/Reindex.svelte';
 	import NewItem from '../components/NewItem.svelte';
+	import File from '../components/file-browser/File.svelte';
+
+	import { pjDir } from '../components/stores.js';
+
+	let meta = [
+						{
+							key: 'name',
+							type: 'text',
+							placeholder: 'Rechercher une pièce jointe',
+							value: '',
+							innerHtml: '',
+							size: '5/6'
+						},
+						{
+							key: 'size',
+							type: 'int',
+							placeholder: 'Taille (kB)',
+							value: '',
+							innerHtml: '',
+							size: '1/6'
+						},
+						{
+							key: 'lastModified',
+							type: 'int',
+							placeholder: 'Modifié',
+							value: '',
+							innerHtml: '',
+							size: '1/6'
+						}
+					]
 
 </script>
 
@@ -26,6 +56,16 @@
 	<p>Cette action peut prendre du temps car tous les documents vont être réindexés.
 	Quand la liste des synonymes ou que la manière d'analyser les documents changent, il faut réindexer. </p>
 	<Reindex />
+</div>
+
+<hr>
+
+<div>
+	<h1>Gestion des pièces-jointes</h1>
+	<br>
+	<p>Vous pouvez ajouter, modifier ou supprimer des pièces-jointes </p>
+	<File baseDir={pjDir} {meta}/>
+
 </div>
 
 

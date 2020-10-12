@@ -8,6 +8,8 @@
 	// read-only, but visible to consumers via bind:start
 	export let start = 0;
 	export let end = 0;
+	export let key = 'key'; // Element Id of the viewport
+
 	// local state
 	let height_map = [];
 	let rows;
@@ -127,7 +129,7 @@
 		bind:this={contents}
 		style="padding-top: {top}px; padding-bottom: {bottom}px;"
 	>
-		{#each visible as row (row.index)}
+		{#each visible as row (row.data[key])}
 			<svelte-virtual-list-row>
 				<slot item={row.data}>Missing template</slot>
 			</svelte-virtual-list-row>
