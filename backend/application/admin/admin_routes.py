@@ -200,6 +200,29 @@ def index(index_name: str):
 
     return make_response({'color': new_index}, 200)
 
+@admin_bp.route('/put_d_threshold', methods=['PUT'])
+    # Put display threshold into d_threshold.json from frontend input
+def put_d_threshold():
+    # body is d_threshold
+    body = request.get_json(force=True)
+    threshold_file = Path(app.config['USER_DATA']) / ('threshold.json')
+
+    '''
+    if (not threshold_file.exists()): #create file
+        with open(threshold_file, "w+") as jsonFile:
+            json.dump({"d_threshold": 1, "r_threshold": 1}, jsonFile)
+    '''
+
+    import pdb; pdb.set_trace()
+    #insert new threshold
+    with open(threshold_file, "r") as jsonFile:
+        data = json.load(jsonFile)
+    data["d_threshold"] = body
+    with open(threshold_file, "w") as jsonFile:
+        json.dump(data, jsonFile)
+
+    return make_response(jsonify(sucess=True), 200)
+
 
 @admin_bp.route("/synonym/<int:key>", methods=["DELETE", "PUT"])
 def synonym(key:int):
@@ -215,6 +238,8 @@ def synonym(key:int):
     """
     filename = request.args.get('filename', app.config['GLOSSARY_FILE'])
     synonym_file = Path(app.config['USER_DATA']) / (filename + '.txt')
+    #import pdb; pdb.set_trace()
+
 
     if 'glossaire' in filename:
         names = ['expressionB','expressionA']
@@ -226,7 +251,7 @@ def synonym(key:int):
         return abort(501)
 
     if synonym_file.exists():
-        synonym_df = pd.read_csv(synonym_file, header=None, sep=sep, names=names);
+        synonym_df = pd.read_csv(synonym_file, header=None, sep=sep, names=names)
         synonym_df['key'] = synonym_df.index + 1
 
     else:

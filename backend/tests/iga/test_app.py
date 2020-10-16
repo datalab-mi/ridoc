@@ -55,6 +55,33 @@ def test_search(client, app, search_data):
     #import pdb; pdb.set_trace()
     time.sleep(2)
     assert [hits['_id'] for hits in res['hits']] == ['BF2016-08-16010-dfci.pdf'], 'Find %s'%[hits['_id'] for hits in res['hits']]
+'''
+def test_display_threshold(client, app, display_threshold_data):
+    with app.test_client() as c:
+        resp = c.post(
+            '/common/search',
+            content_type='application/json',
+            data = json.dumps(display_threshold_data))
+    assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
+
+    res= json.loads(
+            resp.get_data(as_text=False).decode('utf-8'))
+
+    assert len(res)>0, "No document found"
+    #import pdb; pdb.set_trace()
+
+    time.sleep(2)
+    assert [hits['_id'] for hits in res['hits']] == ['BF2016-08-16010-dfci.pdf'], 'Find %s'%[hits['_id'] for hits in res['hits']]
+'''
+def test_put_d_threshold(client, app):
+    # Add display threshold to threshold.json
+    d_threshold = 5
+    with app.test_client() as c:
+        resp = c.put(
+            '/admin/put_d_threshold',
+            data = json.dumps(d_threshold))
+
+    assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
 
 def test_upload_file(client, app, form_to_upload):
     # Add document
@@ -110,6 +137,7 @@ def test_synonym(client, app):
             key=key,
             filename=filename),
             data = json.dumps(body))
+#import pdb; pdb.set_trace()
 
     assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
     synonym_df = pd.read_csv(synonym_file, sep=sep,header=None, names=names)
