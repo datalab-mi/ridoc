@@ -22,9 +22,15 @@ def healthcheck():
 @common_bp.route("/files")
 @common_bp.route("/files/<path:path>")
 def get_file(path=''):
-    """Download a file or  list files on the server"""
-    dir = Path(app.config['USER_DATA']) / path
+    """Get a file or folder name in the file system USER_DATA
+    Args:
+        path (str): The relative path of the document or folder to get
+    Returns:
+        list: List of files if path is a path
+        binary: The file if path is a file
+    """
 
+    dir = Path(app.config['USER_DATA']) / path
     if dir.is_file():
         return send_from_directory(app.config['USER_DATA'], path, as_attachment=True)
 
@@ -44,41 +50,15 @@ def get_file(path=''):
         return make_response('', 404)
 
 
-
-@common_bp.route('/build_query', methods=['POST','OPTIONS'])
-def build_query():
-    """
-    Build only the custom query.
-    """
-
-    content = request.get_json(force=True)
-    index_name = content.get('index_name', None)
-    user_entry = content.get('value', None)
-    print(content)
-    if not user_entry or not index_name:
-        print('Missing keys')
-        return json.dumps({})
-
-    GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
-    EXPRESSION_FILE = os.getenv('RAW_EXPRESSION_FILE')
-    USER_DATA = os.getenv('USER_DATA')
-
-    glossary_file = Path(USER_DATA) / GLOSSARY_FILE
-    expression_file = Path(USER_DATA) / EXPRESSION_FILE
-
-    res = elastic_build_query(user_entry,
-                index_name,
-                glossary_file,
-                expression_file)
-
-    seuil = 4.5
-    seuil_affichage = 3.5
-    print(10*"*")
-    print(res)
-    return jsonify(res)
-
 @common_bp.route('/search', methods=['POST'])
 def search():
+    """ ES search
+    Args:
+        body (json): The ES clauses (must, shoud, filter)
+    Returns:
+        list: List of results
+    """
+
     content = request.get_json(force=True)
     must = content.get('must', None)
     should = content.get('should', None)
@@ -107,6 +87,9 @@ def search():
 
 @common_bp.route('/synonym', methods=['GET'])
 def synonym():
+    """ Get the synonym file
+    """
+
     filename = request.args.get('filename', app.config['GLOSSARY_FILE'])
     synonym_file = Path(app.config['USER_DATA']) / (filename + '.txt')
 
@@ -129,6 +112,12 @@ def synonym():
 
 @common_bp.route('/suggest', methods=['POST'])
 def suggest():
+    """ ES suggestion
+    Args:
+        request (json)
+    Returns:
+        list: List of suggestions
+    """
     content = request.get_json(force=True)
     user_entry = content.get('content', None)
     index_name = content.get('index_name', None)

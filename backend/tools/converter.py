@@ -12,16 +12,20 @@ import unidecode
 
 def normalize(string: str):
     """Strip lower and accent removal
+    Args:
+        string (str): The string to process
+    Returns:
+        str: the decoded string
     """
     return unidecode.unidecode(string.strip().lower())
 
 def odt2json(path: str, sections: list = []) -> dict:
-    """ Fonction qui permet la conversion des Json en Odt elle prend en argument:
-
+    """ Read thanks to odf library an odt document
     Args:
-        path : le chemin du fichier en question
+        path (str) : path of the file
+        sections (list) : The section to read.
     Returns:
-        text: text
+        dict: Keys are sections and value the content read
     """
 
     sections = [{'key':normalize(x['key']), 'array':x['array']} for x in sections]
@@ -79,13 +83,12 @@ def odt2json(path: str, sections: list = []) -> dict:
 
 
 def pdf2json(path: str, sections: list = []) -> dict:
-    """
-    Fonction qui permet la conversion des Pdf en json et prend en argument:
-    Les sections du document ne sont pas encore supportées.
+    """ Read thanks to tika docker a pdf document
     Args:
-        path : le chemin du fichier en question
+        path (str) : path of the file
+        sections (list) : The section to read.
     Returns:
-        path: clean text
+        dict: Keys are sections and value the content read
     """
     try:
         file_data = parser.from_file(path,"http://tika:9998/")

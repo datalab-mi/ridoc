@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Fichier de backend pour gérer les requettes elasticsearch"""
+"""Backend scrpits to handle Elastic Search (ES) queries"""
 
 import elasticsearch
 from elasticsearch import Elasticsearch
@@ -24,30 +24,36 @@ from tools.utils import empty_tree, _finditem
 es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
 indices = elasticsearch.client.IndicesClient(es)
 
-def simple_request(INDEX_NAME):
+def simple_request(index_name, size):
+    """Perform ES search on all documents of an index. Equivalent to index/_search
+    Args:
+        index_name (str): The index on the search is done
+        size (int): Number of maximum results to return
+    Returns:
+        list: the hits return by ES
+    """
     request = {
         "query": {
             "match_all" : {}
             }
     }
 
-    #D = es.search(index=str(INDEX_NAME), size=15, body=request)
-    D = es.search(index=str(INDEX_NAME_prop), size=15, body=request)
+    D = es.search(index=str(INDEX_NAME_prop), size=size, body=request)
     return D['hits']['hits']
 
 def clean(expression:str, index_name:str, analyzer="clean_analyser"):
     """
-    Lowercase, filter stop word
+    Apply lowercase, filter and stop word
     Args:
-        Expression: The string to clean <str>
-        index_name: The index where analysers lie on <str>
-        analyzer The ES analyser to use <str>
-    Returns:  ES token
+        Expression (str): The string to clean
+        index_name (str): The index where analysers lie on
+        analyzer (str): The ES analyser to use
+    Returns:
+        list: ES tokens
     """
     body = {'analyzer': analyzer, "text": expression}
     analyse = indices.analyze(index= index_name, body = body)
     list_token = [x['token'] for x  in analyse['tokens'] if 'token' in x]
-
     return list_token
 
 
@@ -55,14 +61,17 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
             highlight: list,
             glossary_file=None, expression_file=None) -> dict:
     """
-    Build the body of the query
+    Build the body of the ES query
     Args:
-        index_name : Le nom de l'index où on effectue la recherche
-        req : la requête entrèe par l'utilisateur
-        expression_file : Le lien pour la liste des expressions clés analysée
-        glossary_file : Fichier glossaire
+        must (dict): the must request
+        should (dict): the should request
+        filter (str): the filter request
+        index_name (str): The index name
+        highlight (list): List of keys to highlight
+        expression_file (str): Expression file path
+        glossary_file (str): Acronym file path
     Returns:
-        dict
+        dict: The ES query to pass
     """
 
     length_of_request = 0
@@ -162,25 +171,21 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
             highlight: list,
             glossary_file=None, expression_file=None):
 
-    """Fonction qui permet de faire la recherche Elastic dans notre index
-
+    """Perform the ES search
     Args:
-        index_name : Le nom de l'index où on effectue la recherche
-        req : la requête entrèe par l'utilisateur
-        expression_file : Le lien pour la liste des expressions clés analysée
-        glossary_file : Fichier glossaire
-    Output:
-        Dictionnaire des résultats de la recherche
+        must (dict): the must request
+        should (dict): the should request
+        filter (str): the filter request
+        index_name (str): The index name
+        highlight (list): List of keys to highlight
+        expression_file (str): Expression file path
+        glossary_file (str): Acronym file path
+    Returns:
+        dict:
     """
     T = False
     Bande = False
-    """ all keyword???
-    Bande = False
-    for keyword in Liste_acronyme:
-        if keyword in analyzed:
-            T = True
-            break
-    """
+
     #req = [_finditem(x, "query") for x in must]
     #print(req)
 
@@ -211,16 +216,16 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
     return {'hits': D['hits']['hits'], 'length': length_of_request , 'band': Bande}
 
 
-def suggest(req , index_name):
-  """
-    Fonction qui permet de corriger la requête de l'utilisateur
-    Arguments:
-      index_name : Le nom de l'index où on effectue la recherche des mots
-      req : la requête entrèe par l'utilisateur
-    Output:
-      Liste des suggestions de correction
-"""
-  D = es.search(index = index_name , body = {
+def suggest(req: str , index_name: str):
+    """Perform a ES search in  suggest mode
+    Args:
+        index_name (str): The index name
+        req: The user entry
+    Returns:
+        list: List of suggestions
+
+    """
+    D = es.search(index = index_name , body = {
       "suggest": {
         "text" : req,
         "simple_phrase" : {
@@ -243,15 +248,21 @@ def suggest(req , index_name):
           }
         }
       }
-  })
+    })
 
-  res = []
-  for suggestion in D['suggest']['simple_phrase'][0]['options']:
-    res.append(suggestion)
-  return res
+    res = []
+    for suggestion in D['suggest']['simple_phrase'][0]['options']:
+        res.append(suggestion)
+    return res
 
 
-def get_index_name(alias_name):
+def get_index_name(alias_name: str):
+    """Get index name of alias
+        Args:
+            alias_name (str): The alias name
+        Returns:
+            str: The index name
+    """
     try:
         res = es.indices.get_alias(name=alias_name)
         if len(res.keys()) == 1 and list(res.keys())[0] != "":
@@ -264,7 +275,15 @@ def get_index_name(alias_name):
         es.indices.put_alias(index=alias_name, name=index_name)
     return index_name
 
-def replace_blue_green(index_name, alias_name):
+def replace_blue_green(index_name: str, alias_name: str):
+    """Change the index color
+    Args:
+        alias_name (str): The alias name
+        index_name (str): The old index name
+
+    Returns:
+        str: The new index name
+    """
     if 'blue' in index_name:
         index_name = index_name.replace('blue', 'green')
     elif 'green' in index_name:
@@ -274,24 +293,32 @@ def replace_blue_green(index_name, alias_name):
 
     return index_name
 
-def put_alias(index_name, alias_name):
-    #es.indices.delete_alias(index=index_name, name=alias_name, ignore=[400, 404])
+def put_alias(index_name: str, alias_name: str):
     es.indices.put_alias(index=index_name, name=alias_name)
-    #es.indices.put_alias(index=index_name, name=alias_name)
 
-def delete_alias(index_name, alias_name):
+def delete_alias(index_name: str, alias_name: str):
     es.indices.delete_alias(index=index_name, name=alias_name, ignore=[400, 404])
 
-def get_alias(alias_name):
-    return  es.indices.get_alias(name=alias_name)
+def get_alias(alias_name: str):
+    return es.indices.get_alias(name=alias_name)
 
-def create_index(INDEX_NAME,
-            user_data,
-            es_data,
-            mapping_file,
+def create_index(index_name: str,
+            user_data: str,
+            es_data: str,
+            mapping_file: str,
             glossary_file=None,
             expression_file=None):
-
+    """Create in ES the index.
+    Populate the mapping file with synonym paths, then dumps in es data directory
+    and finally create the index in ES.
+    Args:
+        index_name (str): The old index name
+        user_data (str): Path of data in backend docker
+        es_data (str): Path of data in ES docker, to store mapping and synonyms files
+        mapping_file (str): mapping file name
+        expression_file (str): Expression file name
+        glossary_file (str): Acronym file name
+    """
     synonym_file = os.path.join(es_data, 'synonym.txt')
     synonym_search_file = os.path.join(es_data, 'search_synonym.txt')
 
@@ -350,14 +377,26 @@ def create_index(INDEX_NAME,
         json.dump(map, outfile)
 
     # Drop index
-    es.indices.delete(index=INDEX_NAME, ignore=[400, 404])
+    es.indices.delete(index=index_name, ignore=[400, 404])
     # create index
-    es.indices.create(index=INDEX_NAME, body=map)
+    es.indices.create(index=index_name, body=map)
 
 
-def inject_documents(INDEX_NAME, user_data, dst_path, json_path,
+def inject_documents(index_name: str, user_data: str, dst_path: str, json_path: str,
             meta_path=None, sections=[]):
 
+    """Inject in ES all documents present in dst_path.
+    Args:
+        index_name (str): The index name
+        user_data (str): Path of data in backend docker
+        dst_path (str): relative path of the folder which contains
+            the documents to index
+        json_path (str): relative path of the folder which contains
+            the content of the documents
+        meta_path (str): relative path of the folder which contains
+            the meta data of the documents
+        sections (list): In case of odt document, contains the sections to read
+    """
     no_match = 0
 
     (Path(user_data) / json_path).mkdir(parents=True, exist_ok=True)
@@ -370,7 +409,7 @@ def inject_documents(INDEX_NAME, user_data, dst_path, json_path,
             print('Read %s'%str(path_document))
 
             filename = path_document.name
-            index_file(filename, INDEX_NAME, user_data,
+            index_file(filename, index_name, user_data,
                         dst_path, json_path, meta_path, sections=sections)
             print('Document %s just uploaded'% path_document)
 
@@ -384,10 +423,20 @@ def inject_documents(INDEX_NAME, user_data, dst_path, json_path,
 
     print("There is %s documents without metadata match"%no_match)
 
-def index_file(filename, INDEX_NAME, user_data, dst_path, json_path,
-            meta_path,  sections=[]):
-    """
-    Index json file to elastic with metadata
+def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
+            json_path: str, meta_path,  sections=[]):
+    """Inject in ES the document <filename>
+    Args:
+        filename (str): The document to index
+        index_name (str): The index name
+        user_data (str): Path of data in backend docker
+        dst_path (str): relative path of the folder which contains
+            the documents to index
+        json_path (str): relative path of the folder which contains
+            the content of the documents
+        meta_path (str): relative path of the folder which contains
+            the meta data of the documents
+        sections (list): In case of odt document, contains the sections to read
     """
     filename = Path(filename)
     path_document = Path(user_data) / dst_path / filename
@@ -410,12 +459,20 @@ def index_file(filename, INDEX_NAME, user_data, dst_path, json_path,
 
     save_json(data, path_json)
 
-    res = es.index(index = INDEX_NAME, body=data , id = path_document.name)
+    res = es.index(index = index_name, body=data , id = path_document.name)
     return res
 
-def delete_file(filename, INDEX_NAME):
+def delete_file(filename, index_name):
+    """Inject in ES the document <filename>
+    Args:
+        filename (str): The document to index
+        index_name (str): The index name
+    Returns:
+        HTTP error code
+
+    """
     try:
-        res = es.delete(index = INDEX_NAME, id = filename)
+        res = es.delete(index = index_name, id = filename)
         return 200, res
     except elasticsearch.exceptions.NotFoundError as e:
         return e.status_code, e.info

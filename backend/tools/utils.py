@@ -1,6 +1,8 @@
 from pathlib import Path
 
 def empty_tree(pth: Path):
+    if not pth.is_dir():
+        return
     for child in pth.iterdir():
         if child.is_file():
             child.unlink()
