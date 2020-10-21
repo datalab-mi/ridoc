@@ -24,7 +24,7 @@ services:
       - ${ENV_FILE}
   tika:
     image: logicalspark/docker-tikaserver
-    container_name: ${DC_PREFIX}-tika
+    container_name: tika
     expose:
       - "9998"
     ports:
