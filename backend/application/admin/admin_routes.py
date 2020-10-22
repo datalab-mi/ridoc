@@ -200,28 +200,27 @@ def index(index_name: str):
 
     return make_response({'color': new_index}, 200)
 
-@admin_bp.route('/put_d_threshold', methods=['PUT'])
+@admin_bp.route('/put_thresholds', methods=['PUT'])
     # Put display threshold into d_threshold.json from frontend input
-def put_d_threshold():
-    # body is d_threshold
+def put_thresholds():
+    # body is the json of the thresholds
     body = request.get_json(force=True)
+    d_threshold = int(request.args.get('d_threshold'))
+    r_threshold = int(request.args.get('r_threshold'))
     threshold_file = Path(app.config['USER_DATA']) / ('threshold.json')
 
-    '''
-    if (not threshold_file.exists()): #create file
+    if threshold_file.exists():
+        #import pdb; pdb.set_trace()
+        # insert new thresholds
+        body["d_threshold"] = d_threshold
+        body["r_threshold"] = r_threshold
         with open(threshold_file, "w+") as jsonFile:
-            json.dump({"d_threshold": 1, "r_threshold": 1}, jsonFile)
-    '''
+            json.dump(body, jsonFile)
 
-    import pdb; pdb.set_trace()
-    #insert new threshold
-    with open(threshold_file, "r") as jsonFile:
-        data = json.load(jsonFile)
-    data["d_threshold"] = body
-    with open(threshold_file, "w") as jsonFile:
-        json.dump(data, jsonFile)
-
-    return make_response(jsonify(sucess=True), 200)
+        return make_response(jsonify(sucess=True), 200)
+    else:
+        return abort(502)
+   
 
 
 @admin_bp.route("/synonym/<int:key>", methods=["DELETE", "PUT"])

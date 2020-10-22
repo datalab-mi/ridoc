@@ -73,13 +73,16 @@ def test_display_threshold(client, app, display_threshold_data):
     time.sleep(2)
     assert [hits['_id'] for hits in res['hits']] == ['BF2016-08-16010-dfci.pdf'], 'Find %s'%[hits['_id'] for hits in res['hits']]
 '''
-def test_put_d_threshold(client, app):
+def test_put_thresholds(client, app):
     # Add display threshold to threshold.json
-    d_threshold = 5
+    thresholds = {"d_threshold": 1, "r_threshold": 1}
+    d_threshold = 6
+    r_threshold = 6
+
     with app.test_client() as c:
         resp = c.put(
-            '/admin/put_d_threshold',
-            data = json.dumps(d_threshold))
+            '/admin/put_thresholds?d_threshold={d_threshold}&r_threshold={r_threshold}'.format(d_threshold=d_threshold,r_threshold=r_threshold),
+            data = json.dumps(thresholds))
 
     assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
 

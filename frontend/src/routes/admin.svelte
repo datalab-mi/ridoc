@@ -63,7 +63,7 @@
 
 
 <div>
-	<h1>Gestion du seuil d'affichage</h1>
+	<h1>Gestion des seuils</h1>
 	<br>
 	<p>Nombre de documents maximum à afficher par recherche.</p>
 	<DisplayThreshold/>
