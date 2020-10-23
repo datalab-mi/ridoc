@@ -3,7 +3,7 @@ version: '2'
 services:
   logstash:
     #image: docker.elastic.co/elasticsearch/elasticsearch-oss:${ES_VERSION}
-    container_name: ${DC_PREFIX}-logstash
+    container_name: logstash
     image: docker.elastic.co/logstash/logstash-oss:${ES_VERSION}
     environment:
       PATH_CONFIG: "/usr/share/logstash/pipeline" # default
