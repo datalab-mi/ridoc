@@ -126,3 +126,17 @@ def suggest():
                 index_name)
 
     return json.dumps(res)#.encode('utf8')
+
+@common_bp.route("/logo", methods=['GET'])
+def get_logo(name='logo.svg'):
+    """Get the logo in the file system USER_DATA
+    Args:
+        path (str): The relative path of the document or folder to get
+    Returns:
+        file: Logo file
+    """
+    filename  = (Path(app.config['USER_DATA']) / app.config['LOGO'])
+    if filename.is_file(): # return first found
+        return send_from_directory(app.config['USER_DATA'], app.config['LOGO'], as_attachment=True)
+    else:
+        return make_response(str(Path(app.config['USER_DATA']) / name), 404)

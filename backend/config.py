@@ -44,6 +44,7 @@ class Config:
     JSON_DIR = getenv('JSON_DIR')
     META_DIR = getenv('META_DIR')
 
+    LOGO = getenv('LOGO', "logo.svg")
 
     print('Read config')
     pass

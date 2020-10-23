@@ -1,6 +1,6 @@
 <script>
 	export let segment;
-	let logo = "/api/common/files/logo.svg"
+	let logo = "/api/common/logo"
 </script>
 
 <style>
@@ -53,9 +53,8 @@
 	.logo {
 		position: relative;
 		top: .1rem;
-		left: -.1rem;
+		left: -1rem;
 		width: 4.2rem;
-		height: 4.2rem;
 		background: 0 50% no-repeat;
 		background-size: auto 100%;
 		text-indent: -9999px;
