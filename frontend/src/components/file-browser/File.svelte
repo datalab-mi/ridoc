@@ -29,7 +29,6 @@
 		const res = await files('GET', baseDir)
 		//const data = await res.json()
 		$list_files = await res.json()//data.map(element => Object.assign({}, ...keys_to_filter.map(key => ({[key]: element[key]}))))
-
 		return res.status
 	}
 
@@ -110,9 +109,13 @@ onDestroy(() => $list_files = [])
 			<FileRow {item} {meta} {baseDir} {key}/>
 		</VirtualList>
 
-
 	{:catch error}
-		<p style="color: red">{error.message}</p>
+		{#if error.satus === 404}
+			<p style="color: red">Pas de pièces jointes</p>
+
+		{:else}
+			<p style="color: red">{error.message}</p>
+		{/if}
 	{/await}
 
 </div>
