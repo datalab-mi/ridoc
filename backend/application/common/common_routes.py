@@ -69,24 +69,20 @@ def search():
     if  not index_name:
         return
 
-    GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
-    EXPRESSION_FILE = os.getenv('RAW_EXPRESSION_FILE')
-    USER_DATA = os.getenv('USER_DATA')
-    THRESHOLDS = os.getenv('THRESHOLDS')
+    GLOSSARY_FILE = app.config['GLOSSARY_FILE']
+    EXPRESSION_FILE = app.config['RAW_EXPRESSION_FILE']
+    USER_DATA = app.config['USER_DATA']
+    THRESHOLD_FILE = app.config['THRESHOLD_FILE']
 
     glossary_file = Path(USER_DATA) / GLOSSARY_FILE
     expression_file = Path(USER_DATA) / EXPRESSION_FILE
-    thresholds_file = Path(USER_DATA) / THRESHOLDS
+    threshold_file = Path(USER_DATA) / THRESHOLD_FILE
 
     res = elastic_search(must, should, filter, index_name, highlight,
                 glossary_file = glossary_file,
-                expression_file = expression_file, thresholds_file = thresholds_file)
-    #import pdb; pdb.set_trace()
+                expression_file = expression_file,
+                threshold_file = threshold_file)
 
-    '''threshold = 2
-    seuil_affichage = 3.5
-    res['threshold'] = threshold
-    '''
     return json.dumps(res)
 
 @common_bp.route('/synonym', methods=['GET'])

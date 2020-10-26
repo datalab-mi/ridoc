@@ -200,32 +200,36 @@ def index(index_name: str):
 
     return make_response({'color': new_index}, 200)
 
-@admin_bp.route('/put_thresholds', methods=['PUT'])
-    # Put display threshold into d_threshold.json from frontend input
-def put_thresholds():
-    # body is the json of the thresholds
-    body = request.get_json(force=True)
-    d_threshold = int(request.args.get('d_threshold'))
-    r_threshold = int(request.args.get('r_threshold'))
-    threshold_file = Path(app.config['USER_DATA']) / ('threshold.json')
+@admin_bp.route('/threshold', methods=['PUT'])
+def threshold():
+    """ Save display or relevance thresholds
+    Returns: Usual HTTP status codes
+        201: Update
+        501: Server abort
+    """
 
-    if threshold_file.exists():
-        #import pdb; pdb.set_trace()
+    body = request.get_json(force=True)
+    d_threshold = body.get('d_threshold', None)
+    r_threshold = body.get('r_threshold', None)
+
+    threshold_file = Path(app.config['USER_DATA']) / app.config['THRESHOLD_FILE']
+
+    if threshold_file.exists() and d_threshold and r_threshold:
         # insert new thresholds
-        body["d_threshold"] = d_threshold
+        body["d_threshold"] = int(d_threshold)
         body["r_threshold"] = r_threshold
         with open(threshold_file, "w+") as jsonFile:
             json.dump(body, jsonFile)
 
-        return make_response(jsonify(sucess=True), 200)
+        return make_response(jsonify(sucess=True), 201)
     else:
-        return abort(502)
-   
+        return abort(501)
+
 
 
 @admin_bp.route("/synonym/<int:key>", methods=["DELETE", "PUT"])
 def synonym(key:int):
-    """ Add,replace or delete a synonym in its file. If a creation, append
+    """ Add, replace or delete a synonym in its file. If a creation, append
         at the beginning.
     Args:
         key (int): The row number of the synonym in the synonym file
@@ -237,9 +241,6 @@ def synonym(key:int):
     """
     filename = request.args.get('filename', app.config['GLOSSARY_FILE'])
     synonym_file = Path(app.config['USER_DATA']) / (filename + '.txt')
-    #import pdb; pdb.set_trace()
-
-
     if 'glossaire' in filename:
         names = ['expressionB','expressionA']
         sep = ' => '

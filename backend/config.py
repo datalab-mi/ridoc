@@ -35,7 +35,7 @@ class Config:
     INDEX_NAME = getenv('INDEX_NAME')
     ES_DATA = getenv('ES_DATA')
     MAPPING_FILE = getenv('MAPPING_FILE')
-    THRESHOLDS = getenv('THRESHOLDS')
+    THRESHOLD_FILE = getenv('THRESHOLD_FILE')
     GLOSSARY_FILE = getenv('GLOSSARY_FILE')
     EXPRESSION_FILE = getenv('EXPRESSION_FILE')
     RAW_EXPRESSION_FILE = getenv('RAW_EXPRESSION_FILE')
