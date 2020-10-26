@@ -1,8 +1,8 @@
 version: '3.4'
 services:
   nginx-dev:
-    image: ${APP}-nginx-dev
-    container_name: ${APP}-nginx-dev
+    image: nginx-dev
+    container_name: nginx-dev
     build:
       context: ${NGINX}
       target: development

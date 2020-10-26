@@ -30,7 +30,7 @@ export NPM_REGISTRY = $(shell echo $$NPM_REGISTRY )
 export NPM_VERBOSE = 1
 
 # KIBANA
-export KIBANA_HOST = ${APP}-kibana
+export KIBANA_HOST = kibana
 export KIBANA_PORT = 5601
 
 # LOGSTASH
@@ -38,7 +38,7 @@ export LOGSTASH_HOST = ${APP}-logstash
 # BACKEND dir
 export BACKEND=${APP_PATH}/backend
 export BACKEND_PORT=5000
-export BACKEND_HOST = ${APP}-backend
+export BACKEND_HOST = backend
 
 # frontend dir
 export FRONTEND_PORT=3000

@@ -98,7 +98,7 @@
 
 
 </script>
-<div class='search-bar'>
+<div class='search-bar' on:keyup={e=>e.key==="Enter" && handleSearch()}>
 {#await getInit}
 <p>...Initialisation</p>
 

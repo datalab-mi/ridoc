@@ -73,9 +73,10 @@ async function config(filename) {
 	}
 		if (res.ok)  {
 			return res
+    } else if (res.status===404)  {
+      throw new Error('Ressource introuvable');
 		} else {
-			console.log('error')
-			throw new Error('Oups');
+			throw new Error('Erreur inconnue');
 		}
 	}
 

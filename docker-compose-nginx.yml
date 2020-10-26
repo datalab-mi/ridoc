@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   nginx-production:
-    image: ${APP}-nginx-production:${APP_VERSION}
+    image: nginx-production:${APP_VERSION}
     build:
       context: ${NGINX}
       target: production
@@ -11,7 +11,7 @@ services:
         app_ver: ${APP_VERSION}
 
 
-    container_name: ${DC_PREFIX}-nginx-production
+    container_name: nginx-production
 
     environment:
       - APP
