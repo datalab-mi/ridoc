@@ -97,8 +97,6 @@ def test_search():
     thresholds_file = Path(USER_DATA) / THRESHOLDS
     
 
-    
-
     req = 'travail illegal'
     must = [{"multi_match":{"fields":["titre","content"],"query":req}}]
     #import pdb; pdb.set_trace()
@@ -106,6 +104,7 @@ def test_search():
     res = search(must, [], [], INDEX_NAME, [],
                 glossary_file = glossary_file,
                 expression_file = expression_file, thresholds_file = thresholds_file)
+
     #print(hits, length_req, bande)
     assert  res['hits'][0]['_id'] == 'BF2016-08-16010-dfci.pdf', 'Found to result %s'%hits[0]['_id']
     assert res['length']>= 2, res['length']
@@ -120,30 +119,6 @@ def test_search():
     assert res['hits'][0]['_score']  > 10, 'boosting no taken into account'
 
 
-@pytest.mark.run(after='test_inject_documents')
-def test_display_threshold():
-    glossary_file = Path(USER_DATA) / GLOSSARY_FILE
-    expression_file = Path(USER_DATA) / RAW_EXPRESSION_FILE
-
-    req = 'travail illegal'
-    must = [{"multi_match":{"fields":["titre","content"],"query":req}}]
-    #import pdb; pdb.set_trace()
-    time.sleep(2)
-    res = search(must, [], [], INDEX_NAME, [],
-                glossary_file = glossary_file,
-                expression_file = expression_file)
-    #print(hits, length_req, bande)
-    assert  res['hits'][0]['_id'] == 'BF2016-08-16010-dfci.pdf', 'Found to result %s'%hits[0]['_id']
-    assert res['length']>= 2, res['length']
-    assert not res['band']
-
-    # test expression
-    req = "chiffre d'affaire"
-    must = [{"multi_match":{"fields":["titre","content"],"query":req}}]
-    res = search(must, [], [], INDEX_NAME, [],
-                glossary_file = glossary_file,
-                expression_file = expression_file)
-    assert res['hits'][0]['_score']  > 10, 'boosting no taken into account'
 
 """
 @pytest.mark.run(after='test_search')
