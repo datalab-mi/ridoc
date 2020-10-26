@@ -39,6 +39,7 @@ async function ReIndex() {
     </button>
   </div>
 
+<!-- svelte-ignore empty-block -->
 {#await promise}
 {:catch error}
   <p style="color: red">{error.message}</p>

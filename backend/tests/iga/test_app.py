@@ -16,6 +16,8 @@ ES_DATA = os.getenv('ES_DATA')
 GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
 EXPRESSION_FILE = os.getenv('EXPRESSION_FILE')
 MAPPING_FILE =  os.getenv('MAPPING_FILE')
+THRESHOLDS = os.getenv('THRESHOLDS')
+
 
 PDF_DIR = os.getenv('PDF_DIR')
 JSON_DIR = os.getenv('JSON_DIR')
@@ -55,24 +57,7 @@ def test_search(client, app, search_data):
     #import pdb; pdb.set_trace()
     time.sleep(2)
     assert [hits['_id'] for hits in res['hits']] == ['BF2016-08-16010-dfci.pdf'], 'Find %s'%[hits['_id'] for hits in res['hits']]
-'''
-def test_display_threshold(client, app, display_threshold_data):
-    with app.test_client() as c:
-        resp = c.post(
-            '/common/search',
-            content_type='application/json',
-            data = json.dumps(display_threshold_data))
-    assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
 
-    res= json.loads(
-            resp.get_data(as_text=False).decode('utf-8'))
-
-    assert len(res)>0, "No document found"
-    #import pdb; pdb.set_trace()
-
-    time.sleep(2)
-    assert [hits['_id'] for hits in res['hits']] == ['BF2016-08-16010-dfci.pdf'], 'Find %s'%[hits['_id'] for hits in res['hits']]
-'''
 def test_put_thresholds(client, app):
     # Add display threshold to threshold.json
     thresholds = {"d_threshold": 1, "r_threshold": 1}

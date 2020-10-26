@@ -72,17 +72,21 @@ def search():
     GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
     EXPRESSION_FILE = os.getenv('RAW_EXPRESSION_FILE')
     USER_DATA = os.getenv('USER_DATA')
+    THRESHOLDS = os.getenv('THRESHOLDS')
 
     glossary_file = Path(USER_DATA) / GLOSSARY_FILE
     expression_file = Path(USER_DATA) / EXPRESSION_FILE
+    thresholds_file = Path(USER_DATA) / THRESHOLDS
 
     res = elastic_search(must, should, filter, index_name, highlight,
                 glossary_file = glossary_file,
-                expression_file = expression_file)
+                expression_file = expression_file, thresholds_file = thresholds_file)
+    #import pdb; pdb.set_trace()
 
-    threshold = 1
+    '''threshold = 2
     seuil_affichage = 3.5
     res['threshold'] = threshold
+    '''
     return json.dumps(res)
 
 @common_bp.route('/synonym', methods=['GET'])

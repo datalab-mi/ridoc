@@ -43,7 +43,7 @@ async function index(index_name, filename, method) {
 }
 
 async function config(filename) {
-	const res = await fetch(`/api/common/files/${filename}`);
+	const res = await fetch(`/api/common/files/${filename}`,{cache: 'no-cache'});
 	const data = await res.json();
 	if (res.ok)  {
 		return data

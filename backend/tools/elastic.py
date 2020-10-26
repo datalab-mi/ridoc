@@ -18,6 +18,8 @@ from shutil import copyfile
 import pandas as pd
 from tools.converter import pdf2json, odt2json, save_json
 from tools.utils import empty_tree, _finditem
+import json
+
 
 
 #On établit une connection
@@ -169,7 +171,7 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
 
 def search(must: dict, should: dict, filter: dict, index_name: str,
             highlight: list,
-            glossary_file=None, expression_file=None):
+            glossary_file=None, expression_file=None, thresholds_file = None):
 
     """Perform the ES search
     Args:
@@ -180,12 +182,23 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
         highlight (list): List of keys to highlight
         expression_file (str): Expression file path
         glossary_file (str): Acronym file path
+        size: number of documents to display (display threshold)
     Returns:
         dict:
     """
     T = False
     Bande = False
 
+    
+    if thresholds_file.exists():
+        with open(thresholds_file) as json_file:
+            thresholds = json.load(json_file)
+            display_threshold = thresholds['d_threshold']
+            relevance_threshold = thresholds['r_threshold']
+    else:
+        return abort(503)
+    
+    #import pdb; pdb.set_trace()
     #req = [_finditem(x, "query") for x in must]
     #print(req)
 
@@ -196,7 +209,8 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
 
         D = es.search(index = index_name,
                       body = body,
-                      size = 10)
+                      size = display_threshold)
+                  
     else:
         length_of_request = None
         D = es.search(index = index_name,
@@ -207,13 +221,15 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
                         },
                     size = int(1000)
                     )
+        relevance_threshold = 0
+    
     try: #This try is for the case where no match is found
         if not T and D['hits']['hits'][0]["_score"]/length_of_request < seuil: #The first filter then the second filter
           Bande = True
     except:
         pass
-
-    return {'hits': D['hits']['hits'], 'length': length_of_request , 'band': Bande}
+    
+    return {'hits': D['hits']['hits'], 'length': length_of_request , 'band': Bande, 'r_threshold': relevance_threshold}
 
 
 def suggest(req: str , index_name: str):
