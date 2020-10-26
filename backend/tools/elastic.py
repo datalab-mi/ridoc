@@ -208,7 +208,7 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
 
         D = es.search(index = index_name,
                       body = body,
-                      size = thresholds.get('r_threshold', int(1000)))
+                      size = thresholds.get('d_threshold', int(1000)))
 
     else:
         length_of_request = None
@@ -220,7 +220,7 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
                         },
                     size = int(1000)
                     )
-        relevance_threshold = 0
+        thresholds['r_threshold'] = 0
 
     try: #This try is for the case where no match is found
         if not T and D['hits']['hits'][0]["_score"]/length_of_request < seuil: #The first filter then the second filter
