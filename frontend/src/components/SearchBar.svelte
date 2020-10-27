@@ -128,7 +128,7 @@
 	<p>...Attente de la requête</p>
 
 {:then length}
-	<p>{length} documents trouvés</p>
+	<p>{length} documents retournés</p>
 
 {:catch error}
 	<p style="color: red">{error.message}</p>
