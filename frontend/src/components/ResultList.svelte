@@ -11,7 +11,6 @@ let end;
 let height = '90%';
 let items = [];
 let threshold;
-let info;
 
 
 let promise = config('item.json')
@@ -19,7 +18,6 @@ let promise = config('item.json')
 $: {
 	let i = 0;
 	items = [];
-	info = $searchResults.r_threshold
 	
 	threshold = true
 	for (const hits of $searchResults.hits){
@@ -51,7 +49,6 @@ $: {
 			</div>
 		{:else}
 			<ResultItem meta={JSON.parse(JSON.stringify(meta.inputs))} {...item}/>
-			<p>info = {info}</p>
 
 		{/if}
 	{/each}
