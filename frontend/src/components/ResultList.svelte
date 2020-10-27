@@ -9,8 +9,9 @@ import VirtualList from '../components/VirtualList.svelte';
 let start;
 let end;
 let height = '90%';
-let items = []
-let threshold
+let items = [];
+let threshold;
+let info;
 
 
 let promise = config('item.json')
@@ -18,10 +19,12 @@ let promise = config('item.json')
 $: {
 	let i = 0;
 	items = [];
+	info = $searchResults.r_threshold
+	
 	threshold = true
 	for (const hits of $searchResults.hits){
 		let item = {}
-		if (hits._score < $searchResults.threshold && threshold){
+		if (hits._score < $searchResults.r_threshold && threshold){
 			threshold = false
 			item = {'_id': "bar"}
 		} else {
@@ -35,7 +38,6 @@ $: {
 }
 
 </script>
-
 {#await promise}
 <p>... Récuperation de la configuration</p>
 {:then meta}
@@ -44,17 +46,19 @@ $: {
 	{#each items as item (item.key)}
 		{#if  item._id === "bar"}
 			<div class="bar">
-				<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Nous vous recommandons de contacter
-					<a href="mailto://iga@interieur.gouv.fr?subject=Demande_de_consultation">l'administrateur</a>
+				<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Nous vous recommandons de contacter l'<b><a href="mailto://iga@interieur.gouv.fr?subject=Demande_de_consultation">administrateur</a></b>.
 				</p>
 			</div>
 		{:else}
 			<ResultItem meta={JSON.parse(JSON.stringify(meta.inputs))} {...item}/>
+			<p>info = {info}</p>
+
 		{/if}
 	{/each}
 	</div>
 {/if}
 {/await}
+
 
 <style>
 	.result-list {

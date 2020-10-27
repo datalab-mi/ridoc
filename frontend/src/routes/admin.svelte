@@ -5,6 +5,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import Reindex from '../components/Reindex.svelte';
+	import Threshold from '../components/Threshold.svelte';
 	import NewItem from '../components/NewItem.svelte';
 	import File from '../components/file-browser/File.svelte';
 
@@ -60,6 +61,15 @@
 
 <hr>
 
+
+<div>
+	<h1>Gestion des seuils</h1>
+	<br>
+	<Threshold/>
+</div>
+
+<hr>
+
 <div>
 	<h1>Gestion des pièces-jointes</h1>
 	<br>
@@ -67,6 +77,8 @@
 	<File baseDir={pjDir} {meta}/>
 
 </div>
+
+<hr>
 
 
 <style>

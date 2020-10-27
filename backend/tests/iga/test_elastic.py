@@ -24,6 +24,7 @@ ES_DATA = os.getenv('ES_DATA')
 GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
 EXPRESSION_FILE = os.getenv('EXPRESSION_FILE')
 RAW_EXPRESSION_FILE = os.getenv('RAW_EXPRESSION_FILE')
+THRESHOLD_FILE = os.getenv('THRESHOLD_FILE')
 
 MAPPING_FILE =  os.getenv('MAPPING_FILE')
 
@@ -93,6 +94,8 @@ def test_analyse_index():
 def test_search():
     glossary_file = Path(USER_DATA) / GLOSSARY_FILE
     expression_file = Path(USER_DATA) / RAW_EXPRESSION_FILE
+    threshold_file = Path(USER_DATA) / THRESHOLD_FILE
+
 
     req = 'travail illegal'
     must = [{"multi_match":{"fields":["titre","content"],"query":req}}]
@@ -100,19 +103,24 @@ def test_search():
     time.sleep(2)
     res = search(must, [], [], INDEX_NAME, [],
                 glossary_file = glossary_file,
-                expression_file = expression_file)
+                expression_file = expression_file,
+                threshold_file = threshold_file)
+
     #print(hits, length_req, bande)
     assert  res['hits'][0]['_id'] == 'BF2016-08-16010-dfci.pdf', 'Found to result %s'%hits[0]['_id']
     assert res['length']>= 2, res['length']
     assert not res['band']
-
+    #import pdb; pdb.set_trace()
     # test expression
     req = "chiffre d'affaire"
     must = [{"multi_match":{"fields":["titre","content"],"query":req}}]
     res = search(must, [], [], INDEX_NAME, [],
                 glossary_file = glossary_file,
-                expression_file = expression_file)
+                expression_file = expression_file,
+                threshold_file = threshold_file)
     assert res['hits'][0]['_score']  > 10, 'boosting no taken into account'
+
+
 
 """
 @pytest.mark.run(after='test_search')
@@ -202,7 +210,7 @@ def test_blue_green():
     #print(hits, length_req, bande)
     time.sleep(2)
     assert [hits['_id'] for hits in res_blue['hits']] == ['BF2014-08-13069+-+Plan+submersions+rapides.pdf',
-                                                    'BF2015-09-14124+-+Accueil+ressortissants+étrangers.pub.pdf']  , 'Found to result %s'%res['hits'][0]['_id']
+                                                    'BF2014-01-13041+Dépenses+de+contentieux.pdf']  , 'Found to result %s'%res_blue['hits'][0]['_id']
     print([hits['_id'] for hits in res_blue['hits']])
 
     ####  Switch to new index #####
@@ -230,7 +238,7 @@ def test_blue_green():
     #import pdb; pdb.set_trace()
     # should be equal rather than in, but doesn't work with test_app.py. WHY??
     time.sleep(2)
-    assert  'BF2015-15-15034-action-sociale-du-mi.pdf' in [hits['_id'] for hits in res_green['hits']], 'Found to result %s'%res['hits'][0]['_id']
+    assert  'BF2015-15-15034-action-sociale-du-mi.pdf' in [hits['_id'] for hits in res_green['hits']], 'Found to result %s'%res_green['hits'][0]['_id']
 
     print([hits['_id'] for hits in res_green['hits']])
 

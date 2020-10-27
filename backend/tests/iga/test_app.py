@@ -16,6 +16,8 @@ ES_DATA = os.getenv('ES_DATA')
 GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
 EXPRESSION_FILE = os.getenv('EXPRESSION_FILE')
 MAPPING_FILE =  os.getenv('MAPPING_FILE')
+THRESHOLDS = os.getenv('THRESHOLDS')
+
 
 PDF_DIR = os.getenv('PDF_DIR')
 JSON_DIR = os.getenv('JSON_DIR')
@@ -55,6 +57,16 @@ def test_search(client, app, search_data):
     #import pdb; pdb.set_trace()
     time.sleep(2)
     assert [hits['_id'] for hits in res['hits']] == ['BF2016-08-16010-dfci.pdf'], 'Find %s'%[hits['_id'] for hits in res['hits']]
+
+def test_threshold(client, app):
+    # Add display threshold to threshold.json
+    thresholds = {"d_threshold": 1, "r_threshold": 1}
+    with app.test_client() as c:
+        resp = c.put('/admin/threshold',
+            data = json.dumps(thresholds))
+
+    # TODO: open THRESHOLD_FILE and test its content
+    assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
 
 def test_upload_file(client, app, form_to_upload):
     # Add document
@@ -110,6 +122,7 @@ def test_synonym(client, app):
             key=key,
             filename=filename),
             data = json.dumps(body))
+#import pdb; pdb.set_trace()
 
     assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
     synonym_df = pd.read_csv(synonym_file, sep=sep,header=None, names=names)

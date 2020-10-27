@@ -200,10 +200,36 @@ def index(index_name: str):
 
     return make_response({'color': new_index}, 200)
 
+@admin_bp.route('/threshold', methods=['PUT'])
+def threshold():
+    """ Save display or relevance thresholds
+    Returns: Usual HTTP status codes
+        201: Update
+        501: Server abort
+    """
+
+    body = request.get_json(force=True)
+    d_threshold = body.get('d_threshold', None)
+    r_threshold = body.get('r_threshold', None)
+
+    threshold_file = Path(app.config['USER_DATA']) / app.config['THRESHOLD_FILE']
+
+    if threshold_file.exists() and d_threshold and r_threshold:
+        # insert new thresholds
+        body["d_threshold"] = int(d_threshold)
+        body["r_threshold"] = r_threshold
+        with open(threshold_file, "w+") as jsonFile:
+            json.dump(body, jsonFile)
+
+        return make_response(jsonify(sucess=True), 201)
+    else:
+        return abort(501)
+
+
 
 @admin_bp.route("/synonym/<int:key>", methods=["DELETE", "PUT"])
 def synonym(key:int):
-    """ Add,replace or delete a synonym in its file. If a creation, append
+    """ Add, replace or delete a synonym in its file. If a creation, append
         at the beginning.
     Args:
         key (int): The row number of the synonym in the synonym file
@@ -215,7 +241,6 @@ def synonym(key:int):
     """
     filename = request.args.get('filename', app.config['GLOSSARY_FILE'])
     synonym_file = Path(app.config['USER_DATA']) / (filename + '.txt')
-
     if 'glossaire' in filename:
         names = ['expressionB','expressionA']
         sep = ' => '
@@ -226,7 +251,7 @@ def synonym(key:int):
         return abort(501)
 
     if synonym_file.exists():
-        synonym_df = pd.read_csv(synonym_file, header=None, sep=sep, names=names);
+        synonym_df = pd.read_csv(synonym_file, header=None, sep=sep, names=names)
         synonym_df['key'] = synonym_df.index + 1
 
     else:

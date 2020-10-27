@@ -3,7 +3,7 @@ import { readable, writable } from 'svelte/store';
 // auth: https://www.toptal.com/front-end/svelte-framework-guide
 export const searchResults = writable({
   'hits':[],
-  'threshold': 1
+  'r_threshold': 0
 });
 
 export const suggestEntry = writable([]);
