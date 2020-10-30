@@ -13,7 +13,7 @@ from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_
 
 from tools.utils import empty_tree
 
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','md'}
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','md','odt'}
 
 # Blueprint Configuration
 admin_bp = Blueprint('admin_bp', __name__,url_prefix='/admin')
@@ -30,6 +30,14 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# Section path
+path_sections = Path(app.config['USER_DATA']) / 'sections.json'
+if path_sections.exists():
+    with open(path_sections, 'r' , encoding = 'utf-8') as json_file:
+        sections = json.load(json_file)
+else:
+    sections = []
+
 @admin_bp.route("/files")
 @admin_bp.route("/files/<path:path>", methods=["PUT","DELETE"])
 def get_file(path=''):
@@ -41,7 +49,7 @@ def get_file(path=''):
         404: Delete unsuccessful
         200: Create
         201: Update
-        TODO : Create/update for folder
+        TODO : Creatagte/update for folder
     """
     dir = Path(app.config['USER_DATA']) / path
     if request.method == 'DELETE':
@@ -116,6 +124,8 @@ def upload_file(filename: str):
             # save file
             file.save(path_file)
             print("save %s"%path_file)
+        else:
+            status = 202
         # save meta
         if path_meta.parent.exists():
             with open(path_meta , 'w', encoding='utf-8') as f:
@@ -156,7 +166,7 @@ def index_file(index_name: str, filename: str):
                     app.config['USER_DATA'],
                     app.config['DST_DIR'],
                     app.config['JSON_DIR'],
-                    app.config['META_DIR'])
+                    app.config['META_DIR'], sections=sections)
         status = 201 if res['result'] == 'created' else 200 if res['result'] == 'updated' else 500
         return make_response(res, status)
 

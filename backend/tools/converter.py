@@ -59,7 +59,6 @@ def odt2json(path: str, sections: list = []) -> dict:
     data = {}
     section_content = []
     current_section = ''
-
     for x in L2:
         if normalize(x) in [x['key'] for x in sections]:
             current_section = normalize(x)
@@ -73,6 +72,7 @@ def odt2json(path: str, sections: list = []) -> dict:
                 data[current_section] = section_content
             else :
                 data[current_section] = ' ,'.join(section_content)
+    #import pdb; pdb.set_trace()
 
     if '' in data:
         data.pop('')

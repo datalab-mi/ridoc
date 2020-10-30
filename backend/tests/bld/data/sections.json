@@ -1,0 +1,14 @@
+[
+  {"key": "SITE", "array":false},
+  {"key": "DIRECTION", "array":false},
+  {"key": "DOMAINE", "array":false},
+  {"key": "TITRE", "array":false},
+  {"key": "Mots clés", "array":true},
+  {"key": "Date", "array":false},
+  {"key": "Question", "array":false},
+  {"key": "Réponse", "array":false},
+  {"key": "Réponse", "array":false},
+  {"key": "Pièces jointes", "array":true},
+  {"key": "Liens", "array":false},
+  {"key": "Références", "array":false}
+]

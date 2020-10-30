@@ -41,8 +41,8 @@
     },
     {
       "key": "mots cles",
-      "type": "text",
-      "placeholder": "NA",
+      "type": "tag",
+      "placeholder": "Ajoutez un tag",
       "value": [],
       "innerHtml": "<b>Mots clés :</b>",
       "highlight": true,

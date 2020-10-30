@@ -51,6 +51,9 @@ def test_create_index():
 
 @pytest.mark.run(after='test_create_index')
 def test_inject_documents(sections):
+    for path in [JSON_DIR, META_DIR]:
+        print(Path(USER_DATA)/ path)
+        empty_tree(Path(USER_DATA)/ path)
 
     doc = 'moteur de recherche.odt'
 
@@ -64,8 +67,6 @@ def test_inject_documents(sections):
 def test_analyse_index():
 
     # create elasticsearch index
-    for path in [JSON_DIR, META_DIR]:
-        empty_tree(Path(path))
 
     indices = elasticsearch.client.IndicesClient(es)
 

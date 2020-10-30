@@ -34,7 +34,7 @@ export KIBANA_HOST = kibana
 export KIBANA_PORT = 5601
 
 # LOGSTASH
-export LOGSTASH_HOST = ${APP}-logstash
+export LOGSTASH_HOST = logstash
 # BACKEND dir
 export BACKEND=${APP_PATH}/backend
 export BACKEND_PORT=5000
@@ -256,8 +256,8 @@ nginx-build: nginx-check-build
 ###############
 # General 	  #
 ###############
-start: elasticsearch backend-start nginx
-stop: nginx-stop backend-stop elasticsearch-stop
+start: elasticsearch backend-start kibana logstash nginx
+stop: nginx-stop backend-stop elasticsearch-stop kibana-stop logstash-stop
 
 dev: network frontend-dev backend-dev elasticsearch kibana nginx-dev
 down: frontend-dev-stop backend-dev-stop elasticsearch-stop kibana-stop nginx-dev-stop

@@ -86,7 +86,7 @@ def test_upload_file(client, app, form_to_upload, file_name):
             data = form_to_upload)
 
     assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
 
     # Delete document
     with app.test_client() as c:
