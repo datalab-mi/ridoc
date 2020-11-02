@@ -3,3 +3,5 @@ raw_expression.txt
 expression.txt
 tests/**/json
 tests/**/meta
+benchmark/**/json
+benchmark/**/meta

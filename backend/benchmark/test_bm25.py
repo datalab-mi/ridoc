@@ -16,22 +16,14 @@ from elasticsearch import Elasticsearch
 backend/benchmark/bld/.env-bld
 '''
 parser = argparse.ArgumentParser(description='Evaluation of the metrics')
-parser.add_argument('env_path', metavar='path',type=str,help='the path to env file')
+parser.add_argument('env_path',type=str,help='the path to env file')
 args = parser.parse_args()
-print(args)
 print(args.env_path)
 
 #Loading the environment
-#env_path_bench = '/app/benchmark/' + args.env_path
-env_path_bench = '/app/benchmark/bld/.env-bld' 
-print(os.path.exists(env_path_bench))
-
-
-load_dotenv(dotenv_path=env_path_bench)
-
+env_path_bench = '/app/benchmark/' + args.env_path
+load_dotenv(dotenv_path=env_path_bench, override=True)
 INDEX_NAME = os.getenv('INDEX_NAME')
-print(INDEX_NAME)
-import pdb; pdb.set_trace()
 
 USER_DATA = os.getenv('USER_DATA')
 ES_DATA = os.getenv('ES_DATA')
@@ -39,9 +31,9 @@ ES_DATA = os.getenv('ES_DATA')
 GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
 RAW_EXPRESSION_FILE = os.getenv('RAW_EXPRESSION_FILE')
 MAPPING_FILE =  os.getenv('MAPPING_FILE')
+THRESHOLD_FILE = os.getenv('THRESHOLD_FILE')
 
 
-PDF_DIR = os.getenv('PDF_DIR')
 DST_DIR = os.getenv('DST_DIR')
 JSON_DIR = os.getenv('JSON_DIR')
 META_DIR =  os.getenv('META_DIR')
@@ -49,6 +41,7 @@ META_DIR =  os.getenv('META_DIR')
 ES_PORT=os.getenv('ES_PORT')
 ES_HOST=os.getenv('ES_HOST')
 
+os.makedirs(ES_DATA, exist_ok=True)
 
 #Instanciation of elasticsearch
 es = Elasticsearch([{'host': ES_HOST, 'port': ES_PORT}])
@@ -60,16 +53,90 @@ for i in range(3): # to be sure alias and indexes are removed
         name=INDEX_NAME, ignore=[400, 404])
 
 create_index(INDEX_NAME, USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
-
+#import pdb; pdb.set_trace()
 #Injection of documents
-inject_documents(INDEX_NAME, USER_DATA, DST_DIR, JSON_DIR,
-                meta_path = META_DIR)
+sec = [{'key': 'SITE', 'array':False},
+            {'key': 'DIRECTION', 'array':False},
+            {'key': 'DOMAINE', 'array':True},
+            {'key': 'TITRE', 'array':True},
+            {'key': 'Mots clés', 'array':True},
+            {'key': 'Date', 'array':True},
+            {'key': 'Question', 'array':True},
+            {'key': 'Réponse', 'array':False},
+            {'key': 'Pièces jointes', 'array':True},
+            {'key': 'Liens', 'array':False},
+            {'key': 'Références', 'array':False}]
 
+'''
+doc = 'création+de+la+DNUM.odt'
+filename = Path(filename)
+path_document = Path(user_data) / DST_DIR / filename
+    if  filename.suffix == '.pdf':
+
+        data = odt2json(str(path_document), sec)
+    
+'''            
+inject_documents(INDEX_NAME, USER_DATA, DST_DIR, JSON_DIR,
+                meta_path = META_DIR, sections=sec)
+#import pdb; pdb.set_trace()
 #Searching
+glossary_file = Path(USER_DATA) / GLOSSARY_FILE
+expression_file = Path(USER_DATA) / RAW_EXPRESSION_FILE
+threshold_file = Path(USER_DATA) / THRESHOLD_FILE
+
+doc = 'création+de+la+DNUM.odt'
+req = 'DNUM'
+must = [{"multi_match":{"fields":["question","reponse","titre","mots-cles"],"query":req}}]
+#print(es.get(index=INDEX_NAME, id=doc))
+
+'''
+D = es.search(index = INDEX_NAME)
+                    
+
+'''
+res = search(must, [], [], INDEX_NAME, [],
+              glossary_file = glossary_file,
+              expression_file = expression_file,
+              threshold_file = threshold_file)
+
+#print(res)
+
+
+
+
+#import pdb; pdb.set_trace()
+
+
+
+
+
+
+
+
+
+'''
+Brouillon
+#Analyse
+indices = elasticsearch.client.IndicesClient(es)
+# Test synonym
+res = indices.analyze(index = INDEX_NAME, body=body)
+#Test  simple search
+body = {
+      "analyzer": "my_analyzer",
+      "text": "La dnum du Ministère de l'interieur"
+    }
+
 D = es.search(index = INDEX_NAME,
                       body = body,
                       size = 10)
-'''
+
+print('------------------------------------')
+print(INDEX_NAME)
+print('------------------------------------')
+print(D)
+print('------------------------------------')
+print(es.get(index=INDEX_NAME, id='moteur de recherche.odt'))
+
 res = es.get(index=INDEX_NAME, id='BF2014-18-14082 - CVAE.pdf')
 .search(
     index="my-index",
@@ -95,11 +162,6 @@ res = es.get(index=INDEX_NAME, id='BF2014-18-14082 - CVAE.pdf')
       }
     }
 )
-'''
-
-
-'''
-
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Process command line arguments.')
     parser.add_argument('env_path', metavar='path',type=str,help='the path to env file')
