@@ -19,6 +19,7 @@
 
     let rows = 4
     let newValue = ""
+    let keywordList = []
 
     function onDelete(val){
       value = value.filter(item => item !== val)
@@ -32,6 +33,8 @@
     function handleTags(event) {
         value = event.detail.tags;
     }
+
+
 </script>
 
 <div>
@@ -61,6 +64,7 @@
         allowDrop={true}
         allowPaste={true}
         onlyUnique={true}
+        autoComplete={keywordList}
         />
     </div>
   {:else}

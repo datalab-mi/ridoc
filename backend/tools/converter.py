@@ -10,6 +10,9 @@ import re
 from pathlib import Path
 import unidecode
 
+# remove "-"" at the beginning and the withespaces
+reg_list = re.compile('^\-\s*(.*)')
+
 def normalize(string: str):
     """Strip lower and accent removal
     Args:
@@ -64,6 +67,9 @@ def odt2json(path: str, sections: list = []) -> dict:
             current_section = normalize(x)
             section_content = []
         else:
+            x_match = re.match(reg_list, x)
+            if x_match:
+                x = x_match.group(1)
             section_content += [x]
 
         if current_section in [x['key'] for x in sections] :

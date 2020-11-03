@@ -1,6 +1,6 @@
 <script>
-import { searchResults } from '../components/stores.js';
-import { config } from '../components/utils.js';
+import { promiseSearch, itemConfig } from '../components/stores.js';
+import { config, format2ES } from '../components/utils.js';
 
 import { onMount } from 'svelte';
 
@@ -12,48 +12,63 @@ let height = '90%';
 let items = [];
 let threshold;
 
-
-let promise = config('item.json')
+let searchResults
+let getInit =  new Promise(()=>{})
 
 $: {
-	let i = 0;
-	items = [];
-	
-	threshold = true
-	for (const hits of $searchResults.hits){
-		let item = {}
-		if (hits._score < $searchResults.r_threshold && threshold){
-			threshold = false
-			item = {'_id': "bar"}
-		} else {
-			item = hits
-		}
+	async function init() {
+		console.log("*resultlist*")
+		console.log($promiseSearch)
+		searchResults = await $promiseSearch
+		let i = 0;
+		items = [];
+		console.log(searchResults)
 
-	item['key'] =  Math.random() * 1e6  | 0 // Choose random key
-	items.push(item)
+		threshold = true
+		for (const hits of searchResults.hits){
+			let item = {}
+			if (hits._score < searchResults.r_threshold && threshold){
+				threshold = false
+				item = {'_id': "bar"}
+			} else {
+				item = hits
+			}
+
+		item['key'] =  Math.random() * 1e6  | 0 // Choose random key
+		items.push(item)
+		}
 	}
-	//items.splice(i, 0, "bar")
+init()
 }
 
-</script>
-{#await promise}
-<p>... Récuperation de la configuration</p>
-{:then meta}
-{#if items.length > 0}
-	<div class='result-list'>
-	{#each items as item (item.key)}
-		{#if  item._id === "bar"}
-			<div class="bar">
-				<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Nous vous recommandons de contacter l'<b><a href="mailto://iga@interieur.gouv.fr?subject=Demande_de_consultation">administrateur</a></b>.
-				</p>
-			</div>
-		{:else}
-			<ResultItem meta={JSON.parse(JSON.stringify(meta.inputs))} {...item}/>
+	//items.splice(i, 0, "bar")
 
+
+</script>
+
+{#await getInit}
+	<p>...Attente de la requête</p>
+
+{:then length}
+	{#if Object.keys($itemConfig).length > 0}
+		{#if items.length > 0}
+			<div class='result-list'>
+			{#each items as item (item.key)}
+				{#if  item._id === "bar"}
+					<div class="bar">
+						<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Nous vous recommandons de contacter l'<b><a href="mailto://iga@interieur.gouv.fr?subject=Demande_de_consultation">administrateur</a></b>.
+						</p>
+					</div>
+				{:else}
+					<ResultItem meta={JSON.parse(JSON.stringify($itemConfig.inputs))} {...item}/>
+
+				{/if}
+			{/each}
+			</div>
 		{/if}
-	{/each}
-	</div>
-{/if}
+	{:else}
+	<p>... Récuperation de la configuration</p>
+	{/if}
 {/await}
 
 

@@ -27,12 +27,12 @@
 	{:then status}
 		<p>Le seuil d'affichage est fixé à {thresholds.d_threshold}</p>
 		<div class="slidecontainer">
-		<input type="range" bind:value={thresholds.d_threshold} min="1" max="50" >
+		<input type="range" bind:value={thresholds.d_threshold} min="0" max="50" >
 		</div>
 
 		<p>Le seuil de pertinence est fixé à {thresholds.r_threshold}</p>
 		<div class="slidecontainer">
-		<input type="range" bind:value={thresholds.r_threshold} min="1" max="5" >
+		<input type="range" bind:value={thresholds.r_threshold} min="0" max="5" >
 		</div>
 
 		<div>

@@ -7,7 +7,7 @@ import elasticsearch
 from elasticsearch import Elasticsearch
 from shutil import copyfile
 
-from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file, suggest
+from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file, suggest, get_unique_keywords
 from tools.converter import pdf2json
 from tools.utils import empty_tree
 
@@ -122,6 +122,11 @@ def test_search():
 
 # Test test_reindex and suggest already in iga test folder
 
+@pytest.mark.run(after='test_inject_documents')
+def test_get_unique_keywords():
+    field = "mots cles"
+    keyword_list = get_unique_keywords(INDEX_NAME, field)
+    assert keyword_list == ['algorithme', 'data', 'docker', 'innovation', 'organisation', 'python', 'transformation numérique']
 
 if __name__ == '__main__':
     test_create_index()

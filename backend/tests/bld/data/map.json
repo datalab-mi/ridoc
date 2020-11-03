@@ -164,10 +164,8 @@
             "analyzer" : "my_analyzer",
             "search_analyzer" : "my_search_analyzer"
           },
-          "mots-cles":{
-            "type": "text",
-            "analyzer" : "my_analyzer",
-            "search_analyzer" : "my_search_analyzer"
+          "mots cles":{
+            "type": "keyword"
           },
           "date": {
             "type": "date",
