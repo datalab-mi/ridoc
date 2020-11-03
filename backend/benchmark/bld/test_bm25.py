@@ -87,12 +87,14 @@ threshold_file = Path(USER_DATA) / THRESHOLD_FILE
 doc = 'création+de+la+DNUM.odt'
 req = 'DNUM'
 must = [{"multi_match":{"fields":["question","reponse","titre","mots-cles"],"query":req}}]
-#print(es.get(index=INDEX_NAME, id=doc))
 
-'''
-D = es.search(index = INDEX_NAME)
-                    
 
+D = es.search(index = INDEX_NAME, body = {'query':{'match_all':{}}}, size=10)
+print(INDEX_NAME)
+print('------------------------------------')                   
+print(D)
+print('------------------------------------')
+print(es.get(index=INDEX_NAME, id='moteur de recherche.odt'))
 '''
 res = search(must, [], [], INDEX_NAME, [],
               glossary_file = glossary_file,
@@ -100,12 +102,18 @@ res = search(must, [], [], INDEX_NAME, [],
               threshold_file = threshold_file)
 
 #print(res)
+'''
 
-
+print('------------------------------------')
+indices = elasticsearch.client.IndicesClient(es)
+print(indices.stats(index=INDEX_NAME))
+#print(es.search(index=INDEX_NAME, body=bod))
+print('------------------------------------')
 
 
 #import pdb; pdb.set_trace()
-
+#print(indices.exists())
+#print(indices.get(index=INDEX_NAME))
 
 
 
@@ -130,12 +138,25 @@ D = es.search(index = INDEX_NAME,
                       body = body,
                       size = 10)
 
-print('------------------------------------')
-print(INDEX_NAME)
-print('------------------------------------')
-print(D)
-print('------------------------------------')
-print(es.get(index=INDEX_NAME, id='moteur de recherche.odt'))
+bod = { "query": {
+                    "bool": {
+                        "must": [{"multi_match": {"fields": ["question", "reponse", "titre", "mots-cles"], "query": "direction"}}],
+                        "filter": [],
+                        "should": [],
+                        "must_not": []
+                                }
+                        },
+            "highlight" : {
+                "pre_tags" : ["<mark>"],
+                "post_tags" : ["</mark>"],
+                "fragment_size" : 300,
+                "number_of_fragments" : 3,
+                "order" : "score",
+                "boundary_scanner" : "sentence",
+                "boundary_scanner_locale" : "fr-FR",
+                "fields":{}
+                    }
+                }
 
 res = es.get(index=INDEX_NAME, id='BF2014-18-14082 - CVAE.pdf')
 .search(
