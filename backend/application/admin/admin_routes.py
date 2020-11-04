@@ -215,7 +215,7 @@ def threshold():
     """ Save display or relevance thresholds
     Returns: Usual HTTP status codes
         201: Update
-        501: Server abort
+        500: Server abort
     """
 
     body = request.get_json(force=True)
@@ -224,7 +224,7 @@ def threshold():
 
     threshold_file = Path(app.config['USER_DATA']) / app.config['THRESHOLD_FILE']
 
-    if threshold_file.exists() and d_threshold and r_threshold:
+    if threshold_file.exists() and (d_threshold is not None and r_threshold is not None):
         # insert new thresholds
         body["d_threshold"] = int(d_threshold)
         body["r_threshold"] = r_threshold
@@ -233,7 +233,7 @@ def threshold():
 
         return make_response(jsonify(sucess=True), 201)
     else:
-        return abort(501)
+        return abort(500)
 
 
 

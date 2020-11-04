@@ -13,16 +13,14 @@ let items = [];
 let threshold;
 
 let searchResults
-let getInit =  new Promise(()=>{})
 
-$: {
-	async function init() {
+
+
+function add_bar(searchResults) {
+	let i = 0;
+	items = [];
+	console.log(searchResults)
 		console.log("*resultlist*")
-		console.log($promiseSearch)
-		searchResults = await $promiseSearch
-		let i = 0;
-		items = [];
-		console.log(searchResults)
 
 		threshold = true
 		for (const hits of searchResults.hits){
@@ -37,19 +35,17 @@ $: {
 		item['key'] =  Math.random() * 1e6  | 0 // Choose random key
 		items.push(item)
 		}
-	}
-init()
 }
+
+$: $promiseSearch.then((searchResults) => {
+	add_bar(searchResults)
+	})
 
 	//items.splice(i, 0, "bar")
 
 
 </script>
 
-{#await getInit}
-	<p>...Attente de la requête</p>
-
-{:then length}
 	{#if Object.keys($itemConfig).length > 0}
 		{#if items.length > 0}
 			<div class='result-list'>
@@ -69,7 +65,6 @@ init()
 	{:else}
 	<p>... Récuperation de la configuration</p>
 	{/if}
-{/await}
 
 
 <style>

@@ -17,7 +17,9 @@
 		$searchList = await config('search.json')
 		//initial search
 		body =  format2ES($itemConfig, $searchList.flat(2), $index_name)
-		$promiseSearch = await search(body)
+		$promiseSearch = search(body)
+		console.log($promiseSearch)
+
 	});
 
 </script>

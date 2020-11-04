@@ -199,3 +199,13 @@ def test_get_files(client, app):
             '/common/files/{path}'.format(path=path))
         resp = json.loads(req.get_data())
         assert doc_name in resp['titre'], resp
+
+def test_threshold(client, app):
+    # Add display threshold to threshold.json
+    thresholds = {"d_threshold":0,"r_threshold":1}
+    with app.test_client() as c:
+        resp = c.put('/admin/threshold',
+            data = json.dumps(thresholds))
+
+    # TODO: open THRESHOLD_FILE and test its content
+    assert resp.status_code in [200, 201], 'Status Code : %s'%resp.status_code
