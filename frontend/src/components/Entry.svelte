@@ -17,7 +17,7 @@
 
     export let cssClass = 'base'
 
-    let rows = 4
+    let rows = 2
     let newValue = ""
     let keywordList = []
 
@@ -46,7 +46,7 @@
 <div>
 {#if (key == "title") || (key == "titre")}
   <h2>
-    <textarea class='{cssClass}-title' type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}" use:text_area_resize/>
+    <textarea class='{cssClass}-title' type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"    />
   </h2>
 
 {:else if type == "date"}
@@ -87,7 +87,7 @@
                 {#if type == "text"}
                     <input type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                 {:else if type == "textarea"}
-                    <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}" use:text_area_resize/>
+                    <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}"   />
                 {:else if type == "link"}
                     <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={(readonly || !metadata) ? window.open(`/api/common/files/${pjDir}/${val}`,'_blank'): ()=>{}} type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                 {/if}
@@ -117,7 +117,7 @@
       {#if type == "text"}
         <input type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
       {:else if type == "textarea"}
-        <textarea bind:value={value} {placeholder} {rows} readonly="{readonly || !metadata}" use:text_area_resize/>
+        <textarea bind:value={value} {placeholder} readonly="{readonly || !metadata}" {rows} />
       {:else if type == "link"}
           <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={(readonly || !metadata) ? window.open(`/api/common/files/${pjDir}/${value}`,'_blank'): ()=>{}} type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
       {/if}
@@ -187,8 +187,8 @@
    width: 90%;
    resize: none;
    vertical-align: top;
-
   }
+
 
   p {
     display: inline;

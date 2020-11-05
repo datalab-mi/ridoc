@@ -124,11 +124,13 @@ async function search(body) {
 function resize({ target }) {
   target.style.height = "1px";
 	target.style.height = (+target.scrollHeight)+"px";
+  console.log(target)
+
 }
 
 function text_area_resize(el) {
 	resize({ target: el });
-	el.style.overflow = 'hidden';
+	el.style.overflow = 'auto';
 	el.addEventListener('input', resize);
 
 	return {
