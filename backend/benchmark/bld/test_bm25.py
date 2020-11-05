@@ -4,24 +4,33 @@ import json, os, time
 from pathlib import Path
 import pandas as pd
 from dotenv import load_dotenv
-from tools.elastic import get_index_name, replace_blue_green, create_index, put_alias, inject_documents, search, index_file, suggest
+from tools.elastic import get_index_name, replace_blue_green, create_index, put_alias, inject_documents, search, index_file, suggest, build_query
 import elasticsearch
 from elasticsearch import Elasticsearch
+from benchmark.utils import *
 
 
 '''Getting the arguments
 - the path of the Q/A test base
-- the list of the metrics
 - the path of the environment (ex: bld/.env-bld)
+- the list of the metrics
 backend/benchmark/bld/.env-bld
 '''
+
+
+#Parsing argument
 parser = argparse.ArgumentParser(description='Evaluation of the metrics')
-parser.add_argument('env_path',type=str,help='the path to env file')
+parser.add_argument('-qr', dest='test_base_path',type=str,help='the path to Q/A test base file, ex: QR_file.ods', default = 'QR_file.ods')
+parser.add_argument('-env',dest='env_path',type=str,help='the path to env file, ex: .env-bld', default = '.env-bld')
+parser.add_argument('-m', dest='metrics_list',type=str,help='the list of metrics, ex: DCG Recall',nargs='+', default = ['DCG'])
 args = parser.parse_args()
-print(args.env_path)
+
+metrics_list = args.metrics_list
+env_path_bench = Path('/app/benchmark/bld') / args.env_path
+dir_path(env_path_bench)
+
 
 #Loading the environment
-env_path_bench = '/app/benchmark/' + args.env_path
 load_dotenv(dotenv_path=env_path_bench, override=True)
 INDEX_NAME = os.getenv('INDEX_NAME')
 
@@ -33,7 +42,6 @@ RAW_EXPRESSION_FILE = os.getenv('RAW_EXPRESSION_FILE')
 MAPPING_FILE =  os.getenv('MAPPING_FILE')
 THRESHOLD_FILE = os.getenv('THRESHOLD_FILE')
 
-
 DST_DIR = os.getenv('DST_DIR')
 JSON_DIR = os.getenv('JSON_DIR')
 META_DIR =  os.getenv('META_DIR')
@@ -43,19 +51,39 @@ ES_HOST=os.getenv('ES_HOST')
 
 os.makedirs(ES_DATA, exist_ok=True)
 
+#Reading files
+test_base_path = Path(USER_DATA) / args.test_base_path
+dir_path(test_base_path)
+
+glossary_file = Path(USER_DATA) / GLOSSARY_FILE
+expression_file = Path(USER_DATA) / RAW_EXPRESSION_FILE
+threshold_file = Path(USER_DATA) / THRESHOLD_FILE
+
+test_base_df = pd.read_excel(test_base_path, engine="odf") #see if we take csv as input
+#test_base_df = pd.read_csv(test_base_path, encoding= 'utf-8')
+
+
+
+
 #Instanciation of elasticsearch
 es = Elasticsearch([{'host': ES_HOST, 'port': ES_PORT}])
 
+
+
+
+import pdb; pdb.set_trace()
+'''
 #Index creation
 for i in range(3): # to be sure alias and indexes are removed
     es.indices.delete(index=INDEX_NAME, ignore=[400, 404])
     es.indices.delete_alias(index='_all',
         name=INDEX_NAME, ignore=[400, 404])
 
-create_index(INDEX_NAME, USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
+create_index(INDEX_NAME, USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE ) #some parameters are stored in the map, that is linked to the index here
 #import pdb; pdb.set_trace()
+
 #Injection of documents
-sec = [{'key': 'SITE', 'array':False},
+section = [{'key': 'SITE', 'array':False},
             {'key': 'DIRECTION', 'array':False},
             {'key': 'DOMAINE', 'array':True},
             {'key': 'TITRE', 'array':True},
@@ -67,62 +95,86 @@ sec = [{'key': 'SITE', 'array':False},
             {'key': 'Liens', 'array':False},
             {'key': 'Références', 'array':False}]
 
-'''
-doc = 'création+de+la+DNUM.odt'
-filename = Path(filename)
-path_document = Path(user_data) / DST_DIR / filename
-    if  filename.suffix == '.pdf':
-
-        data = odt2json(str(path_document), sec)
-    
-'''            
+         
 inject_documents(INDEX_NAME, USER_DATA, DST_DIR, JSON_DIR,
-                meta_path = META_DIR, sections=sec)
+                meta_path = META_DIR, sections=section)  
 #import pdb; pdb.set_trace()
+'''
 #Searching
-glossary_file = Path(USER_DATA) / GLOSSARY_FILE
-expression_file = Path(USER_DATA) / RAW_EXPRESSION_FILE
-threshold_file = Path(USER_DATA) / THRESHOLD_FILE
+rank_body = {}
+rank_body_requests = []
+
+must = {}
+should = {}
+filter = ''
+highlight = []
+for index, row in test_base_df.iterrows():
+
+    must = [{"multi_match":{"fields":["question","reponse","titre","mots-cles"],"query":row['Questions']}}]
+    body_built, length_of_request = build_query(must, should, filter, INDEX_NAME, highlight, glossary_file=glossary_file, expression_file=expression_file)
+    body_query = body_built["query"] #removing highlight?
+
+    request = { "id": index, "request": body_query, "ratings": [{ "_index": INDEX_NAME, "_id": row['Fiches'], "rating": 1}]}
+    rank_body_requests.append(request)
+    if index ==2:
+        print('__________')
+        print(request)
+        print('__________')
+
+
+
+
+
+
+
+
+
+#Saving
+
+
+
+'''
+
+
+D = es.rank_eval(body= {
+  "requests": [
+    {
+      "id": "JFK query",
+      "request": { "query": {
+                    "bool": {
+                        "must": [{"multi_match": { "query": "ministère"}}],
+                        "filter": [],
+                        "should": [],
+                        "must_not": []
+                                }
+                        }},
+      "ratings": [{ "_index": "bld_benchmark", "_id": "valorisation+données.odt", "rating": 1}]
+    } ],
+ 
+  "metric": {
+    "dcg": {
+      "k": 3,
+      "normalize": False
+    }
+  }
+}, index = INDEX_NAME )
 
 doc = 'création+de+la+DNUM.odt'
 req = 'DNUM'
 must = [{"multi_match":{"fields":["question","reponse","titre","mots-cles"],"query":req}}]
+time.sleep(1)
+#import pdb; pdb.set_trace()
+#D = es.search(index = INDEX_NAME, body = {'query':{'match_all':{}}}, size=10)
 
+#print(es.get(index=INDEX_NAME, id='moteur de recherche.odt'))
 
-D = es.search(index = INDEX_NAME, body = {'query':{'match_all':{}}}, size=10)
-print(INDEX_NAME)
-print('------------------------------------')                   
-print(D)
-print('------------------------------------')
-print(es.get(index=INDEX_NAME, id='moteur de recherche.odt'))
-'''
 res = search(must, [], [], INDEX_NAME, [],
               glossary_file = glossary_file,
               expression_file = expression_file,
               threshold_file = threshold_file)
 
-#print(res)
-'''
+print(res)
 
-print('------------------------------------')
-indices = elasticsearch.client.IndicesClient(es)
-print(indices.stats(index=INDEX_NAME))
-#print(es.search(index=INDEX_NAME, body=bod))
-print('------------------------------------')
-
-
-#import pdb; pdb.set_trace()
-#print(indices.exists())
-#print(indices.get(index=INDEX_NAME))
-
-
-
-
-
-
-
-
-'''
 Brouillon
 #Analyse
 indices = elasticsearch.client.IndicesClient(es)
@@ -158,51 +210,5 @@ bod = { "query": {
                     }
                 }
 
-res = es.get(index=INDEX_NAME, id='BF2014-18-14082 - CVAE.pdf')
-.search(
-    index="my-index",
-    body={
-      "query": {
-        "filtered": {
-          "query": {
-            "bool": {
-              "must": [{"match": {"title": "python"}}],
-              "must_not": [{"match": {"description": "beta"}}]
-            }
-          },
-          "filter": {"term": {"category": "search"}}
-        }
-      },
-      "aggs" : {
-        "per_tag": {
-          "terms": {"field": "tags"},
-          "aggs": {
-            "max_lines": {"max": {"field": "lines"}}
-          }
-        }
-      }
-    }
-)
-def parse_arguments():
-    parser = argparse.ArgumentParser(description='Process command line arguments.')
-    parser.add_argument('env_path', metavar='path',type=str,help='the path to env file')
-    args = parser.parse_args()
-    input_path = parser.parse_args()
-    
-    if not os.path.isfile(input_path):
-        print('The path specified does not exist')
-        sys.exit()
 
-    print('voilà')
-    print(args.env_path)
-    return parser.parse_args
-
-def dir_path(path):
-    if path.exists():
-        return path
-    else:
-        raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
-
-
-
-parse_arguments()'''
+'''
