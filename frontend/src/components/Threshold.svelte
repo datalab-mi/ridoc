@@ -1,10 +1,10 @@
 <script>
-	import { config } from '../components/utils.js';
+	import { get } from '../components/utils.js';
 	let promise = get_old_threshold();
 	let thresholds = {};
 
 	async function get_old_threshold() {
-			thresholds = await config('threshold.json');
+			thresholds = await get('/api/common/files/threshold.json');
 			return 200
 		}
 
@@ -27,12 +27,12 @@
 	{:then status}
 		<p>Le seuil d'affichage est fixé à {thresholds.d_threshold}</p>
 		<div class="slidecontainer">
-		<input type="range" bind:value={thresholds.d_threshold} min="1" max="50" >
+		<input type="range" bind:value={thresholds.d_threshold} min="0" max="50" >
 		</div>
 
 		<p>Le seuil de pertinence est fixé à {thresholds.r_threshold}</p>
 		<div class="slidecontainer">
-		<input type="range" bind:value={thresholds.r_threshold} min="1" max="5" >
+		<input type="range" bind:value={thresholds.r_threshold} min="0" max="5" >
 		</div>
 
 		<div>

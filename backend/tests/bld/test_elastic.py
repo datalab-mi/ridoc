@@ -7,7 +7,7 @@ import elasticsearch
 from elasticsearch import Elasticsearch
 from shutil import copyfile
 
-from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file, suggest
+from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file, suggest, get_unique_keywords
 from tools.converter import pdf2json
 from tools.utils import empty_tree
 
@@ -51,6 +51,9 @@ def test_create_index():
 
 @pytest.mark.run(after='test_create_index')
 def test_inject_documents(sections):
+    for path in [JSON_DIR, META_DIR]:
+        print(Path(USER_DATA)/ path)
+        empty_tree(Path(USER_DATA)/ path)
 
     doc = 'moteur de recherche.odt'
 
@@ -64,8 +67,6 @@ def test_inject_documents(sections):
 def test_analyse_index():
 
     # create elasticsearch index
-    for path in [JSON_DIR, META_DIR]:
-        empty_tree(Path(path))
 
     indices = elasticsearch.client.IndicesClient(es)
 
@@ -121,6 +122,29 @@ def test_search():
 
 # Test test_reindex and suggest already in iga test folder
 
+@pytest.mark.run(after='test_inject_documents')
+def test_get_unique_keywords():
+    field = "mots cles"
+    keyword_list = get_unique_keywords(INDEX_NAME, field)
+    assert keyword_list == ['algorithme', 'data', 'docker', 'innovation', 'organisation', 'python', 'transformation numérique']
+
+@pytest.mark.run(after='test_inject_documents')
+def test_keyword_search():
+    """ Test la recherche par tag
+    """
+    glossary_file = Path(USER_DATA) / GLOSSARY_FILE
+    expression_file = Path(USER_DATA) / RAW_EXPRESSION_FILE
+
+    doc = 'création+de+la+DNUM.odt'
+    req = ['innovation']
+    must, should = [], []
+    filter = [{"terms":{"mots cles":req}}]
+    time.sleep(2)
+    res = search(must, should, filter, INDEX_NAME, [],
+                glossary_file = glossary_file,
+                expression_file = expression_file)
+    #print(hits, length_req, bande)
+    assert  res['hits'][0]['_id'] == doc, 'Found to result %s'%res['hits'][0]['_id']
 
 if __name__ == '__main__':
     test_create_index()

@@ -3,7 +3,7 @@
   import Entry from './Entry.svelte'
   import PutItem from './PutItem.svelte'
 
-  import { config } from '../components/utils.js';
+  import { get } from '../components/utils.js';
 
   let files ;
   let fileNameList = [];
@@ -12,7 +12,7 @@
   const required = false;
 
   async function filterItem() {
-    let item = await config('item.json')
+    let item = await get('/api/common/files/item.json')
     item.inputs = item.inputs.filter(obj => obj.metadata)
     return item
   }

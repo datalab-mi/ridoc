@@ -17,7 +17,7 @@ def test_odt2json(sections):
                     'direction': 'Ma direction',
                     'titre': 'Mon Titre',
                     'domaine': 'Mon domaine',
-                    'mots cles': ['- Test', '- Essai'],
+                    'mots cles': ['Test', 'Essai'],
                     'date': '01/02/2018',
                     'question': 'Question teste ?',
                     'reponse': 'Réponse test.',

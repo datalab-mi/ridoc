@@ -486,7 +486,6 @@ def delete_file(filename, index_name):
         index_name (str): The index name
     Returns:
         HTTP error code
-
     """
     try:
         res = es.delete(index = index_name, id = filename)
@@ -496,6 +495,25 @@ def delete_file(filename, index_name):
     except:
         print("Unexpected error:", sys.exc_info()[0])
         raise
+
+def get_unique_keywords(index_name: str, field: str) -> list:
+    """Get unique keywords list from an filed of type keyword
+    Args:
+        field (str): field name
+        index_name (str): The index name
+    Returns:
+        List: The list of unique keywords
+    """
+    body = {
+          "size": 0,
+          "aggs": {
+            field: {
+              "terms": { "field": field }
+            }
+          }
+        }
+    res = es.search(index=index_name, body=body)
+    return [x['key'] for x in res['aggregations'][field].get('buckets', [{}])]
 
 if __name__ == '__main__':
 

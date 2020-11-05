@@ -42,8 +42,8 @@ async function index(index_name, filename, method) {
 		}
 }
 
-async function config(filename) {
-	const res = await fetch(`/api/common/files/${filename}`,{cache: 'no-cache'});
+async function get(url) {
+	const res = await fetch(url, {cache: 'no-cache'})
 	const data = await res.json();
 	if (res.ok)  {
 		return data
@@ -80,4 +80,61 @@ async function config(filename) {
 		}
 	}
 
-export { index, upload, config, files };
+const format2ES = (item, query_list, index_name) => {
+    query_list = query_list.flat(2)
+		let query_dic = {index_name: index_name};
+		let obj;
+		let highlight_fields = item.inputs.filter(obj => obj.highlight).map(x => x.key)
+		for (obj of query_list) {
+			let clause = {}
+			if (obj.value != "") {
+				//highlight_fields.push(obj.fields)
+				if (!(obj.bool in query_dic)) {
+					query_dic[obj.bool] = []
+				}
+        console.log('***')
+        console.log(JSON.stringify(obj.query))
+        console.log(JSON.stringify(obj.query).replace('"\$value"', JSON.stringify(obj.value)))
+				clause = JSON.parse(JSON.stringify(obj.query).replace('"\$value"', JSON.stringify(obj.value)))
+				query_dic[obj.bool].push(clause)
+			}
+		}
+		if (highlight_fields.length >0){
+			query_dic["highlight"] = highlight_fields.flat()
+		}
+		return query_dic
+  }
+
+
+async function search(body) {
+	const res = await fetch("/api/common/search",{
+											method: "POST",
+											body: JSON.stringify(body)
+												 });
+
+	const result = await res.json();
+	if (res.ok) {
+		return result
+	} else {
+		throw new Error('Oups');
+	}
+}
+
+
+function resize({ target }) {
+  target.style.height = "1px";
+	target.style.height = (+target.scrollHeight)+"px";
+  console.log(target)
+
+}
+
+function text_area_resize(el) {
+	resize({ target: el });
+	el.style.overflow = 'auto';
+	el.addEventListener('input', resize);
+
+	return {
+		destroy: () => el.removeEventListener('input', resize)
+	}
+}
+export { index, upload, get, files, format2ES, search, text_area_resize };

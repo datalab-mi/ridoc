@@ -1,6 +1,6 @@
 <script>
-import { searchResults } from '../components/stores.js';
-import { config } from '../components/utils.js';
+import { promiseSearch, itemConfig } from '../components/stores.js';
+import { format2ES } from '../components/utils.js';
 
 import { onMount } from 'svelte';
 
@@ -13,16 +13,13 @@ let items = [];
 let threshold;
 
 
-let promise = config('item.json')
-
-$: {
+function add_bar(x) {
 	let i = 0;
 	items = [];
-	
 	threshold = true
-	for (const hits of $searchResults.hits){
+	for (const hits of x.hits){
 		let item = {}
-		if (hits._score < $searchResults.r_threshold && threshold){
+		if (hits._score < x.r_threshold && threshold){
 			threshold = false
 			item = {'_id': "bar"}
 		} else {
@@ -32,29 +29,32 @@ $: {
 	item['key'] =  Math.random() * 1e6  | 0 // Choose random key
 	items.push(item)
 	}
-	//items.splice(i, 0, "bar")
 }
 
-</script>
-{#await promise}
-<p>... Récuperation de la configuration</p>
-{:then meta}
-{#if items.length > 0}
-	<div class='result-list'>
-	{#each items as item (item.key)}
-		{#if  item._id === "bar"}
-			<div class="bar">
-				<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Nous vous recommandons de contacter l'<b><a href="mailto://iga@interieur.gouv.fr?subject=Demande_de_consultation">administrateur</a></b>.
-				</p>
-			</div>
-		{:else}
-			<ResultItem meta={JSON.parse(JSON.stringify(meta.inputs))} {...item}/>
+// reactive statement, add_bar function is called whenever the promise changes
+$: $promiseSearch.then((searchResults) => {add_bar(searchResults)})
 
+</script>
+
+	{#if Object.keys($itemConfig).length > 0}
+		{#if items.length > 0}
+			<div class='result-list'>
+			{#each items as item (item.key)}
+				{#if  item._id === "bar"}
+					<div class="bar">
+						<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Nous vous recommandons de contacter l'<b><a href="mailto://iga@interieur.gouv.fr?subject=Demande_de_consultation">administrateur</a></b>.
+						</p>
+					</div>
+				{:else}
+					<ResultItem meta={JSON.parse(JSON.stringify($itemConfig.inputs))} {...item}/>
+
+				{/if}
+			{/each}
+			</div>
 		{/if}
-	{/each}
-	</div>
-{/if}
-{/await}
+	{:else}
+	<p>... Récuperation de la configuration</p>
+	{/if}
 
 
 <style>

@@ -3,14 +3,24 @@
 </svelte:head>
 
 <script>
-	import { onMount } from 'svelte';
+	import { itemConfig, searchList, index_name, promiseSearch } from '../components/stores.js';
+	import { get, format2ES, search } from '../components/utils.js';
 
+	import { onMount } from 'svelte';
 	import ResultList from '../components/ResultList.svelte';
 	import SearchBar from '../components/SearchBar.svelte';
-	import { searchResults } from '../components/stores.js';
+
+	let body
+	onMount(async () => {
+		$itemConfig = await get('/api/common/files/item.json')
+		$searchList = await get('/api/common/files/search.json')
+		//initial search
+		body =  format2ES($itemConfig, $searchList.flat(2), $index_name)
+		$promiseSearch = search(body)
+
+	});
 
 </script>
 
 <SearchBar/>
-
 <ResultList/>

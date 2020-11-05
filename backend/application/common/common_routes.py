@@ -9,6 +9,8 @@ from flask import current_app as app
 from tools.elastic import search as elastic_search
 from tools.elastic import build_query as elastic_build_query
 from tools.elastic import suggest as elastic_suggest
+from tools.elastic import get_unique_keywords
+
 # Blueprint Configuration
 common_bp = Blueprint('common_bp', __name__,url_prefix='/common')
 # USER_DATA is known by parent script __init__
@@ -140,3 +142,12 @@ def get_logo(name='logo.svg'):
         return send_from_directory(app.config['USER_DATA'], app.config['LOGO'], as_attachment=True)
     else:
         return make_response(str(Path(app.config['USER_DATA']) / name), 404)
+
+
+@common_bp.route("/keywords/<index_name>/<field>", methods=['GET'])
+def get_keywords(index_name: str, field: str):
+    """"Wrap get_unique_keywords function
+    Get unique keywords list from an filed of type keyword
+    """
+    keyword_list = get_unique_keywords(index_name, field)
+    return jsonify(keyword_list)
