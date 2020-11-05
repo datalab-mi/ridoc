@@ -1,10 +1,10 @@
 <script>
-	import { config } from '../components/utils.js';
+	import { get } from '../components/utils.js';
 	let promise = get_old_threshold();
 	let thresholds = {};
 
 	async function get_old_threshold() {
-			thresholds = await config('threshold.json');
+			thresholds = await get('/api/common/files/threshold.json');
 			return 200
 		}
 

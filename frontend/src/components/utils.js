@@ -42,8 +42,8 @@ async function index(index_name, filename, method) {
 		}
 }
 
-async function config(filename) {
-	const res = await fetch(`/api/common/files/${filename}`,{cache: 'no-cache'});
+async function get(url) {
+	const res = await fetch(url, {cache: 'no-cache'})
 	const data = await res.json();
 	if (res.ok)  {
 		return data
@@ -92,7 +92,10 @@ const format2ES = (item, query_list, index_name) => {
 				if (!(obj.bool in query_dic)) {
 					query_dic[obj.bool] = []
 				}
-				clause = JSON.parse(JSON.stringify(obj.query).replace('\$value', obj.value))
+        console.log('***')
+        console.log(JSON.stringify(obj.query))
+        console.log(JSON.stringify(obj.query).replace('"\$value"', JSON.stringify(obj.value)))
+				clause = JSON.parse(JSON.stringify(obj.query).replace('"\$value"', JSON.stringify(obj.value)))
 				query_dic[obj.bool].push(clause)
 			}
 		}
@@ -102,18 +105,34 @@ const format2ES = (item, query_list, index_name) => {
 		return query_dic
   }
 
-  async function search(body) {
-		const res = await fetch("/api/common/search",{
-												method: "POST",
-												body: JSON.stringify(body)
-													 });
 
-		const result = await res.json();
-		if (res.ok) {
-			return result
-		} else {
-			throw new Error('Oups');
-		}
+async function search(body) {
+	const res = await fetch("/api/common/search",{
+											method: "POST",
+											body: JSON.stringify(body)
+												 });
+
+	const result = await res.json();
+	if (res.ok) {
+		return result
+	} else {
+		throw new Error('Oups');
 	}
+}
 
-export { index, upload, config, files, format2ES, search };
+
+function resize({ target }) {
+  target.style.height = "1px";
+	target.style.height = (+target.scrollHeight)+"px";
+}
+
+function text_area_resize(el) {
+	resize({ target: el });
+	el.style.overflow = 'hidden';
+	el.addEventListener('input', resize);
+
+	return {
+		destroy: () => el.removeEventListener('input', resize)
+	}
+}
+export { index, upload, get, files, format2ES, search, text_area_resize };

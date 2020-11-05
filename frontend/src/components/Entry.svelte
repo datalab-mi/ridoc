@@ -1,5 +1,6 @@
 <script>
-    import { pjDir } from './stores.js';
+    import { pjDir, index_name } from './stores.js';
+    import { get, text_area_resize } from '../components/utils.js';
     import Tags from "svelte-tags-input";
 
     export let key
@@ -16,10 +17,15 @@
 
     export let cssClass = 'base'
 
-
     let rows = 4
     let newValue = ""
     let keywordList = []
+
+    let promiseListKeyword = new Promise(()=>{})
+
+    if  (type === "keyword") {
+      promiseListKeyword = get(`api/common/keywords/${$index_name}/${key}`)
+    }
 
     function onDelete(val){
       value = value.filter(item => item !== val)
@@ -40,7 +46,7 @@
 <div>
 {#if (key == "title") || (key == "titre")}
   <h2>
-    <textarea class='{cssClass}-title' type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
+    <textarea class='{cssClass}-title' type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}" use:text_area_resize/>
   </h2>
 
 {:else if type == "date"}
@@ -54,19 +60,23 @@
 {:else}
   <label> {@html innerHtml} </label>
   {#if value instanceof Array}
-  {#if type === "tag"}
-    <div class="my-custom-class">
-      <Tags
-    		tags={value}
-        on:tags={handleTags}
-        disable={(readonly || !metadata)}
-        placeholder={(readonly || !metadata) ? false:placeholder}
-        allowDrop={true}
-        allowPaste={true}
-        onlyUnique={true}
-        autoComplete={keywordList}
-        />
-    </div>
+    {#if type === "keyword"}
+      {#await promiseListKeyword}
+      {:then autoComplete}
+        <div class="my-custom-class">
+          <Tags
+        		tags={value}
+            on:tags={handleTags}
+            disable={(readonly || !metadata)}
+            placeholder={(readonly || !metadata) ? false:placeholder}
+            allowDrop={true}
+            allowPaste={true}
+            onlyUnique={true}
+            autoComplete={autoComplete}
+            />
+        </div>
+        {/await}
+
   {:else}
       <ul>
         {#each value as val}
@@ -77,7 +87,7 @@
                 {#if type == "text"}
                     <input type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                 {:else if type == "textarea"}
-                    <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
+                    <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}" use:text_area_resize/>
                 {:else if type == "link"}
                     <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={(readonly || !metadata) ? window.open(`/api/common/files/${pjDir}/${val}`,'_blank'): ()=>{}} type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                 {/if}
@@ -107,7 +117,7 @@
       {#if type == "text"}
         <input type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
       {:else if type == "textarea"}
-        <textarea bind:value={value} {placeholder} {rows} readonly="{readonly || !metadata}"/>
+        <textarea bind:value={value} {placeholder} {rows} readonly="{readonly || !metadata}" use:text_area_resize/>
       {:else if type == "link"}
           <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={(readonly || !metadata) ? window.open(`/api/common/files/${pjDir}/${value}`,'_blank'): ()=>{}} type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
       {/if}
@@ -177,6 +187,7 @@
    width: 90%;
    resize: none;
    vertical-align: top;
+
   }
 
   p {

@@ -1,6 +1,6 @@
 <script>
 import { promiseSearch, itemConfig } from '../components/stores.js';
-import { config, format2ES } from '../components/utils.js';
+import { format2ES } from '../components/utils.js';
 
 import { onMount } from 'svelte';
 
@@ -12,37 +12,27 @@ let height = '90%';
 let items = [];
 let threshold;
 
-let searchResults
 
-
-
-function add_bar(searchResults) {
+function add_bar(x) {
 	let i = 0;
 	items = [];
-	console.log(searchResults)
-		console.log("*resultlist*")
-
-		threshold = true
-		for (const hits of searchResults.hits){
-			let item = {}
-			if (hits._score < searchResults.r_threshold && threshold){
-				threshold = false
-				item = {'_id': "bar"}
-			} else {
-				item = hits
-			}
-
-		item['key'] =  Math.random() * 1e6  | 0 // Choose random key
-		items.push(item)
+	threshold = true
+	for (const hits of x.hits){
+		let item = {}
+		if (hits._score < x.r_threshold && threshold){
+			threshold = false
+			item = {'_id': "bar"}
+		} else {
+			item = hits
 		}
+
+	item['key'] =  Math.random() * 1e6  | 0 // Choose random key
+	items.push(item)
+	}
 }
 
-$: $promiseSearch.then((searchResults) => {
-	add_bar(searchResults)
-	})
-
-	//items.splice(i, 0, "bar")
-
+// reactive statement, add_bar function is called whenever the promise changes
+$: $promiseSearch.then((searchResults) => {add_bar(searchResults)})
 
 </script>
 

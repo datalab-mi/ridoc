@@ -4,7 +4,7 @@
 
 <script>
 	import { itemConfig, searchList, index_name, promiseSearch } from '../components/stores.js';
-	import { config, format2ES, search } from '../components/utils.js';
+	import { get, format2ES, search } from '../components/utils.js';
 
 	import { onMount } from 'svelte';
 	import ResultList from '../components/ResultList.svelte';
@@ -12,13 +12,11 @@
 
 	let body
 	onMount(async () => {
-		console.log('onmount')
-		$itemConfig = await config('item.json')
-		$searchList = await config('search.json')
+		$itemConfig = await get('/api/common/files/item.json')
+		$searchList = await get('/api/common/files/search.json')
 		//initial search
 		body =  format2ES($itemConfig, $searchList.flat(2), $index_name)
 		$promiseSearch = search(body)
-		console.log($promiseSearch)
 
 	});
 

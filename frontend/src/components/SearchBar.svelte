@@ -1,15 +1,10 @@
 <script>
-	import { searchResults, suggestEntry,  index_name, itemConfig, searchList, promiseSearch } from '../components/stores.js';
-	import { config, format2ES, search } from '../components/utils.js';
+	import { suggestEntry,  index_name, itemConfig, searchList, promiseSearch } from '../components/stores.js';
+	import { format2ES, search } from '../components/utils.js';
 
 	import SearchInput from  '../components/SearchInput.svelte';
 
 	let promiseSuggest =  new Promise(()=>{})
-	let getInit =  new Promise(()=>{})
-	//let promiseSearch =  new Promise(()=>{})
-	console.log("*Searchbar*")
-	console.log($promiseSearch)
-
 	let body
 
 	async function suggest() {
@@ -59,7 +54,7 @@
 	{#each $searchList as row, i }
 	<div class="flex mb-4">
 
-		{#each row as {bool, query, value, type, placeholder, innerHtml, style}, j}
+		{#each row as {bool, query, fields, value, type, placeholder, innerHtml, style}, j}
 			{#if (i === 0) && (j === 0) }
 				<div class="w-1/6 p-2" >
 					<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded inline-flex itemConfigs-center">
@@ -69,7 +64,7 @@
 				</div>
 			{/if}
 
-			<SearchInput bind:value={value} {type} {placeholder} {innerHtml} {style} />
+			<SearchInput bind:value={value} {fields} {type} {placeholder} {innerHtml} {style} />
 		{/each}
 		</div>
 

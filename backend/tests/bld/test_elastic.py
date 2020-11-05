@@ -128,6 +128,24 @@ def test_get_unique_keywords():
     keyword_list = get_unique_keywords(INDEX_NAME, field)
     assert keyword_list == ['algorithme', 'data', 'docker', 'innovation', 'organisation', 'python', 'transformation numérique']
 
+@pytest.mark.run(after='test_inject_documents')
+def test_keyword_search():
+    """ Test la recherche par tag
+    """
+    glossary_file = Path(USER_DATA) / GLOSSARY_FILE
+    expression_file = Path(USER_DATA) / RAW_EXPRESSION_FILE
+
+    doc = 'création+de+la+DNUM.odt'
+    req = ['innovation']
+    must, should = [], []
+    filter = [{"terms":{"mots cles":req}}]
+    time.sleep(2)
+    res = search(must, should, filter, INDEX_NAME, [],
+                glossary_file = glossary_file,
+                expression_file = expression_file)
+    #print(hits, length_req, bande)
+    assert  res['hits'][0]['_id'] == doc, 'Found to result %s'%res['hits'][0]['_id']
+
 if __name__ == '__main__':
     test_create_index()
     test_inject_documents()

@@ -1,16 +1,9 @@
 import { readable, writable } from 'svelte/store';
 
 // auth: https://www.toptal.com/front-end/svelte-framework-guide
-export const searchResults = writable({
-  'hits':[],
-  'r_threshold': 0
-});
-
 export const itemConfig = writable({})
 export const searchList = writable([[]])
 export const promiseSearch = writable(new Promise(()=>{}))
-
-export const autoCompleteKeywords = writable('INDEX_NAME')
 
 export const suggestEntry = writable([]);
 
