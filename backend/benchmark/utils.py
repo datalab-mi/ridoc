@@ -2,13 +2,39 @@ import argparse
 import pandas as pd
 
 #Fonction tools
+
+#Checks path existance
 def dir_path(path):
     if path.exists():
         return path
     else:
         raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
 
+#From metric (str), returns its settings (dict)
+def metric_parameters(metric):
+    rank_body_metrics = {}
+    
+    if metric == 'precision':
+        rank_body_metrics['precision'] = {"k": 1,
+                                          "relevant_rating_threshold": 1e100,
+                                          "ignore_unlabeled": False}
+    elif metric == 'recall':
+        rank_body_metrics['recall'] = {"k": 1,
+                                        "relevant_rating_threshold": 1e100}
 
+    elif metric == 'mean_reciprocal_rank':
+        rank_body_metrics['mean_reciprocal_rank'] = {"k": 1,
+                                                      "relevant_rating_threshold": 1e100}
+    elif metric == 'dcg':
+        rank_body_metrics['dcg'] = {"k": 1,
+                                    "normalize": False}
+    elif metric == 'expected_reciprocal_rank':
+        rank_body_metrics['expected_reciprocal_rank'] = {"maximum_relevance": 1e100,
+                                                          "k":1}
+    else: print(metric + ' not recognized as a metric')
+    return rank_body_metrics
+
+#From PoC test base to cleaned test base
 def clean_test_base(test_base_path, new_file_path):
 
     ''' Takes the Question/Answer odt file given by IGPN : test_base_path
@@ -58,6 +84,6 @@ def clean_test_base(test_base_path, new_file_path):
     data = data.drop("Unnamed: 0" , axis = 1) 
 
 
-    data.to_csv(new_file_path,index=False)
+    data.to_csv(new_file_path,index=False, encoding="utf-8")
 
     return data
