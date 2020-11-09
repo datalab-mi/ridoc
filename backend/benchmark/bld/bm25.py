@@ -58,8 +58,8 @@ glossary_file = Path(USER_DATA) / GLOSSARY_FILE
 expression_file = Path(USER_DATA) / RAW_EXPRESSION_FILE
 threshold_file = Path(USER_DATA) / THRESHOLD_FILE
 
-test_base_df = pd.read_excel(test_base_path, engine="odf") #if odt file 
-#test_base_df = pd.read_csv(test_base_path, encoding= 'utf-8') #if csv file
+#test_base_df = pd.read_excel(test_base_path, engine="odf") #if odt file 
+test_base_df = pd.read_csv(test_base_path, encoding= 'utf-8') #if csv file
 
 
 #Instanciation of elasticsearch
