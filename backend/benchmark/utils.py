@@ -13,23 +13,23 @@ def dir_path(path):
 #From metric (str), returns its settings (dict)
 def metric_parameters(metric):
     rank_body_metrics = {}
-    
+
     if metric == 'precision':
         rank_body_metrics['precision'] = {"k": 1,
-                                          "relevant_rating_threshold": 1e100,
+                                          "relevant_rating_threshold": 1e3,
                                           "ignore_unlabeled": False}
     elif metric == 'recall':
         rank_body_metrics['recall'] = {"k": 1,
-                                        "relevant_rating_threshold": 1e100}
+                                        "relevant_rating_threshold": 1e3}
 
     elif metric == 'mean_reciprocal_rank':
         rank_body_metrics['mean_reciprocal_rank'] = {"k": 1,
-                                                      "relevant_rating_threshold": 1e100}
+                                                      "relevant_rating_threshold": 1e3}
     elif metric == 'dcg':
-        rank_body_metrics['dcg'] = {"k": 1,
+        rank_body_metrics['dcg'] = {"k": 3,
                                     "normalize": False}
     elif metric == 'expected_reciprocal_rank':
-        rank_body_metrics['expected_reciprocal_rank'] = {"maximum_relevance": 1e100,
+        rank_body_metrics['expected_reciprocal_rank'] = {"maximum_relevance": 1e3,
                                                           "k":1}
     else: print(metric + ' not recognized as a metric')
     return rank_body_metrics
@@ -68,20 +68,20 @@ def clean_test_base(test_base_path, new_file_path):
     data = data.drop(np.where(data['Fiches'] == '2019 Cumul d’une activité d’import / export')[0] , axis = 0)
 
     #Questions adding
-    data = data.append(pd.DataFrame([["Peut-on mettre un IPM en geole de GAV ?" , "06 Surveillance des personnes retenues au poste de police pour ivresse publique et manifeste"] , 
+    data = data.append(pd.DataFrame([["Peut-on mettre un IPM en geole de GAV ?" , "06 Surveillance des personnes retenues au poste de police pour ivresse publique et manifeste"] ,
                 ["quelle sosnt les limites du 11-2 CPP ?" , "03 Article 11-2"],
                 ["Ou doit-on ranger son arme ?" , "2019 Conservation arme ind – lieux de dépôt – meuble sécurisé"],
                 ["qu’est ce qu’un endroit sécurisé ?" , "2019 dépôts des armes- casiers"],
-                ["quelle est la différence entre le dépôt et le stockag ?" , "03 conditions de conservation d'armes collectives"] , 
+                ["quelle est la différence entre le dépôt et le stockag ?" , "03 conditions de conservation d'armes collectives"] ,
                 ["Est ce que j’ai le droit de ramener mon arme à la maisn ?" , "2019   conservation de l'ame à domicile"],
                 ["qu’est ce qu’une activité libre ?" , "2019  cumul d'activité"]] , columns = ['Questions' , "Fiches"]) , sort = True)
 
     #Nettoyage
     data['Fiches'] = data['Fiches'].map(lambda x:x.lower())
     data["Questions"] = data["Questions"].map(lambda x: unicodedata.normalize("NFKD", x))
-    data = data.reset_index() 
-    data = data.drop("index" , axis = 1) 
-    data = data.drop("Unnamed: 0" , axis = 1) 
+    data = data.reset_index()
+    data = data.drop("index" , axis = 1)
+    data = data.drop("Unnamed: 0" , axis = 1)
 
 
     data.to_csv(new_file_path,index=False, encoding="utf-8")
