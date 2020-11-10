@@ -389,7 +389,7 @@ def create_index(index_name: str,
     map['settings']["analysis"]["filter"]["search_synonym"].update(
             {"synonyms_path" : os.path.join(es_data, synonym_search_file)})
 
-    print(map)
+    # print(map)
     with open(os.path.join(es_data, mapping_file), 'w') as outfile:
         json.dump(map, outfile)
 
