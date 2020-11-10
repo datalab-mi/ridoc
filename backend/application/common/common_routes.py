@@ -143,7 +143,6 @@ def get_logo(name='logo.svg'):
     else:
         return make_response(str(Path(app.config['USER_DATA']) / name), 404)
 
-
 @common_bp.route("/keywords/<index_name>/<field>", methods=['GET'])
 def get_keywords(index_name: str, field: str):
     """"Wrap get_unique_keywords function
