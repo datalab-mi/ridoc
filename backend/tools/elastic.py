@@ -218,7 +218,7 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
                                 "match_all": {}
                             }
                         },
-                    size = int(1000)
+                    size = thresholds.get('d_threshold', int(1000))
                     )
         thresholds['r_threshold'] = 0
 
