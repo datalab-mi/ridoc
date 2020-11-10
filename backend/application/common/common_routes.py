@@ -138,6 +138,8 @@ def get_logo(name='logo.svg'):
         file: Logo file
     """
     filename  = (Path(app.config['USER_DATA']) / app.config['LOGO'])
+    print(filename)
+    
     if filename.is_file(): # return first found
         return send_from_directory(app.config['USER_DATA'], app.config['LOGO'], as_attachment=True)
     else:
