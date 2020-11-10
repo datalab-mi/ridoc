@@ -22,8 +22,9 @@
     let keywordList = []
 
     let promiseListKeyword = new Promise(()=>{})
-
-    if  (type === "keyword") {
+    console.log(key)
+    console.log(type)
+    if  (type === "keyword" && (!readonly && metadata)) {
       promiseListKeyword = get(`api/common/keywords/${$index_name}/${key}`)
     }
 
