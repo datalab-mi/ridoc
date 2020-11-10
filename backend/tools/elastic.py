@@ -2,7 +2,7 @@
 """Backend scrpits to handle Elastic Search (ES) queries"""
 
 import elasticsearch
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, NotFoundError
 import os
 import base64
 import json
@@ -286,10 +286,12 @@ def get_index_name(alias_name: str):
             index_name = list(res.keys())[0]
         else:
             raise Exception
-    except elasticsearch.exceptions.NotFoundError:
+    except NotFoundError:
         # create alias pointing to the blue index.
         index_name = alias_name + '_blue'
         es.indices.put_alias(index=alias_name, name=index_name)
+    except Exception as err:
+        print('Catch unexpected error: ', err)
     return index_name
 
 def replace_blue_green(index_name: str, alias_name: str):
@@ -318,6 +320,12 @@ def delete_alias(index_name: str, alias_name: str):
 
 def get_alias(alias_name: str):
     return es.indices.get_alias(name=alias_name)
+
+def exists(index_name: str):
+    if es.indices.exists(index_name) == 200:
+        return True
+    else:
+        return False
 
 def create_index(index_name: str,
             user_data: str,
