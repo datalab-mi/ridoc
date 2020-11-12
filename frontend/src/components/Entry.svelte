@@ -24,8 +24,12 @@
     let promiseListKeyword = new Promise(()=>{})
     console.log(key)
     console.log(type)
-    if  (type === "keyword" && (!readonly && metadata)) {
-      promiseListKeyword = get(`api/common/keywords/${$index_name}/${key}`)
+    if  (type === "keyword") {
+      if (!readonly && metadata) {
+        promiseListKeyword = get(`api/common/keywords/${$index_name}/${key}`)
+      } else {
+        promiseListKeyword = [] // no need of promiseListKeyword
+      }
     }
 
     function onDelete(val){
