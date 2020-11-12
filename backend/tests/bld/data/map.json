@@ -134,6 +134,16 @@
             "more_stop"
           ]
         }
+      },
+      "normalizer": {
+        "clean_normalizer": {
+          "type": "custom",
+          "filter": [
+            "lowercase",
+            "french_elision",
+            "icu_folding"
+          ]
+        }
       }
     },
     "index": {
@@ -165,7 +175,8 @@
             "search_analyzer" : "my_search_analyzer"
           },
           "mots cles":{
-            "type": "keyword"
+            "type": "keyword",
+            "normalizer": "clean_normalizer"
           },
           "date": {
             "type": "date",

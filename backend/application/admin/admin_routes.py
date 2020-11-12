@@ -138,7 +138,9 @@ def upload_file(filename: str):
                         form_to_save[k] = v
                 json.dump(form_to_save, f, ensure_ascii=False)
                 print("save %s"%path_file)
-
+        else:
+            print("%s doesn't exist"%path_meta.parent)
+            
         return  make_response(jsonify(sucess=True), status)
 
     else:
