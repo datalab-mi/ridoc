@@ -473,6 +473,20 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
         data = odt2json(str(path_document), sections)
     else:
         raise Exception("Format not supported")
+
+    # Clean fields specified in sections.json
+    for entry in sections:
+        if entry.get('clean',False):
+            for key in data :
+                if key == entry.get("field",None) :
+                    if type(data[key]) == list:
+                        y = []
+                        for x in data[key]:
+                            y += [" ".join(clean(x, index_name))]
+                        data[key] = y
+                    else:
+                        data[key] = clean(data[key], index_name)
+
     #import pdb; pdb.set_trace()
     path_meta =  Path(user_data) / meta_path / (path_document.stem + '.json')
     path_json =  Path(user_data) / json_path / (path_document.stem + '.json')
