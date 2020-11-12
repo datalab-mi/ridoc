@@ -56,7 +56,7 @@ def odt2json(path: str, sections: list = []) -> dict:
 
     # Remove empty or digit element
     L2 = [x for x in L2 if x and x != '' and not x.isdigit()]
-
+    print(L2)
     data = {}
     section_content = []
     current_section = ''

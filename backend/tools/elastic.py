@@ -344,6 +344,7 @@ def create_index(index_name: str,
         expression_file (str): Expression file name
         glossary_file (str): Acronym file name
     """
+    os.makedirs(es_data, exist_ok=True)
     synonym_file = os.path.join(es_data, 'synonym.txt')
     synonym_search_file = os.path.join(es_data, 'search_synonym.txt')
 
@@ -473,7 +474,6 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
     else:
         raise Exception("Format not supported")
     #import pdb; pdb.set_trace()
-
     path_meta =  Path(user_data) / meta_path / (path_document.stem + '.json')
     path_json =  Path(user_data) / json_path / (path_document.stem + '.json')
 
@@ -516,7 +516,8 @@ def get_unique_keywords(index_name: str, field: str) -> list:
           "size": 0,
           "aggs": {
             field: {
-              "terms": { "field": field }
+              "terms": { "field": field,
+                        "size": int(1e4) }
             }
           }
         }

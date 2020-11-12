@@ -206,7 +206,8 @@ def index(index_name: str):
                     app.config['USER_DATA'],
                     dst_path = app.config['DST_DIR'],
                     json_path = app.config['JSON_DIR'],
-                    meta_path = META_DIR)
+                    meta_path = META_DIR,
+                    sections=sections)
 
     # Switch index in alias
     put_alias(new_index, index_name)
