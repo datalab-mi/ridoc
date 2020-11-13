@@ -17,7 +17,7 @@
 
     export let cssClass = 'base'
 
-    let rows = 4
+    export let rows = 4
     let newValue = ""
     let keywordList = []
 

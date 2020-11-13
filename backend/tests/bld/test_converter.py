@@ -12,7 +12,8 @@ def test_odt2json(sections):
     Date = 'doc date'
     Auteurs = 'doc auteur 1'
     data = odt2json(directory, sections)
-    #import pdb; pdb.set_trace()
+    import pdb; pdb.set_trace()
+
     assert data == {'site': 'monsite.org',
                     'direction': 'Ma direction',
                     'titre': 'Mon Titre',
