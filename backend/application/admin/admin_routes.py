@@ -9,7 +9,7 @@ from flask import Blueprint, render_template, request, make_response, abort, jso
 
 from tools.elastic import index_file as elastic_index_file
 from tools.elastic import delete_file as elastic_delete_file
-from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, clean
+from tools.elastic import create_index, get_alias, put_alias, delete_alias, exists, get_index_name, replace_blue_green, inject_documents, clean
 
 from tools.utils import empty_tree
 
@@ -138,6 +138,8 @@ def upload_file(filename: str):
                         form_to_save[k] = v
                 json.dump(form_to_save, f, ensure_ascii=False)
                 print("save %s"%path_file)
+        else:
+            print("%s doesn't exist"%path_meta.parent)
 
         return  make_response(jsonify(sucess=True), status)
 
@@ -185,9 +187,13 @@ def index(index_name: str):
     #index_name = content.get('index_name', app.config['INDEX_NAME'])
     #index_name  = index_name if index_name else app.config['INDEX_NAME']
 
-    old_index = get_index_name(index_name)
-    new_index = replace_blue_green(old_index, index_name)
-    print(new_index)
+    if not exists(index_name): # init if no index in ES
+        old_index = index_name + '_green'
+        new_index = index_name + '_blue'
+    else:
+        old_index = get_index_name(index_name)
+        new_index = replace_blue_green(old_index, index_name)
+
     create_index(new_index,
                  app.config['USER_DATA'],
                  app.config['ES_DATA'],
@@ -202,7 +208,8 @@ def index(index_name: str):
                     app.config['USER_DATA'],
                     dst_path = app.config['DST_DIR'],
                     json_path = app.config['JSON_DIR'],
-                    meta_path = META_DIR)
+                    meta_path = META_DIR,
+                    sections=sections)
 
     # Switch index in alias
     put_alias(new_index, index_name)
