@@ -140,7 +140,7 @@ def upload_file(filename: str):
                 print("save %s"%path_file)
         else:
             print("%s doesn't exist"%path_meta.parent)
-            
+
         return  make_response(jsonify(sucess=True), status)
 
     else:

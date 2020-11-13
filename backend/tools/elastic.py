@@ -19,6 +19,7 @@ import pandas as pd
 from tools.converter import pdf2json, odt2json, save_json
 from tools.utils import empty_tree, _finditem
 import json
+import time
 
 
 
@@ -205,11 +206,8 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
         body, length_of_request = build_query(must, should, filter, index_name,
                     highlight,
                     glossary_file=glossary_file, expression_file=expression_file)
-
-        D = es.search(index = index_name,
-                      body = body,
-                      size = thresholds.get('d_threshold', int(1000)))
-
+        time.sleep(0.5)
+        D = es.search(index = index_name, body = body,size = thresholds.get('d_threshold', int(1000)),request_cache=False)
     else:
         length_of_request = None
         D = es.search(index = index_name,
@@ -322,10 +320,8 @@ def get_alias(alias_name: str):
     return es.indices.get_alias(name=alias_name)
 
 def exists(index_name: str):
-    if es.indices.exists(index_name) == 200:
-        return True
-    else:
-        return False
+    return es.indices.exists(index_name)
+
 
 def create_index(index_name: str,
             user_data: str,
