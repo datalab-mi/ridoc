@@ -33,8 +33,8 @@ def odt2json(path: str, sections: list = []) -> dict:
 
     sections = [{'key':normalize(x['key']), 'array':x['array']} for x in sections]
 
-    print('Sections are : ')
-    print(sections)
+    # print('Sections are : ')
+    # print(sections)
     # extract test from doc
     doc = load(path)
     L = [teletype.extractText(x) for x in doc.getElementsByType(text.P)]
