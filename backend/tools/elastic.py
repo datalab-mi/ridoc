@@ -20,7 +20,7 @@ from tools.converter import pdf2json, odt2json, save_json
 from tools.utils import empty_tree, _finditem
 import json
 import time
-
+import re
 
 
 #On établit une connection
@@ -483,6 +483,7 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
                     else:
                         data[key] = clean(data[key], index_name)
 
+
     #import pdb; pdb.set_trace()
     path_meta =  Path(user_data) / meta_path / (path_document.stem + '.json')
     path_json =  Path(user_data) / json_path / (path_document.stem + '.json')
@@ -491,7 +492,10 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
         with open(path_meta, 'r' , encoding = 'utf-8') as json_file:
             meta = json.load(json_file)
             data.update(meta)
-
+    # clean date field
+    if "date" in data:
+        data["date"] = re.sub(r'[^\d\/]','',data["date"]) # remove all caractere ! / or digit
+        data["date"] = data["date"].replace("//",'/')
     save_json(data, path_json)
 
     res = es.index(index = index_name, body=data , id = path_document.name)
