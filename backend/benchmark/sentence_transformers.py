@@ -40,7 +40,7 @@ def main(args):
     GLOSSARY_FILE = os.getenv('GLOSSARY_FILE')
     RAW_EXPRESSION_FILE = os.getenv('RAW_EXPRESSION_FILE')
     MAPPING_FILE =  os.getenv('MAPPING_FILE')
-    # THRESHOLD_FILE = os.getenv('THRESHOLD_FILE')
+    THRESHOLD_FILE = os.getenv('THRESHOLD_FILE')
 
     DST_DIR = os.getenv('DST_DIR')
     JSON_DIR = os.getenv('JSON_DIR')
@@ -49,9 +49,24 @@ def main(args):
     ES_PORT=os.getenv('ES_PORT')
     ES_HOST=os.getenv('ES_HOST')
 
+    MODEL_NAME = "/app/benchmark/bld/data/sbert.net_models_" + \
+        "distilbert-multilingual-nli-stsb-quora-ranking"
+
     os.makedirs(ES_DATA, exist_ok=True)
 
-    MODEL_NAME = 'distilbert-multilingual-nli-stsb-quora-ranking'
+
+    #Reading files
+    glossary_file = Path(USER_DATA) / GLOSSARY_FILE
+    expression_file = Path(USER_DATA) / RAW_EXPRESSION_FILE
+    threshold_file = Path(USER_DATA) / THRESHOLD_FILE
+
+    qr_path = args.base_path /args.qr_path
+    if qr_path.suffix in ['.ods']:
+        test_base_df = pd.read_excel(qr_path, engine="odf") #if odt file
+    elif qr_path.suffix == ".csv":
+        test_base_df = pd.read_csv(qr_path, encoding= 'utf-8') #if csv file
+
+
     #Instanciation of elasticsearch
     es = Elasticsearch([{'host': ES_HOST, 'port': ES_PORT}])
 
@@ -81,7 +96,9 @@ def main(args):
     inject_documents(INDEX_NAME, USER_DATA, DST_DIR, JSON_DIR,
                     meta_path = META_DIR, sections=section)
     time.sleep(1) # ! important, asynchronous injection
-    
+
+    # Embedding with Sentence transformers
+    model = SentenceTransformer(MODEL_NAME)
     # Query all documents to retrieve questions
     res = es.search(index=INDEX_NAME, body = {'_source': ['_id', '_type', 'question'],
             'size' : 10000,
@@ -89,53 +106,47 @@ def main(args):
                 'match_all' : {}
             }
             })
-        
+
     all_questions={}
-    for r in res['hits']['hits']: 
+    for r in res['hits']['hits']:
         all_questions[r['_id']]= r['_source']['question'][0]
 
     qids = list(all_questions.keys())
     questions = [all_questions[qid] for qid in qids]
-    
-    
-    # Embedding with Sentence transformers
-    model = SentenceTransformer(MODEL_NAME)
-    
+
     embeddings = model.encode(questions, show_progress_bar=False)
 
     # Update the existing index with embedded vectors
-    for qid, embedding in zip(qids,  embeddings):
+    for qid, embedding in zip(qids, embeddings):
         es.update(index=INDEX_NAME,
             doc_type='_doc',
-            id=qid, 
+            id=qid,
             body={
                 "script" : {
                     "source": "ctx._source.question_vector= params.emb",
                     "lang": "painless",
                     "params" : {
             "emb" : embedding
+            }
         }
-    }
-})
-    time.sleep(1) 
+    })
 
+    time.sleep(1)
 
-    # Import questions from the test base
-    qr_path = args.base_path /args.qr_path
-    if qr_path.suffix in ['.ods']:
-        test_base_df = pd.read_excel(qr_path, engine="odf") #if odt file
-    elif qr_path.suffix == ".csv":
-        test_base_df = pd.read_csv(qr_path, encoding= 'utf-8') #if csv file
-    
-    # Search similar indexed questions for all questions in the test base 
-    results = []
-    for _, row in test_base_df.iterrows():
-        result_by_query = {}
-        result_by_query["query_question"] = row["Questions"]
+    #Searching
+    rank_body_requests = []
+    rank_body_metric = metric_parameters(args.metric) # building the request metric
+
+    must = {}
+    should = {}
+    filter = ''
+    highlight = []
+
+    #Building the request body
+    for index, row in test_base_df.iterrows():
         question_embedding = model.encode(row["Questions"])
 
-        # Semantic search using the cosineSimilarity
-        sem_search = es.search(index=INDEX_NAME, body={
+        body_query = {
         "query": {
             "script_score": {
             "query": {
@@ -149,12 +160,20 @@ def main(args):
             }
             }
         }
-        })
+        }
+        request = { "id": str(index), "request": body_query, "ratings": [{ "_index": INDEX_NAME, "_id": "%s"%row['Fiches'], "rating": 1}]}
+        rank_body_requests.append(request)
 
-        # For each query, store hits with related scores
-        result_by_query["hits"] = []
-        for hit in sem_search['hits']['hits']:
-            result_by_query["hits"] += [{"result": hit['_source']['question'], "score": hit["_score"] }]
-        results += [result_by_query]
-    print(results)
-    return results
+    import pdb; pdb.set_trace()
+    #Metric evaluation
+    result = es.rank_eval(body= {
+                                  "requests": rank_body_requests,
+                                  "metric": rank_body_metric
+                                  }, index = INDEX_NAME )
+    print(20*'-')
+    print('Result of %s script'%Path(__file__).resolve().stem)
+    print(20*'-')
+    print(json.dumps(result,sort_keys=True, indent=4))
+    #import pdb; pdb.set_trace()
+
+    return result
