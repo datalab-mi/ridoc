@@ -9,23 +9,23 @@
 echo "$1"
 echo "$(dirname $2)"
 
-if [ $3 = "cli" ]
+if [ $2 = "cli" ]
 then
   # with SWIFT, support folder
   swift --debug \
    --os-storage-url "${OS_STORAGE_URL}" --os-auth-token "${OS_AUTH_TOKEN}" \
    download $1 -p $2
 
-elif [ $3 = "curl" ]
+elif [ $2 = "curl" ]
 then
   # with CURL, only file
-  mkdir -p $1/$(dirname $2)
-  echo "curl -s -S ${OS_STORAGE_URL}/$2 -X GET -H 'X-Auth-Token: ${OS_AUTH_TOKEN}' -o $1/$2"
+  mkdir -p $(dirname $1)
+  echo "curl -s -S ${OS_STORAGE_URL}/$1 -X GET -H 'X-Auth-Token: ${OS_AUTH_TOKEN}' -o $1/$2"
   curl -s -S \
-      "${OS_STORAGE_URL}/$2" \
+      "${OS_STORAGE_URL}/$1" \
       -X GET \
       -H "X-Auth-Token: ${OS_AUTH_TOKEN}" \
-      -o $1/$2
+      -o $1
 else
   echo "Choose swift or curl"
   exit 1

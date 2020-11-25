@@ -18,11 +18,11 @@ then
 elif [ $2 = "curl" ]
 then
   # with CURL, only file. Need eventually to loop over a folder
+  #echo "curl -i -T $1 ${OS_STORAGE_URL}/$1  -X PUT -H 'X-Auth-Token: ${OS_AUTH_TOKEN}'  -o send-$1-log"
   curl -i -T $1\
       "${OS_STORAGE_URL}/$1" \
       -X PUT \
-      -H "X-Auth-Token: ${OS_AUTH_TOKEN}" \
-      -o "send-$1-log"
+      -H "X-Auth-Token: ${OS_AUTH_TOKEN}"
 
 else
   echo "Choose swift or curl"

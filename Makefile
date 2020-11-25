@@ -229,7 +229,7 @@ frontend-build-dist:  frontend-check-build
 	${DC} -f  $(DC_FILE)-frontend-build.yml  build $(DC_BUILD_ARGS)
 
 $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION): build-dir
-	${DC} -f $(DC_FILE)-frontend-build.yml run frontend-build sh -c "npm run export > /dev/null 2>&1 && tar czf - __sapper__/export/ -C /app" > $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION)
+	${DC} -f $(DC_FILE)-frontend-build.yml run -T frontend-build sh -c "npm run export > /dev/null 2>&1 && tar czf - __sapper__/export/ -C /app" > $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION)
 	#cp $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION) $(BUILD_DIR)/$(FILE_FRONTEND_DIST_LATEST_VERSION)
 
 
@@ -262,7 +262,7 @@ frontend-upload-swift: chmod
 
 frontend-download-swift: chmod
 	@echo "Download $(FILE_FRONTEND_DIST_APP_VERSION) from SWIFT to ${APP}-build"
-	swift/download.sh ${APP}-build $(FILE_FRONTEND_DIST_APP_VERSION) 'curl'
+	swift/download.sh ${APP}-build/$(FILE_FRONTEND_DIST_APP_VERSION) 'curl'
 
 ###############
 # General 	  #
