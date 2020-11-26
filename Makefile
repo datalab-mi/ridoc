@@ -1,6 +1,6 @@
-export APP = browser
+export APP = moteur-de-recherche
 export APP_PATH := $(shell pwd)
-export APP_VERSION	:= 0.1
+export APP_VERSION	:= 0.2
 export DATA_PATH = ${APP_PATH}/backend/tests/iga/data
 #export APP_VERSION	:= $(shell git describe --tags || cat VERSION )
 
@@ -60,9 +60,8 @@ export API_USER_SCOPE=http_x_forwarded_for
 export API_GLOBAL_LIMIT_RATE=20r/s
 export API_GLOBAL_BURST=200 nodelay
 
-# traefik
-export TRAEFIK_PATH=${APP_PATH}/traefik
-export LOG_LEVEL=DEBUG
+# SWIFT
+export BUCKET_NAME=${APP}
 
 # this is usefull with most python apps in dev mode because if stdout is
 # buffered logs do not shows in realtime
@@ -167,7 +166,7 @@ backend-exec:
 download-data:
 	@echo configuring data downloader
 	git clone -b feat/clean-authors https://github.com/victorjourne/IGA-BF.git
-	make -C IGA-BF run base_path=$(BACKEND)/tests/iga/data
+	make -C IGA-BF run base_path=$(DATA_PATH)
 
 clean:
 	@sudo rm -rf IGA-BF
@@ -230,8 +229,8 @@ frontend-build-dist:  frontend-check-build
 	${DC} -f  $(DC_FILE)-frontend-build.yml  build $(DC_BUILD_ARGS)
 
 $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION): build-dir
-	${DC} -f $(DC_FILE)-frontend-build.yml run -T --rm frontend-build  sh  -c "npm run export > /dev/null 2>&1 && tar czf - __sapper__/export/ -C /app" > $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION)
-	cp $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION) $(BUILD_DIR)/$(FILE_FRONTEND_DIST_LATEST_VERSION)
+	${DC} -f $(DC_FILE)-frontend-build.yml run -T frontend-build sh -c "npm run export > /dev/null 2>&1 && tar czf - __sapper__/export/ -C /app" > $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION)
+	#cp $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION) $(BUILD_DIR)/$(FILE_FRONTEND_DIST_LATEST_VERSION)
 
 
 frontend-build: network frontend-build-dist $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION)
@@ -243,7 +242,6 @@ frontend-clean-dist-archive:
 	@rm -rf ${FRONTEND}/$(FILE_FRONTEND_DIST_APP_VERSION) > /dev/null 2>&1 || true
 	@rm -rf ${NGINX}/$(FILE_FRONTEND_DIST_APP_VERSION) > /dev/null 2>&1 || true
 
-
 nginx-check-build:
 	${DC} -f $(DC_FILE)-nginx.yml config -q
 
@@ -252,6 +250,19 @@ nginx-build: nginx-check-build
 	cp $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION) ${NGINX}/
 	${DC} -f $(DC_FILE)-nginx.yml build $(DC_BUILD_ARGS)
 
+#############
+# SWIFT 	  #
+#############
+chmod:
+	chmod +x swift/*.sh
+
+frontend-upload-swift: chmod
+	@echo "Upload ${APP}-build/$(FILE_FRONTEND_DIST_APP_VERSION) to SWIFT"
+	swift/upload.sh ${APP}-build/$(FILE_FRONTEND_DIST_APP_VERSION) 'curl'
+
+frontend-download-swift: chmod
+	@echo "Download $(FILE_FRONTEND_DIST_APP_VERSION) from SWIFT to ${APP}-build"
+	swift/download.sh ${APP}-build/$(FILE_FRONTEND_DIST_APP_VERSION) 'curl'
 
 ###############
 # General 	  #
