@@ -26,8 +26,8 @@ services:
       - KIBANA_HOST
       - LOGSTASH_HOST
     ports:
-      - "80:80"
-    #restart: always
+      - "$PORT:80"
+      #restart: always
 
 networks:
   default:
