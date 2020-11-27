@@ -14,11 +14,17 @@ server {
   listen 80;
   server_name  localhost;
 
-  location / {
-    alias /usr/share/nginx/html/export/;
+  location /admin {
+    auth_basic "Administrator Area";
+    auth_basic_user_file /etc/nginx/conf.d/.htpasswd;
+    alias /usr/share/nginx/html/export/admin;
     try_files $uri $uri/ /index.html$is_args$args;
   }
 
+  location / {
+      alias /usr/share/nginx/html/export/;
+      try_files $uri $uri/ /index.html$is_args$args;
+    }
   location /elasticsearch/ {
       proxy_pass http://elasticsearch/;
       proxy_redirect off;
