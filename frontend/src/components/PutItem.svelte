@@ -32,8 +32,12 @@ handleUpdate()
 {:then status}
   {#if status == 201 }
     <p style="color: green">{filename} crée</p>
-  {:else if status == 200 }
+  {:else if (status == 200) }
     <p style="color: blue" >{filename} modifié</p>
+  {:else if (status == 203) }
+    <p style="color: red" >{filename} au mauvais format!</p>
+  {:else if (status == 202) }
+    <p></p>
   {:else}
     <p>Status {status} non connu</p>
   {/if}

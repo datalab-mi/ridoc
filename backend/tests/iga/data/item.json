@@ -38,6 +38,15 @@
       "innerHtml": "<b>Date :</b>",
       "highlight": false,
       "metadata": true
+    },
+    {
+      "key": "tag",
+      "type": "keyword",
+      "placeholder": "Ajoutez un tag",
+      "value": [],
+      "innerHtml": "<b>Tag :</b>",
+      "highlight": false,
+      "metadata": true
     }
   ]
 
