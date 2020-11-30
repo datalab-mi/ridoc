@@ -2,10 +2,9 @@
 	import PutItem from './PutItem.svelte'
 	import Entry from './Entry.svelte'
 
-	import { index_name, dstDir } from './stores.js';
+	import { index_name, dstDir, itemConfig } from './stores.js';
 	import { index, upload } from './utils.js'
 
-	export let meta;
 
 	export let _id;
 	export let _source;
@@ -21,22 +20,25 @@
 	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
 
 	const file = {'name': _id.replace(/\+/g, " ")}
+	const meta = JSON.parse(JSON.stringify($itemConfig.inputs))
+	console.log(meta)
 
 	let promiseDelete = new Promise(()=>{})
 	let promiseDeleteIndex = new Promise(()=>{})
 
 	// replace value to the result value contained in _source or in highlight key
 	// if present and if needed
-	meta.forEach((x, index) => {
+	JSON.parse(JSON.stringify($itemConfig.inputs)).forEach((x, index) => {
 		//console.log(highlight)
 		if (x.highlight && highlight && (x.key in highlight)) {
-			x.value = highlight[x.key].join(' [...] ')
-			x.isHighlight = true
+			meta[index].value = highlight[x.key].join(' [...] ')
+			meta[index].isHighlight = true
 		} else {
-			x.value = _source[x.key]
-			x.isHighlight = false
+			meta[index].value =  x.key in _source  ? _source[x.key] : x.value
+			meta[index].isHighlight = false
 		}
 	})
+	console.log(meta)
 
 	async function remove() {
 		const res = await fetch(`/api/admin/${filename}`,

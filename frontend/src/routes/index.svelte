@@ -13,6 +13,7 @@
 	let body
 	onMount(async () => {
 		$itemConfig = await get('/api/common/files/item.json')
+		console.log($itemConfig )
 		$searchList = await get('/api/common/files/search.json')
 		//initial search
 		body =  format2ES($itemConfig, $searchList.flat(2), $index_name)

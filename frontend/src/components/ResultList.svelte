@@ -12,7 +12,6 @@ let height = '90%';
 let items = [];
 let threshold;
 
-
 function add_bar(x) {
 	let i = 0;
 	items = [];
@@ -46,7 +45,7 @@ $: $promiseSearch.then((searchResults) => {add_bar(searchResults)})
 						</p>
 					</div>
 				{:else}
-					<ResultItem meta={JSON.parse(JSON.stringify($itemConfig.inputs))} {...item}/>
+					<ResultItem  {...item}/>
 
 				{/if}
 			{/each}

@@ -22,8 +22,6 @@
     let keywordList = []
 
     let promiseListKeyword = new Promise(()=>{})
-    console.log(key)
-    console.log(type)
     if  (type === "keyword") {
       if (!readonly && metadata) {
         promiseListKeyword = get(`api/common/keywords/${$index_name}/${key}`)
@@ -45,7 +43,7 @@
         value = event.detail.tags;
     }
 
-
+console.log(key,type,value)
 </script>
 
 <div>

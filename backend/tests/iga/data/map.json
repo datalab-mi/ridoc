@@ -134,6 +134,16 @@
             "more_stop"
           ]
         }
+      },
+      "normalizer": {
+        "clean_normalizer": {
+          "type": "custom",
+          "filter": [
+            "lowercase",
+            "french_elision",
+            "icu_folding"
+          ]
+        }
       }
     },
     "index": {
@@ -167,6 +177,10 @@
         "date": {
           "type": "date",
           "format": "yyyy-MM-dd"
+        },
+        "tag":{
+          "type": "keyword",
+          "normalizer": "clean_normalizer"
         }
       }
   }
