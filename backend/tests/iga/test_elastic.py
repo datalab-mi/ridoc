@@ -7,7 +7,7 @@ import elasticsearch
 from elasticsearch import Elasticsearch
 from shutil import copyfile
 
-from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file, suggest
+from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file, suggest, get_tag
 from tools.converter import pdf2json
 
 import pytest
@@ -254,6 +254,12 @@ def test_suggest():
     req = "travail ilegal"
     res = suggest(req, INDEX_NAME)
     assert [element['text'] for element in res] == ['travail illégal', 'travail inégal', 'travail légal']
+
+def test_get_tag():
+    document = 'BF2016-11-15132-sargasses.pub.pdf'
+    fields = 'content'
+    res = get_tag(INDEX_NAME, document, fields)
+    assert res == ['d’échouages', 'sargasses']
 
 if __name__ == '__main__':
     test_create_index()

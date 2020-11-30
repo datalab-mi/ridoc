@@ -120,10 +120,13 @@ def upload_file(filename: str):
         # if user does not select file, browser also
         # submit an empty part without filename
 
-        if file and allowed_file(filename):
-            # save file
-            file.save(path_file)
-            print("save %s"%path_file)
+        if file:
+            if allowed_file(filename):
+                # save file
+                file.save(path_file)
+                print("save %s"%path_file)
+            else:
+                status = 203
         else:
             status = 202
         # save meta

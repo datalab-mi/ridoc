@@ -494,7 +494,7 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
             data.update(meta)
     # clean date field
     if "date" in data:
-        data["date"] = re.sub(r'[^\d\/]','',data["date"]) # remove all caractere ! / or digit
+        data["date"] = re.sub(r'[^\d\/-]','',data["date"]) # remove all caractere ! /, - or digit
         data["date"] = data["date"].replace("//",'/')
     save_json(data, path_json)
 
@@ -537,6 +537,33 @@ def get_unique_keywords(index_name: str, field: str) -> list:
         }
     res = es.search(index=index_name, body=body)
     return [x['key'] for x in res['aggregations'][field].get('buckets', [{}])]
+
+def get_tag(index_name: str, filename: str, fields: str) -> list:
+    """Get tag as keywords list from an document
+    Args:
+        document (str): document name
+        index_name (str): The index name
+    Returns:
+        List: The list of most frequent keywords
+    """
+    body = {
+          "fields" : [fields],
+          "term_statistics": True,
+          "field_statistics": True,
+          "positions": True,
+          "offsets": True,
+          "filter": {
+            "max_num_terms": 3,
+            "min_term_freq": 1,
+            "min_doc_freq": 1
+          }
+        }
+    res = es.termvectors(index=index_name, body=body, id=filename)
+    res = {key: val['tokens'][0] for key, val in res['term_vectors'][fields]['terms'].items()}
+    content = es.get(index=index_name, id=filename, _source = True, _source_includes=[fields])
+
+    res = [content['_source'][fields][val["start_offset"]:val["end_offset"]] for key, val in res.items()]
+    return  list(set(res))
 
 if __name__ == '__main__':
 

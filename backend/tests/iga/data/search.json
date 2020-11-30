@@ -40,5 +40,18 @@
     "style": "w-3/4 p-2",
     "highlight": true
     }
+  ],
+  [
+    {
+    "bool": "filter",
+    "query": {"terms": {"mots cles": "$value"}},
+    "fields": "tag",
+    "value": [],
+    "type": "keyword",
+    "placeholder": "Recherche par tags",
+    "innerHtml": "",
+    "style": "w-5/6 p-2",
+    "highlight": false
+    }
   ]
 ]
