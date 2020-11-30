@@ -425,9 +425,6 @@ def inject_documents(index_name: str, user_data: str, dst_path: str, json_path: 
     # empty it in case
     empty_tree(Path(user_data) / json_path)
 
-    # get the mapping from ES:
-    mapping = es.indices.get_mapping(index=index_name)
-
     for path_document in (Path(user_data) / dst_path).iterdir():
         try:
             #path_document = pdf_path / filename
@@ -435,7 +432,7 @@ def inject_documents(index_name: str, user_data: str, dst_path: str, json_path: 
 
             filename = path_document.name
             index_file(filename, index_name, user_data,
-                        dst_path, json_path, meta_path, mapping, sections=sections)
+                        dst_path, json_path, meta_path, sections=sections)
             print('Document %s just uploaded'% path_document)
 
         except Exception as e:
@@ -449,7 +446,7 @@ def inject_documents(index_name: str, user_data: str, dst_path: str, json_path: 
     print("There is %s documents without metadata match"%no_match)
 
 def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
-            json_path: str, meta_path, mapping, sections=[]):
+            json_path: str, meta_path, sections=[]):
     """Inject in ES the document <filename>
     Args:
         filename (str): The document to index
@@ -461,7 +458,6 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
             the content of the documents
         meta_path (str): relative path of the folder which contains
             the meta data of the documents
-        mapping (dict): ES mapping of the index
         sections (list): In case of odt document, contains the sections to read
     """
     filename = Path(filename)
@@ -502,13 +498,13 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
 
     res = es.index(index = index_name, body=data , id = path_document.name)
     # generate tag if needed
-    mapping_field_tag = mapping[list(mapping)[0]].get("mappings",{}).get("properties",{})
-    for key, val in mapping_field_tag.items():
-        if key in data.keys() and "tag" in val.get('fields', {}):
-            res = get_tag(index_name, filename=str(filename), fields=key)
+    for entry in sections:
+        if entry.get('tag',False):
+            #import pdb; pdb.set_trace()
+            res = get_tag(index_name, filename=str(filename), fields=entry['key'])
             body = {
                     "script" : {
-                        "source": "ctx._source.content.tag=params.list_tag",
+                        "source": "ctx._source.tag=params.list_tag",
                         "lang": "painless",
                         "params" : {
                             "list_tag" : res
@@ -516,7 +512,6 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
                                 }
                     }
             #import pdb; pdb.set_trace()
-
             es.update(index=index_name,doc_type='_doc',id=str(filename),body=body)
 
 
