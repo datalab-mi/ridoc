@@ -20,7 +20,6 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','md','odt'}
 # Blueprint Configuration
 admin_bp = Blueprint('admin_bp', __name__,url_prefix='/admin')
 
-print(app.config)
 
 @admin_bp.route('/cluster', methods=['GET'])
 @jwt_required()
@@ -40,6 +39,7 @@ if path_sections.exists():
         sections = json.load(json_file)
 else:
     sections = []
+print(sections)
 
 @admin_bp.route("/files")
 @admin_bp.route("/files/<path:path>", methods=["PUT","DELETE"])
@@ -213,7 +213,6 @@ def index(index_name: str):
 
     # inject only json
     META_DIR = Path(app.config['USER_DATA']) / app.config['META_DIR']
-
     inject_documents(new_index,
                     app.config['USER_DATA'],
                     dst_path = app.config['DST_DIR'],
