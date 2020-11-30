@@ -446,7 +446,7 @@ def inject_documents(index_name: str, user_data: str, dst_path: str, json_path: 
     print("There is %s documents without metadata match"%no_match)
 
 def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
-            json_path: str, meta_path,  sections=[]):
+            json_path: str, meta_path, sections=[]):
     """Inject in ES the document <filename>
     Args:
         filename (str): The document to index
@@ -482,8 +482,6 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
                         data[key] = y
                     else:
                         data[key] = clean(data[key], index_name)
-
-
     #import pdb; pdb.set_trace()
     path_meta =  Path(user_data) / meta_path / (path_document.stem + '.json')
     path_json =  Path(user_data) / json_path / (path_document.stem + '.json')
@@ -499,6 +497,26 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
     save_json(data, path_json)
 
     res = es.index(index = index_name, body=data , id = path_document.name)
+    # generate tag if needed
+    for entry in sections:
+        if entry.get('tag',False):
+            #import pdb; pdb.set_trace()
+            res = get_tag(index_name, filename=str(filename), fields=entry['key'])
+            body = {
+                    "script" : {
+                        "source": "ctx._source.tag=params.list_tag",
+                        "lang": "painless",
+                        "params" : {
+                            "list_tag" : res
+                                    }
+                                }
+                    }
+            #import pdb; pdb.set_trace()
+            es.update(index=index_name,doc_type='_doc',id=str(filename),body=body)
+
+
+
+
     return res
 
 def delete_file(filename, index_name):

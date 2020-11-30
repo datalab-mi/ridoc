@@ -33,7 +33,13 @@ JSON_DIR = os.getenv('JSON_DIR')
 META_DIR =  os.getenv('META_DIR')
 
 os.makedirs(ES_DATA, exist_ok=True)
-
+# Section path
+path_sections = Path(USER_DATA) / 'sections.json'
+if path_sections.exists():
+    with open(path_sections, 'r' , encoding = 'utf-8') as json_file:
+        sections = json.load(json_file)
+else:
+    sections = []
 es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
 
 doc_guyane_eau = "les-bonnes-feuilles-IGA-eau-potable-en-guadeloupe.pdf"
@@ -52,7 +58,7 @@ def test_create_index():
 @pytest.mark.run(after='test_create_index')
 def test_inject_documents():
     inject_documents(INDEX_NAME, USER_DATA, DST_DIR, JSON_DIR,
-                meta_path = META_DIR)
+                meta_path = META_DIR, sections=sections)
 
     res = es.get(index=INDEX_NAME, id=doc_guyane_eau)
     assert len(str(res)) > 1000, res

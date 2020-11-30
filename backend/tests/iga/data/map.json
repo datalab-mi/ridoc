@@ -166,6 +166,10 @@
             "reverse": {
               "type": "text",
               "analyzer": "reverse"
+            },
+            "tag": {
+              "type": "keyword",
+              "normalizer": "clean_normalizer"
             }
           }
         },
