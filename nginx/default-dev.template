@@ -19,17 +19,7 @@ server {
     listen 80;
     listen 35729;
     server_name  localhost;
-    
-
-    location /admin {
-      proxy_pass http://frontend;
-      proxy_http_version 1.1;
-      proxy_set_header Upgrade $http_upgrade;
-      proxy_set_header Connection 'upgrade';
-      proxy_set_header Host $host;
-      auth_basic "Administrator Area";
-      auth_basic_user_file /etc/nginx/conf.d/.htpasswd;
-    }
+  
 
     location / {
         proxy_pass http://frontend;
@@ -67,6 +57,8 @@ server {
     }
 
     location /kibana/ {
+      auth_basic "Administrator Area";
+      auth_basic_user_file /etc/nginx/conf.d/.htpasswd;
       proxy_pass http://kibana/;
     }
 
