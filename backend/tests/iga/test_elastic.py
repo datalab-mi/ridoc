@@ -104,7 +104,7 @@ def test_search():
 
 
     req = 'travail illegal'
-    must = [{"multi_match":{"fields":["titre","content"],"query":req}}]
+    must = [{"query_string":{"fields":["titre","content"],"query":req}}]
     #import pdb; pdb.set_trace()
     time.sleep(2)
     res = search(must, [], [], INDEX_NAME, [],
@@ -119,7 +119,7 @@ def test_search():
     #import pdb; pdb.set_trace()
     # test expression
     req = "chiffre d'affaire"
-    must = [{"multi_match":{"fields":["titre","content"],"query":req}}]
+    must = [{"query_string":{"fields":["titre","content"],"query":req}}]
     res = search(must, [], [], INDEX_NAME, [],
                 glossary_file = glossary_file,
                 expression_file = expression_file,
@@ -211,7 +211,7 @@ def test_blue_green():
                 meta_path = META_DIR)
 
     # Test search
-    must = [{"multi_match":{"fields":["titre","content"],"query":req}}]
+    must = [{"query_string":{"fields":["titre","content"],"query":req}}]
     res_blue = search(must, [], [], INDEX_NAME, [])
     #print(hits, length_req, bande)
     time.sleep(2)

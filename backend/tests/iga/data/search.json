@@ -2,7 +2,7 @@
   [
     {
     "bool": "must",
-    "query": {"multi_match": {"fields":["titre", "content"], "query":"$value"}},
+    "query": {"query_string": {"fields":["titre", "content"], "query":"$value"}},
     "value": "",
     "type": "search",
     "placeholder": "Recherche par mots clefs",
