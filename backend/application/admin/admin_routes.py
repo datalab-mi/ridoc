@@ -5,7 +5,9 @@ import pandas as pd
 from os import environ
 
 from flask import current_app as app
-from flask import Blueprint, render_template, request, make_response, abort, jsonify, send_from_directory
+from flask import Blueprint, render_template, request, make_response, abort, jsonify, send_from_directory, redirect, request
+from flask_jwt import JWT, jwt_required, current_identity
+
 
 from tools.elastic import index_file as elastic_index_file
 from tools.elastic import delete_file as elastic_delete_file
@@ -218,6 +220,7 @@ def index(index_name: str):
     return make_response({'color': new_index}, 200)
 
 @admin_bp.route('/threshold', methods=['PUT'])
+@jwt_required()
 def threshold():
     """ Save display or relevance thresholds
     Returns: Usual HTTP status codes
