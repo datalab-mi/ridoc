@@ -1,6 +1,8 @@
 """Initialize app."""
 from flask import Flask, g
 from flask_jwt import JWT, jwt_required, current_identity
+from werkzeug.security import safe_str_cmp
+
 #from security import authenticate, identity
 #import database_user
 
@@ -40,13 +42,15 @@ def create_app():
 
     
 
-    #authentification
-    app.secret_key = "jose"  # Make this long, random, and secret in a real app!
-    jwt = JWT(app, authenticate, identity)
+    
 
 
     # Application Configuration
     app.config.from_object('config.Config')
+    app.config['SECRET_KEY'] = 'super-secret'
+
+    #authentification
+    jwt = JWT(app, authenticate, identity)
 
     with app.app_context():
         # Import parts of our application
