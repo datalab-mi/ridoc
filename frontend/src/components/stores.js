@@ -16,3 +16,7 @@ export const list_files = writable([])
 export const index_name = writable('INDEX_NAME')
 export const dstDir = "DST_DIR"
 export const pjDir = "PJ_DIR"
+
+// authentification
+export const displayLogin = writable(false)
+export const jwToken = writable(null)
