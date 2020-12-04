@@ -148,4 +148,23 @@ function text_area_resize(el) {
 		destroy: () => el.removeEventListener('input', resize)
 	}
 }
-export { index, upload, get, files, format2ES, search, text_area_resize };
+
+async function synonym(method, row, filename,key=0) {
+  let res;
+  if (method === 'GET') {
+    res = await fetch(`/api/common/synonym?filename=${filename}`,
+        {method: 'GET'});
+  } else if (method === 'PUT' || method === 'DELETE') {
+    res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
+        method: method,
+        body: JSON.stringify(row)});
+  }
+  let data = await res.json();
+  if (res.ok)  {
+    return data
+  } else {
+    throw new Error('Oups');
+  }
+}
+
+export { index, upload, get, synonym, files, format2ES, search, text_area_resize };

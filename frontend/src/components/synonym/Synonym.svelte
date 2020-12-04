@@ -1,5 +1,6 @@
 <script>
 	import { list_synonym  } from '../stores.js';
+	import { synonym  } from '../utils.js';
 	import SynonymRow from './SynonymRow.svelte';
 	import VirtualList from '../VirtualList.svelte';
   import { onDestroy } from 'svelte'
@@ -7,7 +8,7 @@
 	export let filename;
 	export let meta;
 
-	let GetPromise;
+	let GetPromise = new Promise(()=>{});
 	let PutPromise = new Promise(()=>{});
 
 
@@ -22,34 +23,24 @@
 	let list_synonym_filter;
 	let filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
 
+	let errors = {};
+
 	const keys_to_keep = meta.map(item => item.key);
 	keys_to_keep.push('key') // Add row number to the list of key to keep
 
-	async function synonym(method, row) {
-		let res;
-		if (method == 'GET') {
-			res = await fetch(`/api/common/synonym?filename=${filename}`,
-					{method: 'GET'});
-		} else if (method == 'PUT') {
-			key = 0
-			res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
-					method: 'PUT',
-					body: JSON.stringify(filterRow)});
-		}
-		let data = await res.json();
-		$list_synonym = data.map(element => Object.assign({}, ...keys_to_keep.map(key => ({[key]: element[key]}))))
-		if (res.ok)  {
-			return res.status
-		} else {
-			console.log('error')
-			throw new Error('Oups');
-		}
-	}
 
-	GetPromise = synonym('GET')
+	GetPromise = synonym('GET', filterRow, filename)
+	GetPromise.then((list) => {
+		$list_synonym = list.map(element => Object.assign({}, ...keys_to_keep.map(key => ({[key]: element[key]}))))
+	})
 
-function handleSubmit() {
-	PutPromise = synonym('PUT')
+const handleSubmit = () => {
+	errors = {};
+	PutPromise = synonym('PUT', filterRow, filename)
+	PutPromise.then((list) => {
+		$list_synonym = list.map(element => Object.assign({}, ...keys_to_keep.map(key => ({[key]: element[key]}))))
+	})
+
 	// reset filter
 	filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
 
@@ -122,10 +113,25 @@ onDestroy(() => $list_synonym = [])
 	{:catch error}
 		<p style="color: red">{error.message}</p>
 	{/await}
+</div>
 
+<div class="error-popup">
+	{#await PutPromise}
+	{:catch error}
+		<p style="color: red">{error.message}</p>
+	{/await}
 </div>
 
 <style>
+
+.error-popup {
+display: block;
+position: fixed;
+bottom: 5em;
+left: 15px;
+border: 3px solid #f1f1f1;
+z-index: 9;
+}
 
 .container {
 	width: 90%;
