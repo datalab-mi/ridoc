@@ -7,23 +7,12 @@ export let meta;
 export let file;
 
 
-let filename;
-$: {
-  console.log(file)
-  filename = file.name.replace(/\+/g, " ")
-}
+const filename = file.name.replace(/\+/g, " ")
 
-let promiseUpload = new Promise(()=>{});
-let promiseIndex = new Promise(()=>{});
+console.log(`Save ${filename}`)
+let promiseUpload = upload(meta, file)
+let promiseIndex = index($index_name, filename, 'PUT');
 
-
-async function handleUpdate() {
-  console.log(`Save ${filename}`)
-  promiseUpload = await upload(meta, file)
-  promiseIndex = await index($index_name, filename, 'PUT');
-}
-
-handleUpdate()
 
 </script>
 

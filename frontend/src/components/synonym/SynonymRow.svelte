@@ -21,8 +21,6 @@
 				body: JSON.stringify(item)});
 
 		$list_synonym = await res.json();
-
-		console.log('Delete/update')
 		console.log($list_synonym)
 		if (res.ok)  {
 			return res.status

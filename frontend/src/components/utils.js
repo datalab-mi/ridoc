@@ -1,3 +1,5 @@
+import { displayLogin } from './stores.js';
+
 async function upload(meta, file) {
   //for (var i = 0; i < files.length; i++) {
     //var file = files[i];
@@ -17,6 +19,9 @@ async function upload(meta, file) {
 
   if (upload.ok) {
     return upload.status
+  } else if (upload.status===401)  {
+    displayLogin.set(true)
+    throw new Error('Rôle admin nécessaire');
   } else {
     console.log('error')
     throw new Error('Oups');
@@ -36,7 +41,10 @@ async function index(index_name, filename, method) {
       {method: method});
 		if (statusOK(index)) {
 			return index.status
-		} else {
+    } else if (res.status===401)  {
+      displayLogin.set(true)
+      throw new Error('Rôle admin nécessaire');
+    } else {
       console.log('error')
 			throw new Error('Oups');
 		}
@@ -71,10 +79,13 @@ async function get(url) {
 			res = await fetch(`/api/admin/files/${url}`, {
 					method: 'DELETE'})
 	}
-		if (res.ok)  {
+		if (res.ok) {
 			return res
     } else if (res.status===404)  {
       throw new Error('Ressource introuvable');
+    } else if (res.status===401)  {
+      displayLogin.set(true)
+      throw new Error('Rôle admin nécessaire');
 		} else {
 			throw new Error('Erreur inconnue');
 		}

@@ -1,6 +1,9 @@
 <script>
 	import Nav from '../components/Nav.svelte';
+	import LoginForm from '../components/login/LoginForm.svelte';
+	import { displayLogin } from '../components/stores.js';
 
+	$: $displayLogin
 	export let segment;
 </script>
 
@@ -17,6 +20,11 @@
 
 <Nav {segment}/>
 
-<main>
+<main >
 	<slot></slot>
+
+	{#if $displayLogin}
+		<LoginForm/>
+	{/if}
+
 </main>

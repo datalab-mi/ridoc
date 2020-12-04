@@ -25,7 +25,7 @@
 	const keys_to_keep = meta.map(item => item.key);
 	keys_to_keep.push('key') // Add row number to the list of key to keep
 
-	async function synonym(method) {
+	async function synonym(method, row) {
 		let res;
 		if (method == 'GET') {
 			res = await fetch(`/api/common/synonym?filename=${filename}`,
