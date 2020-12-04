@@ -1,6 +1,7 @@
 <script>
 
 	import { list_synonym  } from '../stores.js';
+	import { synonym  } from '../utils.js';
 
 	export let filename ;
 	export let item ;
@@ -13,22 +14,9 @@
 	let send = false;
 
 	console.log(item)
+	let PutPromise = new Promise(()=>{});
 
-	async function synonym(method) {
-		let res;
-		res = await fetch(`/api/admin/synonym/${item.key}?filename=${filename}`, {
-				method: method,
-				body: JSON.stringify(item)});
 
-		$list_synonym = await res.json();
-		console.log($list_synonym)
-		if (res.ok)  {
-			return res.status
-		} else {
-			console.log('error')
-			throw new Error('Oups');
-		}
-	}
 
 
 	function handleSave() {
@@ -37,12 +25,18 @@
 		readonly = !readonly
 		if (readonly & send){
 			console.log('PUT');
-			synonym('PUT')
+			UpdatePromise = synonym('PUT', item, filename, item.key)
+			UpdatePromise.then((list) => {
+				$list_synonym = list
+			})
 		}
 	}
 
 function handleDelete() {
-	DeletePromise = synonym('DELETE')
+	DeletePromise = synonym('DELETE', item, filename, item.key)
+	DeletePromise.then((list) => {
+		$list_synonym = list
+	})
 }
 
 </script>
