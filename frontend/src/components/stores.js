@@ -20,3 +20,7 @@ export const pjDir = "PJ_DIR"
 // authentification
 export const displayLogin = writable(false)
 export const jwToken = writable(null)
+
+// logger
+export const list_logger = writable([{level: "error",message: "erreur grave", ressource: "authentification", status:401},
+        {level: "info",message: "document telechargé", ressource: "upload", status:200}])
