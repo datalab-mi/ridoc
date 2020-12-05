@@ -124,14 +124,6 @@ onDestroy(() => $list_synonym = [])
 
 <style>
 
-.error-popup {
-display: block;
-position: fixed;
-bottom: 5em;
-left: 15px;
-border: 3px solid #f1f1f1;
-z-index: 9;
-}
 
 .container {
 	width: 90%;
