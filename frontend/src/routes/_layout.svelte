@@ -7,12 +7,6 @@
 
 	export let segment;
 
-	const handleAdd = (msg) => {
-		$list_logger = $list_logger.concat({level: "info",message: msg + "", ressource: "upload", status:200})
-	}
-	const handleDelete = () => {
-		$list_logger = $list_logger.slice(1, $list_logger.length)
-	}
 
 
 </script>
@@ -31,11 +25,7 @@
 <Nav {segment}/>
 
 <main >
-	<input
-		placeholder="what needs to be done?"
-		on:keydown={e => e.key === 'Enter' && handleAdd(e.target.value)}
-	>
-	<button  on:click={handleDelete}>Delete</button>
+
 
 	<slot></slot>
 

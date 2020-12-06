@@ -162,6 +162,9 @@ async function synonym(method, row, filename,key=0) {
   let data = await res.json();
   if (res.ok)  {
     return data
+  } else if (res.status===401)  {
+    //displayLogin.set(true)
+    throw new Error('Rôle admin nécessaire')
   } else {
     throw new Error('Oups');
   }
