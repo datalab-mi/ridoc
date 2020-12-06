@@ -1,6 +1,6 @@
 <script>
 	import { get } from '../components/utils.js';
-	import { list_logger  } from '../stores.js';
+	import { list_logger  } from './stores.js';
 
 	let promise = get_old_threshold();
 	let thresholds = {};
