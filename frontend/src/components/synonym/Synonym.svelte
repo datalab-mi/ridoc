@@ -1,5 +1,5 @@
 <script>
-	import { list_synonym  } from '../stores.js';
+	import { list_synonym, list_logger  } from '../stores.js';
 	import { synonym  } from '../utils.js';
 	import SynonymRow from './SynonymRow.svelte';
 	import VirtualList from '../VirtualList.svelte';
@@ -9,8 +9,6 @@
 	export let meta;
 
 	let GetPromise = new Promise(()=>{});
-	let PutPromise = new Promise(()=>{});
-
 
 	let isAdd = false;
 	let readonly = true;
@@ -36,14 +34,15 @@
 
 const handleSubmit = () => {
 	errors = {};
-	PutPromise = synonym('PUT', filterRow, filename)
-	PutPromise.then((list) => {
+	synonym('PUT', filterRow, filename)
+		.then((list) => {
 		$list_synonym = list.map(element => Object.assign({}, ...keys_to_keep.map(key => ({[key]: element[key]}))))
-	})
-
+		})
+		.catch(err => {
+			list_logger.concat({level: "error", message: err, ressource: "upload"})
+		})
 	// reset filter
 	filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
-
 }
 
 function handleAdd() {
@@ -115,12 +114,7 @@ onDestroy(() => $list_synonym = [])
 	{/await}
 </div>
 
-<div class="error-popup">
-	{#await PutPromise}
-	{:catch error}
-		<p style="color: red">{error.message}</p>
-	{/await}
-</div>
+
 
 <style>
 

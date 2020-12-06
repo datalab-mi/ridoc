@@ -1,6 +1,6 @@
 <script>
 
-	import { list_synonym  } from '../stores.js';
+	import { list_synonym, list_logger  } from '../stores.js';
 	import { synonym  } from '../utils.js';
 
 	export let filename ;
@@ -13,30 +13,28 @@
 	let readonly = true;
 	let send = false;
 
-	console.log(item)
-	let PutPromise = new Promise(()=>{});
-
-
-
-
 	function handleSave() {
 
 		send = !send
 		readonly = !readonly
 		if (readonly & send){
 			console.log('PUT');
-			UpdatePromise = synonym('PUT', item, filename, item.key)
-			UpdatePromise.then((list) => {
-				$list_synonym = list
+			synonym('PUT', item, filename, item.key)
+				.then((list) => {
+					$list_synonym = list
 			})
 		}
 	}
 
 function handleDelete() {
-	DeletePromise = synonym('DELETE', item, filename, item.key)
-	DeletePromise.then((list) => {
-		$list_synonym = list
-	})
+	synonym('DELETE', item, filename, item.key)
+		.then((list) => {
+			$list_synonym = list
+		})
+		.catch(err => {
+			list_logger.concat({level: "error", message: err, ressource: filename})
+		})
+
 }
 
 </script>

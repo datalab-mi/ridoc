@@ -1,5 +1,7 @@
 <script>
 	import { get } from '../components/utils.js';
+	import { list_logger  } from '../stores.js';
+
 	let promise = get_old_threshold();
 	let thresholds = {};
 
@@ -17,7 +19,8 @@
 			if (res.ok) {
 				return text;
 			} else {
-				throw new Error(text);
+				list_logger.concat({level: "error", message: "", ressource: "thresold"})
+				throw new Error("Oups");
 			}
 		}
 	</script>
