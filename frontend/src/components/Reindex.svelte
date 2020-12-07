@@ -1,5 +1,5 @@
 <script>
-import { index_name, isReindex } from './stores.js';
+import { index_name, isReindex, list_logger } from './stores.js';
 
 let promise;
 
@@ -9,11 +9,12 @@ async function ReIndex() {
 
 		if (res.ok) {
       $isReindex = false
-			return text;
+			return res;
+		} else if (res.status == 401) {
+			throw new Error("Rôle admin nécessaire");
 		} else {
 			var win = window.open("", "Error", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yestop="+(screen.height)+",left="+(screen.width));
 			win.document.body.innerHTML = text;
-
 			throw new Error(text);
 		}
 	}
@@ -22,8 +23,13 @@ async function ReIndex() {
 	function handleIndex() {
     $isReindex = true
 		promise = ReIndex()
-
-
+		promise
+		.then(res => {
+			list_logger.concat({level: "success", message: "Réindexation terminée", status: res.status, ressource: "Reindex"})
+		})
+		.catch(err => {
+			list_logger.concat({level: "error", message: err, ressource: "Reindex"})
+	  })
 	}
 </script>
 

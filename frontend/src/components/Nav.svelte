@@ -1,12 +1,12 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
-	import { displayLogin } from './stores.js';
+	import { user } from './stores.js';
 
 	export let segment;
 	let logo = "/api/common/logo"
 
 	function authClicked() {
-		$displayLogin=!$displayLogin
+		$user.display =! $user.display
 	}
 
 </script>
@@ -78,7 +78,10 @@
 		<li><a aria-current='{segment === undefined ? "page" : undefined}' href='.'>recherche</a></li>
 		<li><a aria-current='{segment === "glossary" ? "page" : undefined}' href='glossary'>glossaire</a></li>
 		<li><a aria-current='{segment === "expression" ? "page" : undefined}' href='expression'>expression</a></li>
-		<li><a aria-current='{segment === "admin" ? "page" : undefined}' href='admin'>admin</a></li>
+
+		{#if $user.role === "admin"}
+			<li><a aria-current='{segment === "admin" ? "page" : undefined}' href='admin'>admin</a></li>
+		{/if}
 
 	</ul>
 

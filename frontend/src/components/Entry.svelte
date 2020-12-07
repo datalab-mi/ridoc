@@ -43,9 +43,6 @@
         value = event.detail.tags;
     }
 
-console.log(key,type,value,metadata)
-
-
 </script>
 
 <div>

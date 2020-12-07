@@ -15,9 +15,9 @@ upload(meta, file)
   .then(status => {
     if (status == 201) {
       msg = `${filename} crée`
-    } else if (status == 200){
+    } else if (status == 200) {
       msg = `${filename} modifié`
-    } else if (status == 203){
+    } else if (status == 203) {
       msg = `${filename} au mauvais format`
     } else {
       msg = `status ${status} inconnu`
@@ -32,7 +32,7 @@ index($index_name, filename, 'PUT')
   .then(status => {
     if (status == 201) {
       msg = `${filename} indexé`
-    } else if (status == 200){
+    } else if (status == 200) {
       msg = `${filename} modifié dans l'index`
     } else {
       msg = `status ${status} inconnu`
