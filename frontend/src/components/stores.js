@@ -18,8 +18,7 @@ export const dstDir = "DST_DIR"
 export const pjDir = "PJ_DIR"
 
 // authentification
-export const displayLogin = writable(false)
-export const jwToken = writable(null)
+export const user = writable({display: false, role:"common", jwToken:null})
 
 // logger
 const inital_logger_list = [{level: "error",message: "erreur grave", ressource: "authentification", status:401},
@@ -27,7 +26,7 @@ const inital_logger_list = [{level: "error",message: "erreur grave", ressource: 
 
 // custom store for the logger, every 10 seconds lost first element (the oldest)
 function createLogger() {
-	const { subscribe, set, update } = writable(inital_logger_list,() => {
+	const { subscribe, set, update } = writable([], () => {
 	console.log('got a subscriber');
 	const interval = setInterval(() => {
 		update(n => n.slice(1, n.length))

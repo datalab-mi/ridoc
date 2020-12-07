@@ -1,12 +1,12 @@
 <script>
   let email = "";
   let password = "";
-  import { jwToken} from '../stores.js';
+  import { user, list_logger } from '../stores.js';
 
   let isLoading = false;
   let isSuccess = false;
 
-  $: {console.log('token is '+ $jwToken)}
+  $: {console.log('token is '+ $user.jwToken)}
 
   const submit = ({ email, password }) =>
     new Promise((resolve, reject) => {
@@ -39,12 +39,16 @@
       submit({ email, password })
         .then((token) => {
           console.log(token)
-          $jwToken = token
+          $user.jwToken = token
+          $user.role = "admin"
           isSuccess = true;
           isLoading = false;
+          list_logger.concat({level: "success", message: `Loggé en tant que ${$user.role}`, ressource: "login"})
         })
         .catch(err => {
-          errors.server = err;
+          $user.role = "common"
+          list_logger.concat({level: "error", message: err, ressource: "login"})
+          //errors.server = err;
           isLoading = false;
         });
     }
@@ -91,15 +95,11 @@
 
 <style>
   form {
-    background: #fff;
-    padding: 5rem;
-    width: 20rem;
-    height: 20rem;
+    padding: 4rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: 0px 20px 14px 8px rgba(0, 0, 0, 0.58);
   }
 
   label {
@@ -151,8 +151,14 @@
   position: fixed;
   top: 5em;
   right: 15px;
-  border: 3px solid #f1f1f1;
+  width: 20rem;
+  height: 20rem;
+  border: 1px solid #f1f1f1;
+  box-shadow: 2px 2px 8px black;
+  border-radius: 4px;
   z-index: 9;
+  background: #fff;
+
 }
 
 </style>

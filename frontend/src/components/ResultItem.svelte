@@ -2,7 +2,7 @@
 	import PutItem from './PutItem.svelte'
 	import Entry from './Entry.svelte'
 
-	import { index_name, dstDir, itemConfig } from './stores.js';
+	import { index_name, dstDir, itemConfig, user } from './stores.js';
 	import { index, upload } from './utils.js'
 
 
@@ -21,7 +21,6 @@
 
 	const file = {'name': _id.replace(/\+/g, " ")}
 	const meta = JSON.parse(JSON.stringify($itemConfig.inputs))
-	console.log(meta)
 
 	let promiseDelete = new Promise(()=>{})
 	let promiseDeleteIndex = new Promise(()=>{})
@@ -38,7 +37,6 @@
 			meta[index].isHighlight = false
 		}
 	})
-	console.log(meta)
 
 	async function remove() {
 		const res = await fetch(`/api/admin/${filename}`,
@@ -80,12 +78,12 @@
 	{#if (readonly) }
 			{#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight, rows}, i }
 				{#if (! isEmpty(value)) }
-					<Entry  bind:readonly={readonly} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {cssClass} {rows}}/>
+					<Entry  {readonly} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {cssClass} {rows}}/>
 				{/if}
 			{/each}
 	{:else}
 		{#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight, rows}, i }
-			<Entry  bind:readonly={readonly} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {cssClass} {rows}}/>
+			<Entry  {readonly} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {cssClass} {rows}}/>
 		{/each}
 	{/if}
 
@@ -97,32 +95,34 @@
 			<span>CONSULTER</span>
 		</button>
 
-		<button on:click={handleDelete} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-			<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 2l2-2h4l2 2h4v2H2V2h4zM3 6h14l-1 14H4L3 6zm5 2v10h1V8H8zm3 0v10h1V8h-1z"/></svg>
-			<span>SUPPRIMER</span>
-		</button>
+		{#if ($user.role === "admin") }
+		
+			<button on:click={handleDelete} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+				<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 2l2-2h4l2 2h4v2H2V2h4zM3 6h14l-1 14H4L3 6zm5 2v10h1V8H8zm3 0v10h1V8h-1z"/></svg>
+				<span>SUPPRIMER</span>
+			</button>
 
-
-		{#if (readonly && send) }
-			<button on:click={handleSave} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-				<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>
-				<span>MODIFER</span>
-			</button>
-			<PutItem meta={meta} file={file} />
-		{:else if (!readonly && !send) }
-			<button on:click={handleSave} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-				<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M0 2C0 .9.9 0 2 0h14l4 4v14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm5 0v6h10V2H5zm6 1h3v4h-3V3z"/></svg>
-					<span>SAUVER</span>
-			</button>
-			<button on:click={handleCancel} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-				<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z"/></svg>
-				<span>ANNULER</span>
-			</button>
-		{:else}
-			<button on:click="{() => readonly = !readonly}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-				<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>
-				<span>MODIFER</span>
-			</button>
+			{#if (readonly && send) }
+				<button on:click={handleSave} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+					<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>
+					<span>MODIFER</span>
+				</button>
+				<PutItem meta={meta} file={file} />
+			{:else if (!readonly && !send) }
+				<button on:click={handleSave} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+					<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M0 2C0 .9.9 0 2 0h14l4 4v14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm5 0v6h10V2H5zm6 1h3v4h-3V3z"/></svg>
+						<span>SAUVER</span>
+				</button>
+				<button on:click={handleCancel} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+					<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z"/></svg>
+					<span>ANNULER</span>
+				</button>
+			{:else}
+				<button on:click="{() => readonly = !readonly}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+					<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>
+					<span>MODIFER</span>
+				</button>
+			{/if}
 		{/if}
 
 		{#await promiseDelete}
