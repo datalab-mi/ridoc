@@ -17,9 +17,10 @@
 				});
 			const text = await res.text();
 			if (res.ok) {
+				list_logger.concat({level: "success", message: "Nouveaux seuils enregistrés", ressource: "thresold"})
 				return text;
 			} else {
-				list_logger.concat({level: "error", message: "Non authorisé", ressource: "thresold"})
+				list_logger.concat({level: "error", message: `Erreur: ${text}`, ressource: "thresold"})
 				throw new Error("Oups");
 			}
 		}

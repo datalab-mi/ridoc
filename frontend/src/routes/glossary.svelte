@@ -14,7 +14,7 @@
 							placeholder: 'DNUM',
 							value: '',
 							innerHtml: 'Acronyme: ',
-							size: '1/5'
+							size: '1'
 						},
 						{
 							key: 'expressionB',
@@ -22,7 +22,7 @@
 							placeholder: 'Direction du Numérique',
 							value: '',
 							innerHtml: 'Signification: ',
-							size: '4/5'
+							size: '4'
 						}
 					]
 

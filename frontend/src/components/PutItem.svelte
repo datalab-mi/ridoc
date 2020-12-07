@@ -19,6 +19,8 @@ upload(meta, file)
       msg = `${filename} modifié`
     } else if (status == 203) {
       msg = `${filename} au mauvais format`
+    } else if (status == 202) {
+      msg = `Pas de document à sauver`
     } else {
       msg = `status ${status} inconnu`
     }

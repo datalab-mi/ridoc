@@ -1,5 +1,5 @@
 <script>
-	import { list_synonym, list_logger  } from '../stores.js';
+	import { list_synonym, list_logger, user  } from '../stores.js';
 	import { synonym  } from '../utils.js';
 	import SynonymRow from './SynonymRow.svelte';
 	import VirtualList from '../VirtualList.svelte';
@@ -20,6 +20,7 @@
 
 	let list_synonym_filter;
 	let filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
+	let totalSize = meta.reduce((tot, x) => tot + parseInt(x.size), 0)
 
 	let errors = {};
 
@@ -36,7 +37,9 @@ const handleSubmit = () => {
 	errors = {};
 	synonym('PUT', filterRow, filename)
 		.then((list) => {
-		$list_synonym = list.map(element => Object.assign({}, ...keys_to_keep.map(key => ({[key]: element[key]}))))
+			$list_synonym = list.map(element => Object.assign({}, ...keys_to_keep.map(key => ({[key]: element[key]}))))
+			list_logger.concat({level: "success", message: "Entrée ajoutée avec succès! ", ressource: "upload"})
+			filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
 		})
 		.catch(err => {
 			list_logger.concat({level: "error", message: err, ressource: "upload"})
@@ -68,44 +71,46 @@ onDestroy(() => $list_synonym = [])
 
 
 		<div class="inline-flex bg-{(isAdd) ? 'white': 'gray'}-200 w-full">
-			<div class="inline-flex w-5/6">
+			<div class="inline-flex w-full">
 			{#each meta as {key, type, placeholder, value, innerHtml, size} }
-				<div class="flex-grow w-{size} text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
+				<div class="flex-auto w-{size}/{totalSize} text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
 					<input type="search" bind:value={filterRow[key]} placeholder={(isAdd) ? placeholder: 'recherche'} >
 				</div>
 			{/each}
 			</div>
 
-			<div class="flex-initial w-1/6 px-4 py-2 m-2">
-				{#if (isAdd)}
-					{#if Object.keys(filterRow).every((key) => filterRow[key] != '') }
-						<button on:click={handleSubmit} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-							<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
-							<span>SOUMETTRE</span>
+			{#if ($user.role === "admin") }
+				<div class="flex-auto w-1/6 px-4 py-2 m-2">
+					{#if (isAdd)}
+						{#if Object.keys(filterRow).every((key) => filterRow[key] != '') }
+							<button on:click={handleSubmit} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+								<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
+								<span>SOUMETTRE</span>
+							</button>
+						{:else}
+							<button disabled class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+								<svg class="fill-curr
+								ent w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
+								<span>SOUMETTRE</span>
+							</button>
+						{/if}
+						<button on:click="{() => isAdd = !isAdd}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-2 rounded inline-flex items-center">
+							<svg class="fill-current w-4 h-4 mr-2" svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zM11.4 10l2.83-2.83-1.41-1.41L10 8.59 7.17 5.76 5.76 7.17 8.59 10l-2.83 2.83 1.41 1.41L10 11.41l2.83 2.83 1.41-1.41L11.41 10z"/></svg>
 						</button>
-					{:else}
-						<button disabled class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-							<svg class="fill-curr
-							ent w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 10v6H7v-6H2l8-8 8 8h-5zM0 18h20v2H0v-2z"/></svg>
-							<span>SOUMETTRE</span>
-						</button>
-					{/if}
-					<button on:click="{() => isAdd = !isAdd}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-2 rounded inline-flex items-center">
-						<svg class="fill-current w-4 h-4 mr-2" svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zM11.4 10l2.83-2.83-1.41-1.41L10 8.59 7.17 5.76 5.76 7.17 8.59 10l-2.83 2.83 1.41 1.41L10 11.41l2.83 2.83 1.41-1.41L11.41 10z"/></svg>
-					</button>
 
-				{:else}
-				<button on:click={handleAdd} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-					<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M11 9h4v2h-4v4H9v-4H5V9h4V5h2v4zm-1 11a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"/></svg>
-					<span>AJOUTER</span>
-				</button>
-				{/if}
-			</div>
+					{:else}
+					<button on:click={handleAdd} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+						<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M11 9h4v2h-4v4H9v-4H5V9h4V5h2v4zm-1 11a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"/></svg>
+						<span>AJOUTER</span>
+					</button>
+					{/if}
+				</div>
+			{/if}
 
 		</div>
 
 		<VirtualList items={list_synonym_filter} let:item>
-			<SynonymRow {filename} {item} {meta} />
+			<SynonymRow {filename} {item} {meta} {totalSize} />
 		</VirtualList>
 
 
