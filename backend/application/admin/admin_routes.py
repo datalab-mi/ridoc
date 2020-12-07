@@ -23,6 +23,7 @@ admin_bp = Blueprint('admin_bp', __name__,url_prefix='/admin')
 print(app.config)
 
 @admin_bp.route('/cluster', methods=['GET'])
+@jwt_required()
 def cluster():
     elastic_info = Elasticsearch.info(client)
     return json.dumps(elastic_info, indent=4 )
@@ -42,6 +43,7 @@ else:
 
 @admin_bp.route("/files")
 @admin_bp.route("/files/<path:path>", methods=["PUT","DELETE"])
+@jwt_required()
 def get_file(path=''):
     """Add, replace or delete a file or folder name in the file system USER_DATA
     Args:
@@ -80,6 +82,7 @@ def get_file(path=''):
         return  make_response(jsonify(sucess=True), status)
 
 @admin_bp.route("/<filename>", methods=["PUT","DELETE"])
+@jwt_required()
 def upload_file(filename: str):
     """Add, replace or delete a document in order to index it in ES
      in the file system USER_DATA,
@@ -150,6 +153,7 @@ def upload_file(filename: str):
 
 
 @admin_bp.route("/<index_name>/_doc/<filename>", methods=["DELETE", "PUT"])
+@jwt_required()
 def index_file(index_name: str, filename: str):
     """Add, replace or delete a document in Elastic Search (ES)
     Args:
@@ -180,6 +184,7 @@ def index_file(index_name: str, filename: str):
 
 
 @admin_bp.route('/<index_name>/reindex', methods=['GET'])
+@jwt_required()
 def index(index_name: str):
     """(Re)index after a mapping change
     Args:
@@ -248,6 +253,7 @@ def threshold():
 
 
 @admin_bp.route("/synonym/<int:key>", methods=["DELETE", "PUT"])
+@jwt_required()
 def synonym(key:int):
     """ Add, replace or delete a synonym in its file. If a creation, append
         at the beginning.

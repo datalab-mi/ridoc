@@ -2,9 +2,8 @@
 from flask import Flask, g
 from flask_jwt import JWT, jwt_required, current_identity
 from werkzeug.security import safe_str_cmp
-
-#from security import authenticate, identity
-#import database_user
+from .security import authenticate, identity #pour les fonctions (qui renvoient un objet user)
+from .database_user import User, users, username_table, userid_table #contient la classe User et les listes des instanciations
 
 
 
@@ -12,37 +11,6 @@ def create_app():
     """Construct the core application."""
     app = Flask(__name__, instance_relative_config=False)
     app.debug = True
-
-    class User(object):
-        def __init__(self, id, username, password):
-            self.id = id
-            self.username = username
-            self.password = password
-
-        def __str__(self):
-            return "User(id='%s')" % self.id
-
-    users = [
-        User(1, 'user1', 'abcxyz'),
-        User(2, 'user2', 'abcxyz'),
-    ]
-
-    username_table = {u.username: u for u in users}
-    userid_table = {u.id: u for u in users}
-    
-    #Security
-    def authenticate(username, password):
-        user = username_table.get(username, None)
-        if user and safe_str_cmp(user.password.encode('utf-8'), password.encode('utf-8')):
-            return user
-
-    def identity(payload):
-        user_id = payload['identity']
-        return userid_table.get(user_id, None)
-
-    
-
-    
 
 
     # Application Configuration
