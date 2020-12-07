@@ -18,11 +18,6 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','md','odt'}
 # Blueprint Configuration
 admin_bp = Blueprint('admin_bp', __name__,url_prefix='/admin')
 
-@admin_bp.after_request
-def set_unauthorized(response):
-    response.headers["WWW-Authenticate"] = "Bearer realm=for admin"
-    response.status_code = 401
-    return response
 
 @admin_bp.route('/cluster', methods=['GET'])
 def cluster():
