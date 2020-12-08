@@ -3,6 +3,7 @@ from os import environ, getenv
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+from datetime import timedelta 
 
 
 class Config:
@@ -46,6 +47,10 @@ class Config:
     META_DIR = getenv('META_DIR')
 
     LOGO = getenv('LOGO', "logo.svg")
+
+    #Authentication
+    SECRET_KEY = 'super-secret'  #to be stored somewherelse?
+    JWT_EXPIRATION_DELTA = timedelta(seconds=300) #5mins token expiration
 
     print('Read config')
     pass

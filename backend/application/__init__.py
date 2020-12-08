@@ -2,8 +2,7 @@
 from flask import Flask, g
 from flask_jwt import JWT, jwt_required, current_identity
 from werkzeug.security import safe_str_cmp
-from .security import authenticate, identity #pour les fonctions (qui renvoient un objet user)
-from .database_user import User, users, username_table, userid_table #contient la classe User et les listes des instanciations
+from .authentication import authenticate, identity, User, users, username_table, userid_table 
 
 
 
@@ -15,7 +14,6 @@ def create_app():
 
     # Application Configuration
     app.config.from_object('config.Config')
-    app.config['SECRET_KEY'] = 'super-secret'
 
     #authentification
     jwt = JWT(app, authenticate, identity)
