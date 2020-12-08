@@ -5,7 +5,9 @@ import pandas as pd
 from os import environ
 
 from flask import current_app as app
-from flask import Blueprint, render_template, request, make_response, abort, jsonify, send_from_directory
+from flask import Blueprint, render_template, request, make_response, abort, jsonify, send_from_directory, redirect, request
+from flask_jwt import JWT, jwt_required, current_identity
+
 
 from tools.elastic import index_file as elastic_index_file
 from tools.elastic import delete_file as elastic_delete_file
@@ -20,6 +22,7 @@ admin_bp = Blueprint('admin_bp', __name__,url_prefix='/admin')
 
 
 @admin_bp.route('/cluster', methods=['GET'])
+@jwt_required()
 def cluster():
     elastic_info = Elasticsearch.info(client)
     return json.dumps(elastic_info, indent=4 )
@@ -40,6 +43,7 @@ print(sections)
 
 @admin_bp.route("/files")
 @admin_bp.route("/files/<path:path>", methods=["PUT","DELETE"])
+@jwt_required()
 def get_file(path=''):
     """Add, replace or delete a file or folder name in the file system USER_DATA
     Args:
@@ -78,6 +82,7 @@ def get_file(path=''):
         return  make_response(jsonify(sucess=True), status)
 
 @admin_bp.route("/<filename>", methods=["PUT","DELETE"])
+@jwt_required()
 def upload_file(filename: str):
     """Add, replace or delete a document in order to index it in ES
      in the file system USER_DATA,
@@ -151,6 +156,7 @@ def upload_file(filename: str):
 
 
 @admin_bp.route("/<index_name>/_doc/<filename>", methods=["DELETE", "PUT"])
+@jwt_required()
 def index_file(index_name: str, filename: str):
     """Add, replace or delete a document in Elastic Search (ES)
     Args:
@@ -181,6 +187,7 @@ def index_file(index_name: str, filename: str):
 
 
 @admin_bp.route('/<index_name>/reindex', methods=['GET'])
+@jwt_required()
 def index(index_name: str):
     """(Re)index after a mapping change
     Args:
@@ -220,6 +227,7 @@ def index(index_name: str):
     return make_response({'color': new_index}, 200)
 
 @admin_bp.route('/threshold', methods=['PUT'])
+@jwt_required()
 def threshold():
     """ Save display or relevance thresholds
     Returns: Usual HTTP status codes
@@ -247,6 +255,7 @@ def threshold():
 
 
 @admin_bp.route("/synonym/<int:key>", methods=["DELETE", "PUT"])
+@jwt_required()
 def synonym(key:int):
     """ Add, replace or delete a synonym in its file. If a creation, append
         at the beginning.
