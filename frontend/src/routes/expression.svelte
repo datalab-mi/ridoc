@@ -14,7 +14,7 @@
 							placeholder: 'INNOVATION',
 							value: '',
 							innerHtml: 'expression: ',
-							size: '5/5'
+							size: '5'
 						}
 					]
 

@@ -1,6 +1,14 @@
 <script>
+	import { createEventDispatcher } from 'svelte';
+	import { user } from './stores.js';
+
 	export let segment;
 	let logo = "/api/common/logo"
+
+	function authClicked() {
+		$user.display =! $user.display
+	}
+
 </script>
 
 <style>
@@ -51,25 +59,32 @@
 	}
 
 	.logo {
-		position: relative;
-		top: .1rem;
-		left: -1rem;
-		width: 4.2rem;
-		background: 0 50% no-repeat;
-		background-size: auto 100%;
-		text-indent: -9999px;
-		/* z-index: 11; */
+		margin: auto;
+		width:100%;
+		height:100%;
+		viewBox: "0 0 100 100"
+	}
+
+	.login {
+		cursor: pointer;
 	}
 
 </style>
 
 <nav>
+
 	<ul>
+		<li><a class="w-12 h-12"><img src={logo}></a></li>
 		<li><a aria-current='{segment === undefined ? "page" : undefined}' href='.'>recherche</a></li>
 		<li><a aria-current='{segment === "glossary" ? "page" : undefined}' href='glossary'>glossaire</a></li>
 		<li><a aria-current='{segment === "expression" ? "page" : undefined}' href='expression'>expression</a></li>
-		<li><a aria-current='{segment === "admin" ? "page" : undefined}' href='admin'>admin</a></li>
+
+		{#if $user.role === "admin"}
+			<li><a aria-current='{segment === "admin" ? "page" : undefined}' href='admin'>admin</a></li>
+		{/if}
+
 	</ul>
-	<a rel="prefetch" href="." class="logo" style="background-image: url({logo})"></a>
+
+	<svg on:click={authClicked} class="login inline-block object-center fill-current w-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5 5a5 5 0 0 1 10 0v2A5 5 0 0 1 5 7V5zM0 16.68A19.9 19.9 0 0 1 10 14c3.64 0 7.06.97 10 2.68V20H0v-3.32z"/></svg>
 
 </nav>

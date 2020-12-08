@@ -1,5 +1,7 @@
 <script>
 	import { get } from '../components/utils.js';
+	import { list_logger  } from './stores.js';
+
 	let promise = get_old_threshold();
 	let thresholds = {};
 
@@ -15,9 +17,11 @@
 				});
 			const text = await res.text();
 			if (res.ok) {
+				list_logger.concat({level: "success", message: "Nouveaux seuils enregistrés", ressource: "thresold"})
 				return text;
 			} else {
-				throw new Error(text);
+				list_logger.concat({level: "error", message: `Erreur: ${text}`, ressource: "thresold"})
+				throw new Error("Oups");
 			}
 		}
 	</script>

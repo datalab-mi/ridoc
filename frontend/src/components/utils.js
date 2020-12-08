@@ -17,6 +17,8 @@ async function upload(meta, file) {
 
   if (upload.ok) {
     return upload.status
+  } else if (upload.status===401)  {
+    throw new Error('Rôle admin nécessaire');
   } else {
     console.log('error')
     throw new Error('Oups');
@@ -27,7 +29,7 @@ async function index(index_name, filename, method) {
     let statusOK;
     // handle status of the http request
     if (method == 'PUT') {
-      statusOK = (s) => s.status
+      statusOK = (s) => s.ok
     } else if (method == 'DELETE') {
       statusOK = (s) => (s.ok || s.status == 404)
     }
@@ -36,7 +38,9 @@ async function index(index_name, filename, method) {
       {method: method});
 		if (statusOK(index)) {
 			return index.status
-		} else {
+    } else if (index.status === 401)  {
+      throw new Error('Rôle admin nécessaire pour indexer');
+    } else {
       console.log('error')
 			throw new Error('Oups');
 		}
@@ -71,10 +75,12 @@ async function get(url) {
 			res = await fetch(`/api/admin/files/${url}`, {
 					method: 'DELETE'})
 	}
-		if (res.ok)  {
+		if (res.ok) {
 			return res
     } else if (res.status===404)  {
       throw new Error('Ressource introuvable');
+    } else if (res.status===401)  {
+      throw new Error('Rôle admin nécessaire pour sauver');
 		} else {
 			throw new Error('Erreur inconnue');
 		}
@@ -137,4 +143,26 @@ function text_area_resize(el) {
 		destroy: () => el.removeEventListener('input', resize)
 	}
 }
-export { index, upload, get, files, format2ES, search, text_area_resize };
+
+async function synonym(method, row, filename,key=0) {
+  let res;
+  if (method === 'GET') {
+    res = await fetch(`/api/common/synonym?filename=${filename}`,
+        {method: 'GET'});
+  } else if (method === 'PUT' || method === 'DELETE') {
+    res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
+        method: method,
+        body: JSON.stringify(row)});
+  }
+  let data = await res.json();
+  if (res.ok)  {
+    return data
+  } else if (res.status===401)  {
+    //displayLogin.set(true)
+    throw new Error('Rôle admin nécessaire')
+  } else {
+    throw new Error('Oups');
+  }
+}
+
+export { index, upload, get, synonym, files, format2ES, search, text_area_resize };
