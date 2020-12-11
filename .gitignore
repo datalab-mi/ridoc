@@ -16,3 +16,4 @@ Data
 frontend/public/build
 bundle.*
 acme.json
+nginx/apache2/*
