@@ -26,6 +26,9 @@ EXPOSE 443/tcp
 #     unzip  pdfjs-2.3.200-dist.zip  -d /usr/share/nginx/html/pdfjs  && \
 #     rm -rf pdfjs-2.3.200-dist.zip
 
+RUN apk add apache2-utils
+#RUN apk add vim
+
 ################################
 # Step 2: "development" target #
 ################################
@@ -39,8 +42,6 @@ COPY .htpasswd  /etc/nginx/conf.d/.htpasswd
 
 CMD ["/home/nginx/run.sh"]
 
-RUN apk add apache2-utils
-RUN apk add vim
 ################################
 # Step 2: "production" target #
 ################################
@@ -62,7 +63,5 @@ RUN  [ -f "${app_name}-${app_ver}-frontend-dist.tar.gz" ] && \
      tar -zxvf ${app_name}-${app_ver}-frontend-dist.tar.gz --strip=1 -C /usr/share/nginx/html  && \
      rm -rf ${app_name}-${app_ver}-frontend-dist.tar.gz
 
-RUN apk add apache2-utils
-RUN apk add vim
 
 CMD ["/home/nginx/run.sh"]

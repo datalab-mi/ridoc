@@ -1,10 +1,9 @@
 <script>
 	import { get } from '../components/utils.js';
-	import { list_logger  } from './stores.js';
+	import { list_logger, user  } from './stores.js';
 
 	let promise = get_old_threshold();
 	let thresholds = {};
-
 	async function get_old_threshold() {
 			thresholds = await get('/api/common/files/threshold.json');
 			return 200
@@ -13,7 +12,8 @@
 	async function handleClick(){
 			const res = await fetch(`/api/admin/threshold`, {
 					method: 'PUT',
-					body:  JSON.stringify(thresholds)
+					body:  JSON.stringify(thresholds),
+					headers: new Headers({Authorization: `JWT ${$user.jwToken}`})
 				});
 			const text = await res.text();
 			if (res.ok) {

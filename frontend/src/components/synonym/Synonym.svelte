@@ -7,7 +7,7 @@
 
 	export let filename;
 	export let meta;
-
+	console.log($user)
 	let GetPromise = new Promise(()=>{});
 
 	let isAdd = false;

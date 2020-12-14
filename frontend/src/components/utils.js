@@ -1,3 +1,10 @@
+import { user } from './stores.js';
+
+var headers =  {}
+const unsubscribe = user.subscribe(value => {
+  headers = {'Authorization': `JWT ${value.jwToken}`}
+});
+
 async function upload(meta, file) {
   //for (var i = 0; i < files.length; i++) {
     //var file = files[i];
@@ -12,7 +19,8 @@ async function upload(meta, file) {
 
   const upload = await fetch(`/api/admin/${filename}`, {
       method: 'PUT',
-      body: formData
+      body: formData,
+      headers: new Headers(headers)
       });
 
   if (upload.ok) {
@@ -34,8 +42,10 @@ async function index(index_name, filename, method) {
       statusOK = (s) => (s.ok || s.status == 404)
     }
     // Make the  http request
-    const index = await fetch(`/api/admin/${index_name}/_doc/${filename}`,
-      {method: method});
+    const index = await fetch(`/api/admin/${index_name}/_doc/${filename}`,{
+      method: method,
+      headers: new Headers(headers)
+    });
 		if (statusOK(index)) {
 			return index.status
     } else if (index.status === 401)  {
@@ -70,10 +80,15 @@ async function get(url) {
       const formData = new FormData()
       formData.append('file', file)
 			res = await fetch(`/api/admin/files/${url}`, {
-					method: 'PUT', body: formData})
+					method: 'PUT',
+          body: formData,
+          headers: new Headers(headers)
+      })
 		} else if (method == 'DELETE') {
 			res = await fetch(`/api/admin/files/${url}`, {
-					method: 'DELETE'})
+					method: 'DELETE',
+          headers: new Headers(headers)
+      })
 	}
 		if (res.ok) {
 			return res
@@ -85,6 +100,21 @@ async function get(url) {
 			throw new Error('Erreur inconnue');
 		}
 	}
+
+  async function reIndex(index_name) {
+  		const res = await fetch(`/api/admin/${index_name}/reindex`,{
+        headers: new Headers(headers)
+      });
+  		const text = await res.text();
+
+  		if (res.ok) {
+  			return res;
+  		} else if (res.status == 401) {
+  			throw new Error("Rôle admin nécessaire");
+  		} else {
+  			throw new Error(text);
+  		}
+  	}
 
 const format2ES = (item, query_list, index_name) => {
     query_list = query_list.flat(2)
@@ -118,8 +148,8 @@ async function search(body) {
 											body: JSON.stringify(body)
 												 });
 
-	const result = await res.json();
 	if (res.ok) {
+    const result = await res.json();
 		return result
 	} else {
 		throw new Error('Oups');
@@ -152,7 +182,9 @@ async function synonym(method, row, filename,key=0) {
   } else if (method === 'PUT' || method === 'DELETE') {
     res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
         method: method,
-        body: JSON.stringify(row)});
+        body: JSON.stringify(row),
+        headers: new Headers(headers)
+    })
   }
   let data = await res.json();
   if (res.ok)  {
@@ -165,4 +197,4 @@ async function synonym(method, row, filename,key=0) {
   }
 }
 
-export { index, upload, get, synonym, files, format2ES, search, text_area_resize };
+export { index, upload, get, synonym, files, format2ES, search, text_area_resize, reIndex };
