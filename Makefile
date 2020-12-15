@@ -60,9 +60,6 @@ export API_USER_SCOPE=http_x_forwarded_for
 export API_GLOBAL_LIMIT_RATE=20r/s
 export API_GLOBAL_BURST=200 nodelay
 
-# SWIFT
-export BUCKET_NAME=${APP}
-
 # this is usefull with most python apps in dev mode because if stdout is
 # buffered logs do not shows in realtime
 PYTHONUNBUFFERED=1
@@ -70,6 +67,8 @@ PYTHONUNBUFFERED=1
 dummy		    := $(shell touch artifacts)
 include ./artifacts
 export
+# SWIFT
+export BUCKET_NAME=${INDEX_NAME}
 
 #vm_max_count            := $(shell cat /etc/sysctl.conf | egrep vm.max_map_count\s*=\s*262144 && echo true)
 #
@@ -257,8 +256,8 @@ chmod:
 	chmod +x swift/*.sh
 
 frontend-upload-swift: chmod
-	@echo "Upload ${APP}-build/$(FILE_FRONTEND_DIST_APP_VERSION) to SWIFT"
-	swift/upload.sh ${APP}-build/$(FILE_FRONTEND_DIST_APP_VERSION) 'curl'
+	@echo "Upload ${APP}-build/$(FILE_FRONTEND_DIST_APP_VERSION) to SWIFT BUCKET $(BUCKET_NAME)"
+	swift/upload.sh ${BUCKET_NAME} ${APP}-build/$(FILE_FRONTEND_DIST_APP_VERSION) 'curl'
 
 frontend-download-swift: chmod
 	@echo "Download $(FILE_FRONTEND_DIST_APP_VERSION) from SWIFT to ${APP}-build"

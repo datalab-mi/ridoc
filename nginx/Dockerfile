@@ -1,10 +1,9 @@
 #######################
 # Step 1: Base target #
 #######################
-FROM nginx:alpine as base
+FROM nginx as base
 ARG app_name
 ARG app_ver
-
 
 WORKDIR /home/nginx
 
@@ -15,19 +14,21 @@ RUN  [ -f "run.sh" ] && chmod +x run.sh
 EXPOSE 80/tcp
 EXPOSE 443/tcp
 
-# PDFJS VIEWER
 #RUN apk update\
 #  && apk add ca-certificates wget\
 #  && update-ca-certificates
 
+# PDFJS VIEWER
 #RUN  wget "https://github.com/mozilla/pdf.js/releases/download/v2.3.200/pdfjs-2.3.200-dist.zip" && \
 #     [ -f "pdfjs-2.3.200-dist.zip" ] && \
 #     mkdir -p /usr/share/nginx/html/pdfjs && \
 #     unzip  pdfjs-2.3.200-dist.zip  -d /usr/share/nginx/html/pdfjs  && \
 #     rm -rf pdfjs-2.3.200-dist.zip
 
-RUN apk add apache2-utils
-#RUN apk add vim
+RUN apt-get update --allow-releaseinfo-change -y
+
+RUN apt-get install apache2-utils -y
+#RUN apt-get install vim
 
 ################################
 # Step 2: "development" target #
