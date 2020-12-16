@@ -8,7 +8,6 @@ from flask import current_app as app
 from flask import Blueprint, render_template, request, make_response, abort, jsonify, send_from_directory, redirect, request
 from flask_jwt import JWT, jwt_required, current_identity
 
-
 from tools.elastic import index_file as elastic_index_file
 from tools.elastic import delete_file as elastic_delete_file
 from tools.elastic import create_index, get_alias, put_alias, delete_alias, exists, get_index_name, replace_blue_green, inject_documents, clean

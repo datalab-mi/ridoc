@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from werkzeug.security import safe_str_cmp
 
 
@@ -11,11 +12,12 @@ class User(object):
     def __str__(self):
         return "User(id='%s')" % self.id
 
-with open('/app/application/user_database.json') as json_file:
+
+with open(Path(__file__).resolve().parent / 'user_database.json') as json_file:
     user_database = json.load(json_file)["user_database"]
 
 
-users = [User(u['id'],u['username'],u['password']) for u in user_database]
+users = [User(u['id'], u['username'], u['password']) for u in user_database]
 
 username_table = {u.username: u for u in users}
 userid_table = {u.id: u for u in users}

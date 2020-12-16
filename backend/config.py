@@ -3,8 +3,9 @@ from os import environ, getenv
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-from datetime import timedelta 
-
+from datetime import timedelta
+import random
+import string
 
 class Config:
     """Set Flask configuration vars from .env file."""
@@ -49,8 +50,11 @@ class Config:
     LOGO = getenv('LOGO', "logo.svg")
 
     #Authentication
-    SECRET_KEY = 'super-secret'  #to be stored somewherelse?
-    JWT_EXPIRATION_DELTA = timedelta(seconds=300) #5mins token expiration
-
+    # secret_key will change whenever the backend is start if not provided
+    secret_key = ''.join(random.choice(string.ascii_lowercase) for i in range(10))
+    SECRET_KEY = getenv('SECRET_KEY', secret_key)
+    JWT_EXPIRATION_DELTA = timedelta(
+        minutes=int(getenv('JWT_EXPIRATION_DELTA', 5))) #5mins token expiration default
+    #JWT_AUTH_HEADER_PREFIX = "JWT"
     print('Read config')
     pass
