@@ -8,7 +8,7 @@ let promise;
 
 	function handleIndex() {
     $isReindex = true
-		promise = reIndex(index_name)
+		promise = reIndex($index_name)
 		.then(res => {
 			$isReindex = false
 			list_logger.concat({level: "success", message: "Réindexation terminée", status: res.status, ressource: "Reindex"})
@@ -35,12 +35,12 @@ let promise;
   </div>
 
 <!-- svelte-ignore empty-block -->
-{#await promise}
-{:catch error}
-<p style="color:red">Error</p>
+<!--{#await promise} -->
+<!--{:catch error} -->
+<!--<p style="color:red">Error</p>-->
 <!-- <iframe srcdoc={error.message} height="300">
-</iframe> -->
-{/await}
+<!--</iframe> -->
+<!--{/await}  -->
 <style>
 
 #spinner {
