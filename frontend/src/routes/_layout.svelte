@@ -1,7 +1,14 @@
 <script>
 	import Nav from '../components/Nav.svelte';
+	import LoginForm from '../components/login/LoginForm.svelte';
+	import Logger from '../components/Logger.svelte';
+
+	import { user, displayLogin, list_logger  } from '../components/stores.js';
 
 	export let segment;
+
+
+
 </script>
 
 <style>
@@ -17,6 +24,14 @@
 
 <Nav {segment}/>
 
-<main>
+<main >
+
+
 	<slot></slot>
+
+	{#if $displayLogin}
+		<LoginForm/>
+	{/if}
+
+	<Logger/>
 </main>

@@ -1,5 +1,5 @@
 <script>
-	import { list_files } from '../stores.js';
+	import { list_files, list_logger } from '../stores.js';
 	import { files } from '../utils.js';
 	import FileRow from './FileRow.svelte';
 	import VirtualList from '../VirtualList.svelte';
@@ -24,6 +24,7 @@
 	let filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
 
 	const keys_to_filter = meta.filter(item => item.type == 'text').map(item => item.key);
+	GetPromise = handleFiles()
 
 	async function handleFiles() {
 		const res = await files('GET', baseDir)
@@ -32,27 +33,34 @@
 		return res.status
 	}
 
-	GetPromise = handleFiles()
 
-async function handleSubmit() {
-	console.log(file[0])
-	await files('PUT', baseDir, file[0])
-	PutPromise = handleFiles()
-	// reset filter and file
-	filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})))
-	file = {'name': ""}
+	async function handleSubmit() {
+		console.log(file[0])
+		filterRow.name = file[0].name
+		files('PUT', baseDir, file[0])
+			.then(() => {
+				list_logger.concat({level: "success", message: `Fichier  ajouté avec succès!`, ressource: "files"})
+			})
+			.catch(err => {
+				list_logger.concat({level: "error", message: err, ressource: "files"})
+			})
 
-}
+		GetPromise = handleFiles()
+		// reset filter and file
+		filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})))
+		file = {'name': ""}
 
-function handleAdd() {
-	isAdd = !isAdd;
-}
+	}
 
-$: { // filter $list_files with filterRow on its keys (expressionA, expressionB...)
-	console.log($list_files)
-	list_files_filter = $list_files.filter((item) => keys_to_filter.every((key) => item[key].toLowerCase().includes(filterRow[key].toLowerCase())))
+	function handleAdd() {
+		isAdd = !isAdd;
+	}
 
-}
+	$: { // filter $list_files with filterRow on its keys (expressionA, expressionB...)
+		console.log($list_files)
+		list_files_filter = $list_files.filter((item) => keys_to_filter.every((key) => item[key].toLowerCase().includes(filterRow[key].toLowerCase())))
+
+	}
 
 onDestroy(() => $list_files = [])
 

@@ -1,59 +1,48 @@
 <script>
 
-import { index_name } from './stores.js';
+import { index_name, list_logger } from './stores.js';
 import { index, upload } from './utils.js'
 
 export let meta;
 export let file;
 
+let msg
+const filename = file.name.replace(/\+/g, " ")
 
-let filename;
-$: {
-  console.log(file)
-  filename = file.name.replace(/\+/g, " ")
-}
+console.log(`Save ${filename}`)
 
-let promiseUpload = new Promise(()=>{});
-let promiseIndex = new Promise(()=>{});
+upload(meta, file)
+  .then(status => {
+    if (status == 201) {
+      msg = `${filename} crée`
+    } else if (status == 200) {
+      msg = `${filename} modifié`
+    } else if (status == 203) {
+      msg = `${filename} au mauvais format`
+    } else if (status == 202) {
+      msg = `Pas de document à sauver`
+    } else {
+      msg = `status ${status} inconnu`
+    }
+    list_logger.concat({level: "success", message: msg, ressource: filename, status: status, ressource: "putItem"})
+  })
+  .catch(err => {
+    list_logger.concat({level: "error", message: err, ressource: "putItem"})
+  })
 
-
-async function handleUpdate() {
-  console.log(`Save ${filename}`)
-  promiseUpload = await upload(meta, file)
-  promiseIndex = await index($index_name, filename, 'PUT');
-}
-
-handleUpdate()
+index($index_name, filename, 'PUT')
+  .then(status => {
+    if (status == 201) {
+      msg = `${filename} indexé`
+    } else if (status == 200) {
+      msg = `${filename} modifié dans l'index`
+    } else {
+      msg = `status ${status} inconnu`
+    }
+    list_logger.concat({level: "success", message: msg, ressource: filename, status: status, ressource: "putItem"})
+    })
+  .catch(err => {
+    list_logger.concat({level: "error", message: err, ressource: "putItem"})
+  })
 
 </script>
-
-
-{#await promiseUpload}
-{:then status}
-  {#if status == 201 }
-    <p style="color: green">{filename} crée</p>
-  {:else if (status == 200) }
-    <p style="color: blue" >{filename} modifié</p>
-  {:else if (status == 203) }
-    <p style="color: red" >{filename} au mauvais format!</p>
-  {:else if (status == 202) }
-    <p></p>
-  {:else}
-    <p>Status {status} non connu</p>
-  {/if}
-{:catch error}
-	<p style="color: red">{error.message}</p>
-{/await}
-
-{#await promiseIndex}
-{:then status}
-  {#if status == 201 }
-    <p style="color: green">{filename} indexé</p>
-  {:else if status == 200 }
-    <p style="color: blue" >{filename} modifié dans l'index</p>
-  {:else}
-    <p>Status {status} non connu</p>
-  {/if}
-{:catch error}
-  <p style="color: red">{error.message}</p>
-{/await}
