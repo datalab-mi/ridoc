@@ -1,4 +1,4 @@
-import { readable, writable } from 'svelte/store';
+import { readable, writable, derived } from 'svelte/store';
 
 // auth: https://www.toptal.com/front-end/svelte-framework-guide
 export const itemConfig = writable({})
@@ -18,8 +18,28 @@ export const dstDir = "DST_DIR"
 export const pjDir = "PJ_DIR"
 
 // authentification
-export const user = writable({display: false, role:"common", jwToken:null})
+const initial_user = {display: false, role:"common", jwToken:null}
 
+function createUser() {
+  const { subscribe, set, update } = writable({role:"common", jwToken:null})
+  console.log('got a user');
+  return {
+    subscribe,
+    authenticate: (user) => {
+      set(user)
+      localStorage.setItem('user', JSON.stringify(user))
+    },
+    clean: () => localStorage.removeItem('user'),
+    updateKey: (key, value) => {
+      update(user => user.key = value)
+    }
+
+  };
+}
+export const user = createUser();
+
+export const displayLogin = writable(false)
+export const headers = derived(user,  $user => {Authorization: `JWT ${$user.jwToken}`})
 // logger
 const inital_logger_list = [{level: "error",message: "erreur grave", ressource: "authentification", status:401},
         {level: "info",message: "document telechargé", ressource: "upload", status:200}]
@@ -37,7 +57,7 @@ function createLogger() {
 		subscribe,
 		concat: (x) => update(n => n.concat(x)),
 		filter: (msg, key) => update(n => n.filter(t => t[key] !== msg)),
-    delete: () => n.slice(1, n.length),
+    delete: () => update(n => n.slice(1, n.length)),
 		reset: () => set(inital_logger_list)
 	};
 }

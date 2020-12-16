@@ -6,23 +6,27 @@
 
 [ -z "${OS_AUTH_TOKEN}" -o -z "${OS_STORAGE_URL}" ] && echo "missing auth variables"
 
-echo "$(dirname $1)"
+echo "$(dirname $2)"
 #--object-name "$(basename $1)"
-if [ $2 = "swift" ]
+if [ $3 = "swift" ]
 then
   # with SWIFT, support folder
   swift --debug \
-   --os-storage-url "${OS_STORAGE_URL}" --os-auth-token "${OS_AUTH_TOKEN}" \
-   upload $1
+   --os-storage-url "${OS_STORAGE_URL}/$1" --os-auth-token "${OS_AUTH_TOKEN}" \
+   upload $2
 
-elif [ $2 = "curl" ]
+elif [ $3 = "curl" ]
 then
   # with CURL, only file. Need eventually to loop over a folder
-  #echo "curl -i -T $1 ${OS_STORAGE_URL}/$1  -X PUT -H 'X-Auth-Token: ${OS_AUTH_TOKEN}'  -o send-$1-log"
-  curl -i -T $1\
-      "${OS_STORAGE_URL}/$1" \
+  echo 'curl -k -i -T $2\
+      ${OS_STORAGE_URL}/$1/$2 \
       -X PUT \
-      -H "X-Auth-Token: ${OS_AUTH_TOKEN}"
+      -H "X-Auth-Token: ${OS_AUTH_TOKEN}" -vv'
+
+  curl -k -i -T $2\
+      "${OS_STORAGE_URL}/$1/$2" \
+      -X PUT \
+      -H "X-Auth-Token: ${OS_AUTH_TOKEN}" -vv
 
 else
   echo "Choose swift or curl"

@@ -3,7 +3,7 @@
 	import LoginForm from '../components/login/LoginForm.svelte';
 	import Logger from '../components/Logger.svelte';
 
-	import { user, list_logger  } from '../components/stores.js';
+	import { user, displayLogin, list_logger  } from '../components/stores.js';
 
 	export let segment;
 
@@ -29,7 +29,7 @@
 
 	<slot></slot>
 
-	{#if $user.display}
+	{#if $displayLogin}
 		<LoginForm/>
 	{/if}
 

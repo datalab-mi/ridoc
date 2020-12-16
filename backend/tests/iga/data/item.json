@@ -18,7 +18,8 @@
       "value": "",
       "innerHtml": "<b>Contenu :</b>",
       "highlight":  true,
-      "metadata": false
+      "metadata": false,
+      "rows":4
     },
     {
       "key": "author",

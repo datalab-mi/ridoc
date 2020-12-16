@@ -1,30 +1,16 @@
 <script>
 import { index_name, isReindex, list_logger } from './stores.js';
-
+import {reIndex} from './utils.js'
 let promise;
 
-async function ReIndex() {
-		const res = await fetch(`/api/admin/${$index_name}/reindex`);
-		const text = await res.text();
 
-		if (res.ok) {
-      $isReindex = false
-			return res;
-		} else if (res.status == 401) {
-			throw new Error("Rôle admin nécessaire");
-		} else {
-			var win = window.open("", "Error", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yestop="+(screen.height)+",left="+(screen.width));
-			win.document.body.innerHTML = text;
-			throw new Error(text);
-		}
-	}
 
 
 	function handleIndex() {
     $isReindex = true
-		promise = ReIndex()
-		promise
+		promise = reIndex($index_name)
 		.then(res => {
+			$isReindex = false
 			list_logger.concat({level: "success", message: "Réindexation terminée", status: res.status, ressource: "Reindex"})
 		})
 		.catch(err => {
@@ -49,13 +35,14 @@ async function ReIndex() {
   </div>
 
 <!-- svelte-ignore empty-block -->
-{#await promise}
-{:catch error}
-<p style="color:red">Error</p>
+<!--{#await promise} -->
+<!--{:catch error} -->
+<!--<p style="color:red">Error</p>-->
 <!-- <iframe srcdoc={error.message} height="300">
-</iframe> -->
-{/await}
+<!--</iframe> -->
+<!--{/await}  -->
 <style>
+
 #spinner {
   transition-property: transform;
   animation-name: svelte-spinner_infinite-spin;

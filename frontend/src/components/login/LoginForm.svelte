@@ -1,25 +1,30 @@
 <script>
+
+  import { onMount } from "svelte";
+  import { user, list_logger, displayLogin } from '../stores.js';
   let email = "";
   let password = "";
-  import { user, list_logger } from '../stores.js';
 
   let isLoading = false;
   let isSuccess = false;
 
-  $: {console.log('token is '+ $user.jwToken)}
+  async function submit({ email, password }) {
+    var headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    const res = await fetch("/api/auth", {
+      method: "POST",
+      body: JSON.stringify({username: email, password: password}),
+      headers: headers
+    })
+    if (res.ok) {
+      const resp = await res.json()
+      return resp.access_token
+    } else {
+      throw new Error('mauvaise combinaison')
+    }
 
-  const submit = ({ email, password }) =>
-    new Promise((resolve, reject) => {
-      setTimeout(() => {
-        //fetch should be there
-        if (email===password) {
-          const token = "azerty"
-          resolve(token);
-        } else {
-          reject('mauvaise combinaison')
-        }
-      }, 1000);
-    });
+  }
+
 
 
   let errors = {};
@@ -38,15 +43,15 @@
       isLoading = true;
       submit({ email, password })
         .then((token) => {
-          console.log(token)
-          $user.jwToken = token
-          $user.role = "admin"
+          console.log(`Your new token is: ${token}`)
+          const admin_user = {display: true, role:"admin", jwToken:token}
+          user.authenticate(admin_user)
           isSuccess = true;
           isLoading = false;
           list_logger.concat({level: "success", message: `Loggé en tant que ${$user.role}`, ressource: "login"})
         })
         .catch(err => {
-          $user.role = "common"
+          user.updateKey("role", "common")
           list_logger.concat({level: "error", message: err, ressource: "login"})
           //errors.server = err;
           isLoading = false;
