@@ -11,7 +11,7 @@ const filename = file.name.replace(/\+/g, " ")
 
 console.log(`Save ${filename}`)
 
-upload(meta, file)
+  upload(meta, file)
   .then(status => {
     if (status == 201) {
       msg = `${filename} crée`
@@ -24,14 +24,13 @@ upload(meta, file)
     } else {
       msg = `status ${status} inconnu`
     }
+    console.log('fin')
     list_logger.concat({level: "success", message: msg, ressource: filename, status: status, ressource: "putItem"})
+    return index($index_name, filename, 'PUT')
   })
-  .catch(err => {
-    list_logger.concat({level: "error", message: err, ressource: "putItem"})
-  })
-
-index($index_name, filename, 'PUT')
   .then(status => {
+    console.log('début')
+
     if (status == 201) {
       msg = `${filename} indexé`
     } else if (status == 200) {
@@ -44,5 +43,9 @@ index($index_name, filename, 'PUT')
   .catch(err => {
     list_logger.concat({level: "error", message: err, ressource: "putItem"})
   })
+
+
+
+
 
 </script>

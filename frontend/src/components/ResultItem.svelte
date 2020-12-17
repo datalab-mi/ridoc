@@ -2,7 +2,7 @@
 	import PutItem from './PutItem.svelte'
 	import Entry from './Entry.svelte'
 
-	import { index_name, dstDir, itemConfig, user } from './stores.js';
+	import { index_name, dstDir, itemConfig, user, list_logger } from './stores.js';
 	import { index, upload } from './utils.js'
 
 
@@ -22,9 +22,6 @@
 	const file = {'name': _id.replace(/\+/g, " ")}
 	const meta = JSON.parse(JSON.stringify($itemConfig.inputs))
 
-	let promiseDelete = new Promise(()=>{})
-	let promiseDeleteIndex = new Promise(()=>{})
-
 	// replace value to the result value contained in _source or in highlight key
 	// if present and if needed
 	JSON.parse(JSON.stringify($itemConfig.inputs)).forEach((x, index) => {
@@ -38,21 +35,23 @@
 		}
 	})
 
-	async function remove() {
-		const res = await fetch(`/api/admin/${filename}`,
-				{method: 'DELETE'});
-		if (res.ok || res.status == 404) {
-			return res.status
-		} else {
-			console.log('error')
-			throw new Error('Oups');
-		}
-	}
-
 	function handleDelete() {
 		console.log(`Delete ${_id.replace(/\+/g, " ")}`)
-		promiseDelete = remove()
-		promiseDeleteIndex = index( $index_name, filename, 'DELETE')
+		upload(meta, file, 'DELETE')
+			.then(() => {
+				list_logger.concat({level: "success", message: "Document supprimé avec succès! ", ressource: "upload"})
+			})
+			.catch(err => {
+				list_logger.concat({level: "error", message: err, ressource: "upload"})
+			})
+
+		index( $index_name, filename, 'DELETE')
+			.then(() => {
+				list_logger.concat({level: "success", message: "Document désindexé avec succès! ", ressource: "upload"})
+			})
+			.catch(err => {
+				list_logger.concat({level: "error", message: err, ressource: "upload"})
+			})
 	}
 
 	function handleSave() {
@@ -96,7 +95,7 @@
 		</button>
 
 		{#if ($user.role === "admin") }
-		
+
 			<button on:click={handleDelete} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
 				<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 2l2-2h4l2 2h4v2H2V2h4zM3 6h14l-1 14H4L3 6zm5 2v10h1V8H8zm3 0v10h1V8h-1z"/></svg>
 				<span>SUPPRIMER</span>
@@ -124,32 +123,6 @@
 				</button>
 			{/if}
 		{/if}
-
-		{#await promiseDelete}
-		{:then status}
-			{#if status == 204 }
-				<p style="color: green"> Le fichier {filename} est supprimé</p>
-			{:else if status == 404 }
-				<p style="color: red" > {filename} n'existe pas</p>
-			{:else}
-				<p>Status {status} non connu</p>
-			{/if}
-		{:catch error}
-			<p style="color: red">{error.message}</p>
-		{/await}
-
-		{#await promiseDeleteIndex}
-		{:then status}
-			{#if status == 200 }
-				<p style="color: green"> {filename} désindexé</p>
-			{:else if status == 404 }
-				<p style="color: red" > {filename} pas dans l'index</p>
-			{:else}
-				<p>Status {status} non connu</p>
-			{/if}
-		{:catch error}
-			<p style="color: red">{error.message}</p>
-		{/await}
 
 	</div>
 

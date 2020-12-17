@@ -26,7 +26,6 @@
 
 <main >
 
-
 	<slot></slot>
 
 	{#if $displayLogin}
@@ -34,4 +33,5 @@
 	{/if}
 
 	<Logger/>
+
 </main>
