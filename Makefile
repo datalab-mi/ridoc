@@ -12,7 +12,7 @@ export DC_PREFIX := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]' | tr '_' '-
 export DC_NETWORK := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]')
 export DC_BUILD_ARGS = --pull --no-cache
 export DC_UP_ARGS = --build --force-recreate
-export DC_NETWORK_OPT = --opt com.docker.network.driver.mtu=1450 
+export DC_NETWORK_OPT = --opt com.docker.network.driver.mtu=1450
 
 # elasticsearch defaut configuration
 export ES_HOST = ${APP}-elasticsearch
