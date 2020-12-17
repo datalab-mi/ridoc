@@ -12,7 +12,7 @@ export DC_PREFIX := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]' | tr '_' '-
 export DC_NETWORK := $(shell echo ${APP} | tr '[:upper:]' '[:lower:]')
 export DC_BUILD_ARGS = --pull --no-cache
 export DC_UP_ARGS = --build --force-recreate
-export DC_NETWORK_OPT = --opt com.docker.network.driver.mtu=1450 
+export DC_NETWORK_OPT = --opt com.docker.network.driver.mtu=1450
 
 # elasticsearch defaut configuration
 export ES_HOST = ${APP}-elasticsearch
@@ -270,6 +270,11 @@ frontend-upload-swift: chmod
 frontend-download-swift: chmod
 	@echo "Download $(FILE_FRONTEND_DIST_APP_VERSION) from SWIFT to ${APP}-build"
 	swift/download.sh ${BUCKET_NAME} ${APP}-build/$(FILE_FRONTEND_DIST_APP_VERSION) 'curl'
+
+upload: chmod
+	swift/upload.sh $(BUCKET_NAME) $(SRC) 'curl'
+download: chmod
+	swift/upload.sh $(BUCKET_NAME) $(DST) 'curl'
 
 ###############
 # General 	  #
