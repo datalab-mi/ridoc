@@ -30,7 +30,8 @@ services:
     ports:
       - "$PORT:80"
       #restart: always
-
+    volumes:
+      - ./nginx/apache2:/etc/nginx/apache2
 networks:
   default:
     external:
