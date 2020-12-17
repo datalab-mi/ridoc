@@ -52,6 +52,7 @@ ARG app_ver
 
 VOLUME /var/log/nginx
 
+RUN mkdir -p /etc/nginx/apache2
 COPY default-run.template /etc/nginx/conf.d/default.template
 COPY nginx-run.template /etc/nginx/nginx.template
 

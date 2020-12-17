@@ -195,7 +195,7 @@ nginx-exec:
 nginx-create-user:
 	@read -p "Enter User:" user; \
 	echo $$user; \
-	${DC} -f $(DC_FILE)-nginx.yml exec nginx-production sh -c "touch htpasswd /etc/apache2/.htpasswd;htpasswd /etc/apache2/.htpasswd $$user"
+	${DC} -f $(DC_FILE)-nginx.yml exec nginx-production sh -c "touch /etc/nginx/apache2/.htpasswd;htpasswd /etc/nginx/apache2/.htpasswd $$user"
 
 
 
