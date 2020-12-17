@@ -26,13 +26,13 @@
     </div>
   {/each}
 </div>
-
+<!--
 <input
   placeholder="what needs to be done?"
   on:keydown={e => e.key === 'Enter' && handleAdd(e.target.value)}
 >
 <button  on:click={handleDelete}>Delete</button>
-
+ //-->
 <style>
 
 

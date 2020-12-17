@@ -489,7 +489,12 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
     if path_meta.exists():
         with open(path_meta, 'r' , encoding = 'utf-8') as json_file:
             meta = json.load(json_file)
-            data.update(meta)
+            for key,val in meta.items():
+                if type(val) == list:
+                    data[key] = list(set(data.get(key) + val))
+                if type(val) == str:
+                    data[key] = val
+
     # clean date field
     if "date" in data:
         data["date"] = re.sub(r'[^\d\/-]','',data["date"]) # remove all caractere ! /, - or digit

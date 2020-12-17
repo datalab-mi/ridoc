@@ -5,21 +5,23 @@ const unsubscribe = user.subscribe(value => {
   headers = {'Authorization': `JWT ${value.jwToken}`}
 });
 
-async function upload(meta, file) {
-  //for (var i = 0; i < files.length; i++) {
-    //var file = files[i];
-  const formData = new FormData();
+async function upload(meta, file, method='PUT') {
+  const filename = file.name
   console.log('upload :')
   console.log(file)
-  const filename = file.name
-  formData.append('file', file);
+  const body = new FormData();
 
-  meta.forEach(item => formData.append(item.key,
-    (item.value instanceof Array) ?  JSON.stringify(item.value) : item.value));
+  if (method === "PUT") {
+    body.append('file', file);
+    meta.forEach(item => body.append(item.key,
+      (item.value instanceof Array) ?  JSON.stringify(item.value) : item.value));
+  }
+  //for (var i = 0; i < files.length; i++) {
+    //var file = files[i];
 
   const upload = await fetch(`/api/admin/${filename}`, {
-      method: 'PUT',
-      body: formData,
+      method: method,
+      body: body,
       headers: new Headers(headers)
       });
 
@@ -28,8 +30,7 @@ async function upload(meta, file) {
   } else if (upload.status===401)  {
     throw new Error('Rôle admin nécessaire');
   } else {
-    console.log('error')
-    throw new Error('Oups');
+    throw new Error(`Status ${upload.status} inconnu`);
   }
 }
 
