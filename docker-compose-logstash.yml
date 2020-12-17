@@ -7,12 +7,11 @@ services:
     image: docker.elastic.co/logstash/logstash-oss:${ES_VERSION}
     environment:
       PATH_CONFIG: "/usr/share/logstash/pipeline" # default
+      ES_HOST: ${ES_HOST}
+      ES_PORT: ${ES_PORT}
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
-    ports:
-      - "1025:1025/udp"
-      - "127.0.0.1:5000:5000"
-      - "127.0.0.1:9600:9600"
+
 networks:
   default:
     external:
