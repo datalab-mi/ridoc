@@ -18,10 +18,23 @@ export const dstDir = "DST_DIR"
 export const pjDir = "PJ_DIR"
 
 // authentification
-const initial_user = {display: false, role:"common", jwToken:null}
+const initial_user = {role:"common", jwToken:null}
 
-function createUser() {
-  const { subscribe, set, update } = writable({role:"common", jwToken:null})
+async function testToken(user, set) {
+  const response = await fetch('/api/admin/identity', {
+    headers: new Headers({'Authorization': `JWT ${user.jwToken}`})
+  });
+  console.log(response)
+  if(response.ok) {
+    set(user)
+  }
+  else if (response.status === 401) {
+    set(initial_user)
+  }
+}
+
+function createUser(user) {
+  const { subscribe, set, update } = writable(user, () => testToken(user, set))
   console.log('got a user');
   return {
     subscribe,
@@ -36,7 +49,13 @@ function createUser() {
 
   };
 }
-export const user = createUser();
+
+export let user
+if(typeof window !== "undefined") {
+    user = createUser(JSON.parse(localStorage.getItem("user")) || initial_user);
+} else {
+    user = createUser(initial_user);
+}
 
 export const displayLogin = writable(false)
 export const headers = derived(user,  $user => {Authorization: `JWT ${$user.jwToken}`})

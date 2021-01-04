@@ -491,7 +491,7 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
             meta = json.load(json_file)
             for key,val in meta.items():
                 if type(val) == list:
-                    data[key] = list(set(data.get(key) + val))
+                    data[key] = list(set(data.get(key, []) + val))
                 if type(val) == str:
                     data[key] = val
 
