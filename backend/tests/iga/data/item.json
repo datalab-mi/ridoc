@@ -9,7 +9,8 @@
       "value": "",
       "innerHtml": "<b>Titre :</b>",
       "highlight":  true,
-      "metadata": true
+      "metadata": true,
+      "canBeEmpty": true
     },
     {
       "key": "content",
@@ -19,7 +20,8 @@
       "innerHtml": "<b>Contenu :</b>",
       "highlight":  true,
       "metadata": false,
-      "rows":4
+      "rows":4,
+      "canBeEmpty": false
     },
     {
       "key": "author",
@@ -28,7 +30,8 @@
       "value": "",
       "innerHtml": "<b>Auteurs :</b>",
       "highlight": true,
-      "metadata": true
+      "metadata": true,
+      "canBeEmpty": true
 
     },
     {
@@ -38,7 +41,8 @@
       "value": "",
       "innerHtml": "<b>Date :</b>",
       "highlight": false,
-      "metadata": true
+      "metadata": true,
+      "canBeEmpty": true
     },
     {
       "key": "tag",
@@ -47,7 +51,8 @@
       "value": [],
       "innerHtml": "<b>Tag :</b>",
       "highlight": false,
-      "metadata": true
+      "metadata": true,
+      "canBeEmpty": true
     }
   ]
 
