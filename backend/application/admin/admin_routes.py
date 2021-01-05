@@ -19,6 +19,10 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','md','odt'}
 # Blueprint Configuration
 admin_bp = Blueprint('admin_bp', __name__,url_prefix='/admin')
 
+@admin_bp.route('/identity', methods=['GET'])
+@jwt_required()
+def identity():
+    return '%s'% current_identity
 
 @admin_bp.route('/cluster', methods=['GET'])
 @jwt_required()

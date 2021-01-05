@@ -10,6 +10,8 @@
 	import ResultList from '../components/ResultList.svelte';
 	import SearchBar from '../components/SearchBar.svelte';
 
+
+
 	let body
 	onMount(async () => {
 		$itemConfig = await get('/api/common/files/item.json')

@@ -491,7 +491,7 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
             meta = json.load(json_file)
             for key,val in meta.items():
                 if type(val) == list:
-                    data[key] = list(set(data.get(key) + val))
+                    data[key] = list(set(data.get(key, []) + val))
                 if type(val) == str:
                     data[key] = val
 
@@ -506,13 +506,13 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
     for entry in sections:
         if entry.get('tag',False):
             #import pdb; pdb.set_trace()
-            res = get_tag(index_name, filename=str(filename), fields=entry['key'])
+            res_tag = get_tag(index_name, filename=str(filename), fields=entry['key'])
             body = {
                     "script" : {
                         "source": "ctx._source.tag=params.list_tag",
                         "lang": "painless",
                         "params" : {
-                            "list_tag" : res
+                            "list_tag" : res_tag
                                     }
                                 }
                     }
