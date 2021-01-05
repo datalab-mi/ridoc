@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from werkzeug.security import safe_str_cmp
-
+import os
 
 class User(object):
     def __init__(self, id, username, password):
@@ -12,8 +12,12 @@ class User(object):
     def __str__(self):
         return "User(id='%s')" % self.id
 
+if "AUTH_DIR" not in os.environ:
+    auth_dir = Path(__file__).resolve().parent / 'user_database.json'
+else:
+    auth_dir = Path(os.environ["AUTH_DIR"])
 
-with open(Path(__file__).resolve().parent / 'user_database.json') as json_file:
+with open(auth_dir) as json_file:
     user_database = json.load(json_file)["user_database"]
 
 
