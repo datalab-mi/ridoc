@@ -10,7 +10,7 @@
       "innerHtml": "<b>Titre :</b>",
       "highlight":  true,
       "metadata": true,
-      "canBeEmpty": true
+      "canBeEmpty": false
     },
     {
       "key": "content",
