@@ -35,7 +35,8 @@
 			meta[index].isHighlight = false
 		}
 		// test if item should be displayed if empty
-		if ((! meta[index].canBeEmpty === undefined) && (! meta[index].canBeEmpty) && (isEmpty(meta[index].value))) {
+		console.log(meta[index])
+		if (!( meta[index].canBeEmpty === undefined) && (! meta[index].canBeEmpty) && (isEmpty(meta[index].value))) {
 			display = false
 		}
 	})
