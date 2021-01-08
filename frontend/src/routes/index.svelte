@@ -6,19 +6,13 @@
 </svelte:head>
 
 <div>
-  <h1>Moteur de recherche</h1><br>
-
-  <p>
-    Cet outil est un moteur de recherche documentaire fondé sur Elasticsearch,
-    python et Svelte.
-  </p>
+{@html innerIndex}
 </div>
 
 <style>
 	h1 {
 	    font-size: 2rem;
 	}
-
 </style>
 
 
@@ -26,17 +20,18 @@
   export async function preload() {
     // the `slug` parameter is available because
     // this file is called [slug].html
-    const res = await this.fetch('data.json');
-    const data = await res.json();
+    const res = await this.fetch('innerIndex.html');
+    const innerIndex = await res.text();
 		console.log('preload')
-		console.log(data)
+		console.log(innerIndex)
     if (res.status === 200) {
-      return { indexData: data };
+      return { innerIndex };
     } else {
       this.error(res.status, data.message);
     }
   }
 </script>
 <script>
-  export let indexData;
+  export let innerIndex;
+	console.log(innerIndex)
 </script>
