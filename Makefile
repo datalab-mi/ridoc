@@ -257,6 +257,7 @@ nginx-build: nginx-check-build
 	cp $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION) ${NGINX}/
 	${DC} -f $(DC_FILE)-nginx.yml build $(DC_BUILD_ARGS)
 
+	
 #############
 # SWIFT 	  #
 #############
