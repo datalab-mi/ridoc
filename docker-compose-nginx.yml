@@ -32,6 +32,8 @@ services:
       #restart: always
     volumes:
       - ./nginx/apache2:/etc/nginx/apache2
+      - ./frontend/static/user:/usr/share/nginx/html/export/user
+
 networks:
   default:
     external:

@@ -20,11 +20,14 @@
 		margin: 0;
 		box-sizing: border-box;
 	}
+
+
+
 </style>
 
 <Nav {segment}/>
 
-<main >
+<main>
 
 	<slot></slot>
 

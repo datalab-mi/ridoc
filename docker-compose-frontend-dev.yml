@@ -17,6 +17,8 @@ services:
     container_name: ${FRONTEND_DEV_HOST}
     volumes:
       - ${FRONTEND}/src:/app/src
+      - ${FRONTEND}/static:/app/static
+
     ports:
       - "${FRONTEND_PORT}:3000"
       - "35729:35729"

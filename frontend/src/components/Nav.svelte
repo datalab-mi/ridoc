@@ -74,8 +74,8 @@
 <nav>
 
 	<ul>
-		<li><a class="w-12 h-12"><img src={logo}></a></li>
-		<li><a aria-current='{segment === undefined ? "page" : undefined}' href='.'>recherche</a></li>
+		<li><a class="w-12 h-12" href='.'><img src={logo}></a></li>
+		<li><a aria-current='{segment === "search" ? "page" : undefined}' href='search'>recherche</a></li>
 		<li><a aria-current='{segment === "glossary" ? "page" : undefined}' href='glossary'>glossaire</a></li>
 		<li><a aria-current='{segment === "expression" ? "page" : undefined}' href='expression'>expression</a></li>
 
