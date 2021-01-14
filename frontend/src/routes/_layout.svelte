@@ -1,14 +1,11 @@
 <script>
 	import Nav from '../components/Nav.svelte';
+	import Footer from '../components/Footer.svelte';
 	import LoginForm from '../components/login/LoginForm.svelte';
 	import Logger from '../components/Logger.svelte';
-
 	import { user, displayLogin, list_logger  } from '../components/stores.js';
 
 	export let segment;
-
-
-
 </script>
 
 <style>
@@ -36,5 +33,6 @@
 	{/if}
 
 	<Logger/>
+	<Footer/>
 
 </main>
