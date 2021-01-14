@@ -48,6 +48,7 @@
           user.authenticate(admin_user)
           isSuccess = true;
           isLoading = false;
+          $displayLogin = false
           list_logger.concat({level: "success", message: `Loggé en tant que ${$user.role}`, ressource: "login"})
         })
         .catch(err => {

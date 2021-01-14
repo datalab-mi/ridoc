@@ -62,10 +62,10 @@ import marked from 'marked'
 export let indexMd = "";
 
 function authClicked() {
-	$displayLogin =! $displayLogin
+	$displayLogin = !$displayLogin
 }
 onMount(async () => {
-	const res = await fetch('notice.md');
+	const res = await fetch('user/notice.md');
 	indexMd = await res.text();
 	});
 
