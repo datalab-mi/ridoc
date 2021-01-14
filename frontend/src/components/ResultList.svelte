@@ -6,6 +6,7 @@ import { onMount } from 'svelte';
 
 import ResultItem from '../components/ResultItem.svelte';
 import VirtualList from '../components/VirtualList.svelte';
+
 let start;
 let end;
 let height = '90%';
