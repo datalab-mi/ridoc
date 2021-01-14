@@ -66,11 +66,12 @@
     if (res.status === 200) {
       return { indexMd };
     } else {
-      this.error(res.status, indexHTML.message);
+      this.error(res.status, indexMd.message);
     }
   }
 </script>
 <script>
+
 	import { user, displayLogin } from '../components/stores.js';
 
 	import marked from 'marked'

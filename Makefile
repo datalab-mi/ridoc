@@ -183,7 +183,7 @@ nginx-dev: network
 nginx-dev-stop: network
 	${DC} -f ${DC_FILE}-nginx-dev.yml down
 nginx-dev-exec:
-	${DC} -f $(DC_FILE)-nginx-dev.yml exec nginx-dev sh
+	${DC} -f $(DC_FILE)-nginx-dev.yml exec nginx-dev bash
 
 nginx: network
 	${DC} -f $(DC_FILE)-nginx.yml up -d --build
@@ -191,7 +191,7 @@ nginx-stop:
 	${DC} -f $(DC_FILE)-nginx.yml down
 
 nginx-exec:
-	${DC} -f $(DC_FILE)-nginx.yml exec nginx-production sh
+	${DC} -f $(DC_FILE)-nginx.yml exec nginx-production bash
 
 nginx-create-user:
 	@read -p "Enter User:" user; \
@@ -257,7 +257,7 @@ nginx-build: nginx-check-build
 	cp $(BUILD_DIR)/$(FILE_FRONTEND_DIST_APP_VERSION) ${NGINX}/
 	${DC} -f $(DC_FILE)-nginx.yml build $(DC_BUILD_ARGS)
 
-	
+
 #############
 # SWIFT 	  #
 #############
