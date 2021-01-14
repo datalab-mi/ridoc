@@ -110,7 +110,7 @@
 				{#if (readonly && send) }
 					<button on:click={handleSave} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
 						<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>
-						<span>MODIFER</span>
+						<span>MODIFIER</span>
 					</button>
 					<PutItem meta={meta} file={file} />
 				{:else if (!readonly && !send) }
@@ -125,7 +125,7 @@
 				{:else}
 					<button on:click="{() => readonly = !readonly}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
 						<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>
-						<span>MODIFER</span>
+						<span>MODIFIER</span>
 					</button>
 				{/if}
 			{/if}

@@ -4,8 +4,7 @@ Ce **moteur de recherche** constitue une base de connaissances  ouverte de l'IGA
 ⚠️ **Attention** ⚠️, il s'agit ici d'une démo, la barre de recherche ainsi que les résultats sont configurables.
 Il peut aussi être utilisé pour des documents sous d'autres formats, avec des champs texte, date ou mots-clefs.
 
-Pour des questions relatives à son installation ou utilisation, vous pouvez contacter [✉️](datalab@interieur.gouv.fr.
-
+Pour des questions relatives à son installation ou utilisation, vous pouvez nous contacter [✉️](datalab@interieur.gouv.fr).
 ---
 # Notice d'utilisation
 
@@ -45,7 +44,7 @@ ELle est développée en [Svelte](https://svelte.dev), un language récent et tr
 Le site est servi avec Nginx, pour contrôler les connexions et gérer le routage des services appelés par l'interface.
 
 ## Le serveur
-Le serveur qui répond aux requêtes de l’interface est développée en Python, avec la bibliothèque Flask.
+Le serveur qui répond aux requêtes de l’interface est développée en **Python**, avec la bibliothèque Flask.
 
 ## Autres outils
-Pour mieux cloisonner les différents services, nous utilisons Docker.
+Pour mieux cloisonner les différents services, nous utilisons **Docker**.
