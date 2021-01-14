@@ -41,23 +41,14 @@
 	}
 </style>
 
-
-<script context="module">
-  export async function preload() {
-    // the `slug` parameter is available because
-    // this file is called [slug].html
-    const res = await this.fetch('notice.md');
-    const indexMd = await res.text();
-		console.log('preload')
-    if (res.status === 200) {
-      return { indexMd };
-    } else {
-      this.error(res.status, indexHTML.message);
-    }
-  }
-</script>
 <script>
-	import marked from 'marked'
+import { onMount } from 'svelte';
+import marked from 'marked'
+export let indexMd = "";
 
-  export let indexMd;
+onMount(async () => {
+	const res = await fetch('notice.md');
+	indexMd = await res.text();
+	});
+
 </script>
