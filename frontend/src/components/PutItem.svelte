@@ -1,6 +1,6 @@
 <script>
 
-import { index_name, list_logger } from './stores.js';
+import { userData, list_logger } from './stores.js';
 import { index, upload } from './utils.js'
 
 export let meta;
@@ -26,7 +26,7 @@ console.log(`Save ${filename}`)
     }
     console.log('fin')
     list_logger.concat({level: "success", message: msg, ressource: filename, status: status, ressource: "putItem"})
-    return index($index_name, filename, 'PUT')
+    return index($userData.index_name, filename, 'PUT')
   })
   .then(status => {
     console.log('début')

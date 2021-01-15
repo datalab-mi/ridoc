@@ -1,6 +1,6 @@
 <script>
   import Tags from "svelte-tags-input"
-  import { index_name } from '../components/stores.js';
+  import { userData } from '../components/stores.js';
   import { get } from '../components/utils.js';
 
   export let innerHtml = ""
@@ -13,7 +13,7 @@
   let promiseListKeyword = new Promise(()=>{})
 
   if  (type === "keyword") {
-    promiseListKeyword = get(`api/common/keywords/${$index_name}/${fields}`)
+    promiseListKeyword = get(`api/common/keywords/${$userData.dstDir}/${fields}`)
   }
   const handleInput = e => {
     // in here, you can switch on type and implement

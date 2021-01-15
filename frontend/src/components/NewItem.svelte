@@ -12,7 +12,7 @@
   const required = false;
 
   async function filterItem() {
-    let item = await get('/api/common/files/item.json')
+    let item = await get('user/item.json')
     item.inputs = item.inputs.filter(obj => obj.metadata)
     return item
   }

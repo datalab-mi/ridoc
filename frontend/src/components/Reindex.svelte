@@ -1,5 +1,5 @@
 <script>
-import { index_name, isReindex, list_logger } from './stores.js';
+import { userData, isReindex, list_logger } from './stores.js';
 import {reIndex} from './utils.js'
 let promise;
 
@@ -8,7 +8,7 @@ let promise;
 
 	function handleIndex() {
     $isReindex = true
-		promise = reIndex($index_name)
+		promise = reIndex($userData.index_name)
 		.then(res => {
 			$isReindex = false
 			list_logger.concat({level: "success", message: "Réindexation terminée", status: res.status, ressource: "Reindex"})

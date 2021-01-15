@@ -3,7 +3,7 @@
 </svelte:head>
 
 <script>
-	import { itemConfig, searchList, index_name, promiseSearch } from '../components/stores.js';
+	import { itemConfig, searchList, userData, promiseSearch } from '../components/stores.js';
 	import { get, format2ES, search } from '../components/utils.js';
 
 	import { onMount } from 'svelte';
@@ -12,11 +12,11 @@
 
 	let body
 	onMount(async () => {
-		$itemConfig = await get('/api/common/files/item.json')
+		$itemConfig = await get('user/item.json')
 		console.log($itemConfig )
-		$searchList = await get('/api/common/files/search.json')
+		$searchList = await get('user/search.json')
 		//initial search
-		body =  format2ES($itemConfig, $searchList.flat(2), $index_name)
+		body =  format2ES($itemConfig, $searchList.flat(2), $userData.index_name)
 		$promiseSearch = search(body)
 
 	});
