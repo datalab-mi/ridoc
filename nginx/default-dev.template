@@ -20,6 +20,11 @@ server {
     listen 35729;
     server_name  localhost;
 
+    location /kibana/ {
+      auth_basic "Administrator Area (user1, psw)";
+      auth_basic_user_file /etc/nginx/conf.d/.htpasswd;
+      proxy_pass http://kibana/;
+    }
 
     location / {
         proxy_pass http://frontend;
@@ -56,11 +61,7 @@ server {
       proxy_set_header Connection "upgrade";
     }
 
-    location /kibana/ {
-      auth_basic "Administrator Area (user1, psw)";
-      auth_basic_user_file /etc/nginx/conf.d/.htpasswd;
-      proxy_pass http://kibana/;
-    }
+
 
     error_page   500 502 503 504  /50x.html;
     location = /50x.html {

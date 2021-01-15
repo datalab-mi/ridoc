@@ -15,7 +15,7 @@ import pytest
 #import pdb; pdb.set_trace()
 
 env_path = '/app/tests/bld/.env-bld'
-load_dotenv(dotenv_path=env_path)
+load_dotenv(dotenv_path=env_path, override=True)
 
 INDEX_NAME = os.getenv('INDEX_NAME')
 
@@ -36,6 +36,7 @@ META_DIR =  os.getenv('META_DIR')
 
 os.makedirs(ES_DATA, exist_ok=True)
 
+print(os.environ)
 es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
 
 def test_create_index():

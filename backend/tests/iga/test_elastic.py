@@ -14,7 +14,7 @@ import pytest
 #import pdb; pdb.set_trace()
 
 env_path = '/app/tests/iga/.env-iga'
-load_dotenv(dotenv_path=env_path)
+load_dotenv(dotenv_path=env_path, override=True)
 
 INDEX_NAME = os.getenv('INDEX_NAME')
 
