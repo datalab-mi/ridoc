@@ -474,7 +474,7 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
     for entry in sections:
         if entry.get('clean',False):
             for key in data :
-                if key == entry.get("field",None) :
+                if key == entry.get("=>",entry.get('key', False)):
                     if type(data[key]) == list:
                         y = []
                         for x in data[key]:

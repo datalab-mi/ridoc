@@ -30,9 +30,9 @@ def odt2json(path: str, sections: list = []) -> dict:
     Returns:
         dict: Keys are sections and value the content read
     """
-
-    sections = [{'key':normalize(x['key']), 'array':x['array']} for x in sections]
-
+    for i, x in enumerate(sections):
+        x['key'] = normalize(x['key'])
+        sections[i] = x
     # extract test from doc
     doc = load(path)
     L = [teletype.extractText(x) for x in doc.getElementsByType(text.P)]
@@ -42,7 +42,6 @@ def odt2json(path: str, sections: list = []) -> dict:
 
     # replace \xa0 and \n
     L = [x.replace(u'\xa0', u' ').replace(u'\n' , u' ') for x in L]
-
     L2 = []
 
     for x in L:
@@ -60,30 +59,33 @@ def odt2json(path: str, sections: list = []) -> dict:
     data = {}
     section_content = []
     current_section = ''
+    is_array = False
     for x in L2:
-        if normalize(x) in [x['key'] for x in sections]:
-            current_section = normalize(x)
-            section_content = []
-        else:
+        is_new_section = False
+        for entry in sections:
+            if normalize(x) in entry['key']:
+                is_new_section = True
+                is_array = entry.get('array', False)
+                current_section = entry.get("=>", normalize(x))
+                section_content = []
+        #import pdb; pdb.set_trace()
+        if not is_new_section:
             x_match = re.match(reg_list, x)
             if x_match:
                 x = x_match.group(1)
             if re.search('[a-zA-Z0-9]', x): # If there are letters
                 section_content += [x]
 
-        if current_section in [x['key'] for x in sections] :
-            is_array = [x['array'] for x in sections if x['key'] == current_section][0]
-            if is_array:
-                data[current_section] = section_content
-            else :
-                data[current_section] = ' '.join(section_content)
-    #import pdb; pdb.set_trace()
+        # save the buffer until the next section
+        if is_array:
+            data[current_section] = []
+            for el in section_content:
+                data[current_section] += el.split(",")
+        else :
+            data[current_section] = ' '.join(section_content)
 
     if '' in data:
         data.pop('')
-
-    #import pdb; pdb.set_trace()
-
     return data
 
 

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from tools.elastic import get_index_name, replace_blue_green
 
 env_path = '/app/tests/iga/.env-iga'
-load_dotenv(dotenv_path=env_path)
+load_dotenv(dotenv_path=env_path, override=True)
 
 INDEX_NAME = os.getenv('INDEX_NAME')
 

@@ -15,8 +15,8 @@ from elasticsearch import Elasticsearch
 
 es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
 
-env_path = '/app/tests/iga/.env-iga'
-load_dotenv(dotenv_path=env_path)
+env_path = '/app/tests/bld/.env-bld'
+load_dotenv(dotenv_path=env_path, override=True)
 
 INDEX_NAME = os.getenv('INDEX_NAME')
 

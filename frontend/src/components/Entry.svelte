@@ -30,6 +30,7 @@
       }
     }
 
+
     function onDelete(val){
       value = value.filter(item => item !== val)
     }
