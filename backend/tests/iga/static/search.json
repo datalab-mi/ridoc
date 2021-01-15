@@ -1,0 +1,57 @@
+[
+  [
+    {
+    "bool": "must",
+    "query": {"query_string": {"fields":["titre", "content"], "query":"$value"}},
+    "value": "",
+    "type": "search",
+    "placeholder": "Recherche par mots clefs",
+    "innerHtml": "",
+    "style": "w-5/6 p-2",
+    "highlight": true
+    }
+  ],
+  [
+    {
+    "bool": "filter",
+    "query": {"match": {"author":{"query":"$value"}}},
+    "value": "",
+    "type": "search",
+    "placeholder": "Paul Dupond, Anne-Marie",
+    "innerHtml": "Nom ou Prénom",
+    "style": "w-3/4 p-2",
+    "highlight": true
+    },
+    {
+    "bool": "filter",
+    "query": {"range": {"date": {"gte":"$value"}}},
+    "value": "",
+    "type": "date",
+    "innerHtml": "A partir de : ",
+    "style": "w-3/4 p-2",
+    "highlight": true
+    },
+    {
+    "bool": "filter",
+    "query": {"range": {"date": {"gte":"$value"}}},
+    "value": "",
+    "type": "date",
+    "innerHtml": "Jusqu'à : ",
+    "style": "w-3/4 p-2",
+    "highlight": true
+    }
+  ],
+  [
+    {
+    "bool": "filter",
+    "query": {"terms": {"mots cles": "$value"}},
+    "fields": "tag",
+    "value": [],
+    "type": "keyword",
+    "placeholder": "Recherche par tags",
+    "innerHtml": "",
+    "style": "w-5/6 p-2",
+    "highlight": false
+    }
+  ]
+]

@@ -1,0 +1,59 @@
+{
+  "multiple": false,
+  "accept": ".pdf",
+  "inputs": [
+    {
+      "key": "title",
+      "type": "textarea",
+      "placeholder": "NA",
+      "value": "",
+      "innerHtml": "<b>Titre :</b>",
+      "highlight":  true,
+      "metadata": true,
+      "canBeEmpty": false
+    },
+    {
+      "key": "content",
+      "type": "textarea",
+      "placeholder": "NA",
+      "value": "",
+      "innerHtml": "<b>Contenu :</b>",
+      "highlight":  true,
+      "metadata": false,
+      "rows":4,
+      "canBeEmpty": false
+    },
+    {
+      "key": "author",
+      "type": "text",
+      "placeholder": "NA",
+      "value": "",
+      "innerHtml": "<b>Auteurs :</b>",
+      "highlight": true,
+      "metadata": true,
+      "canBeEmpty": true
+
+    },
+    {
+      "key": "date",
+      "type": "date",
+      "placeholder": "NA",
+      "value": "",
+      "innerHtml": "<b>Date :</b>",
+      "highlight": false,
+      "metadata": true,
+      "canBeEmpty": true
+    },
+    {
+      "key": "tag",
+      "type": "keyword",
+      "placeholder": "Ajoutez un tag",
+      "value": [],
+      "innerHtml": "<b>Tag :</b>",
+      "highlight": false,
+      "metadata": true,
+      "canBeEmpty": true
+    }
+  ]
+
+}
