@@ -1,23 +1,19 @@
 <footer>
   <span>
-    &copy; {new Date().getFullYear()} DNUM - {data.index_name}.
+    &copy; {new Date().getFullYear()} DNUM - {(data.index_name + "").toUpperCase()}.
     Powered by <a href="https://sapper.svelte.dev" target="_blank">Sapper</a>.
     Nous écrire <a href="mailto://{data.contact}">✉️</a>.
-    <a href="https://github.com/datalab-mi/moteur-de-recherche">Dépot</a>
+    <a href={data.repository}>Dépot</a>
   </span>
 </footer>
 
-
-
-
 <script>
-  import { onMount } from 'svelte';
   import { userData } from './stores.js';
-  let data = {}
+  import { onDestroy } from 'svelte';
+  let data = {index_name: "", contact: ""}
   const unsubscribe = userData.subscribe(value => {
     data = value;
   });
-
 </script>
 
 <style>

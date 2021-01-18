@@ -58,7 +58,7 @@
 		{#each row as {bool, query, fields, value, type, placeholder, innerHtml, style}, j}
 			{#if (i === 0) && (j === 0) }
 				<div class="w-1/6 p-2" >
-					<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded inline-flex itemConfigs-center">
+					<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded inline-flex items-center itemConfigs-center">
 						<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/></svg>
 						<span>Rechercher</span>
 					</button>

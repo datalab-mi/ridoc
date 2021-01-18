@@ -91,8 +91,6 @@ async function fetchUserData(set) {
 
 function getUserData() {
   const { subscribe, set, update } = writable({}, () => fetchUserData(set));
-  console.log('got a data');
-
   return  { subscribe }
 }
 export const userData = getUserData();
