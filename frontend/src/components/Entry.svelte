@@ -1,5 +1,5 @@
 <script>
-    import { pjDir, index_name } from './stores.js';
+    import { userData } from './stores.js';
     import { get, text_area_resize } from '../components/utils.js';
     import Tags from "svelte-tags-input";
 
@@ -24,7 +24,7 @@
     let promiseListKeyword = new Promise(()=>{})
     if  (type === "keyword") {
       if (!readonly && metadata) {
-        promiseListKeyword = get(`api/common/keywords/${$index_name}/${key}`)
+        promiseListKeyword = get(`api/common/keywords/${$userData.index_name}/${key}`)
       } else {
         promiseListKeyword = [] // no need of promiseListKeyword
       }
@@ -92,7 +92,7 @@
                 {:else if type == "textarea"}
                     <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}"   />
                 {:else if type == "link"}
-                    <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={(readonly || !metadata) ? window.open(`/api/common/files/${pjDir}/${val}`,'_blank'): ()=>{}} type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
+                    <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={(readonly || !metadata) ? window.open(`/api/common/files/${$userData.pjDir}/${val}`,'_blank'): ()=>{}} type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                 {/if}
                 {#if !readonly  && metadata}
                 <button on:click={() => onDelete(val)}>
@@ -122,7 +122,7 @@
       {:else if type == "textarea"}
         <textarea bind:value={value} {placeholder} readonly="{readonly || !metadata}" {rows} />
       {:else if type == "link"}
-          <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={(readonly || !metadata) ? window.open(`/api/common/files/${pjDir}/${value}`,'_blank'): ()=>{}} type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
+          <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={(readonly || !metadata) ? window.open(`/api/common/files/${$userData.pjDir}/${value}`,'_blank'): ()=>{}} type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
       {/if}
     {/if}
   {/if}

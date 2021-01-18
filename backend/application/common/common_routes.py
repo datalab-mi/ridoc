@@ -55,7 +55,7 @@ def get_file(path=''):
                 filename.relative_to(Path(app.config['USER_DATA'])),
                 as_attachment=True)
 
-        return make_response('%s not found'%dir.stem, 404)
+        return make_response('%s not found'%dir, 404)
 
 
 @common_bp.route('/search', methods=['POST'])

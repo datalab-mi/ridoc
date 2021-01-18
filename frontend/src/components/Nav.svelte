@@ -1,9 +1,13 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
-	import { user, displayLogin } from './stores.js';
+	import { user, displayLogin, userData } from './stores.js';
 
 	export let segment;
-	let logo = "/api/common/logo"
+	let logo = ''
+  const unsubscribe = userData.subscribe(value => {
+    logo = "user/" + value.logo;
+  });
+
 
 	function authClicked() {
 		$displayLogin =! $displayLogin

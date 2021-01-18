@@ -12,10 +12,6 @@ export const isReindex = writable(false)
 export const list_synonym = writable([])
 export const list_files = writable([])
 
-//index_name, dstDir, pjDir are replaced in rollup.config.js
-export const index_name = writable('INDEX_NAME')
-export const dstDir = "DST_DIR"
-export const pjDir = "PJ_DIR"
 
 // authentification
 const initial_user = {role:"common", jwToken:null}
@@ -82,3 +78,25 @@ function createLogger() {
 }
 
 export const list_logger = createLogger();
+
+
+async function fetchUserData(set) {
+  console.log("fetchUserData")
+  const res = await fetch('user/env.json');
+  if(res.ok) {
+    const data_res = await res.json();
+    console.log(data_res);
+    set(data_res);
+  } else {
+    const text = res.text();
+    throw new Error(text);
+  }
+}
+
+function getUserData() {
+  const { subscribe, set, update } = writable({}, () => fetchUserData(set));
+  console.log('got a data');
+
+  return  { subscribe }
+}
+export const userData = getUserData();

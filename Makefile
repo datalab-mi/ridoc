@@ -1,6 +1,6 @@
 export APP = moteur-de-recherche
 export APP_PATH := $(shell pwd)
-export APP_VERSION	:= 0.2
+export APP_VERSION	:= 0.3
 export DATA_PATH = ${APP_PATH}/backend/tests/iga/data
 #export APP_VERSION	:= $(shell git describe --tags || cat VERSION )
 
@@ -48,6 +48,7 @@ export FRONTEND_DEV_HOST = frontend-dev
 export FILE_FRONTEND_APP_VERSION = $(APP)-$(APP_VERSION)-frontend.tar.gz
 export FILE_FRONTEND_DIST_APP_VERSION = $(APP)-$(APP_VERSION)-frontend-dist.tar.gz
 export FILE_FRONTEND_DIST_LATEST_VERSION = $(APP)-latest-frontend-dist.tar.gz
+export FRONTEND_STATIC_USER = ${APP_PATH}/frontend/static/user # user folder in static folder of frontend
 
 export PDFJS_VERSION=2.3.200
 export BUILD_DIR = ${APP_PATH}/${APP}-build

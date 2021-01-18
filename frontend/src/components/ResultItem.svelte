@@ -2,7 +2,7 @@
 	import PutItem from './PutItem.svelte'
 	import Entry from './Entry.svelte'
 
-	import { index_name, dstDir, itemConfig, user, list_logger } from './stores.js';
+	import { userData, itemConfig, user, list_logger } from './stores.js';
 	import { index, upload } from './utils.js'
 
 
@@ -16,7 +16,7 @@
 	let isResult = true
 	let cssClass = 'result'
 	let filename = _id.replace(/\+/g, " ")
-	$: url = `/api/common/files/${dstDir}/${filename}`
+	$: url = `/api/common/files/${$userData.dstDir}/${filename}`
 	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
 
 	const file = {'name': _id.replace(/\+/g, " ")}
@@ -35,7 +35,6 @@
 			meta[index].isHighlight = false
 		}
 		// test if item should be displayed if empty
-		console.log(meta[index])
 		if (!( meta[index].canBeEmpty === undefined) && (! meta[index].canBeEmpty) && (isEmpty(meta[index].value))) {
 			display = false
 		}
@@ -52,7 +51,7 @@
 				list_logger.concat({level: "error", message: err, ressource: "upload"})
 			})
 
-		index( $index_name, filename, 'DELETE')
+		index( $userData.index_name, filename, 'DELETE')
 			.then(() => {
 				list_logger.concat({level: "success", message: "Document désindexé avec succès! ", ressource: "upload"})
 			})

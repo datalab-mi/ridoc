@@ -18,7 +18,7 @@ services:
     volumes:
       - ${FRONTEND}/src:/app/src
       - ${FRONTEND}/static:/app/static
-
+      - ${FRONTEND_STATIC_USER}:/app/static/user
     ports:
       - "${FRONTEND_PORT}:3000"
       - "35729:35729"

@@ -44,7 +44,7 @@
   [
     {
     "bool": "filter",
-    "query": {"terms": {"mots cles": "$value"}},
+    "query": {"terms": {"tag": "$value"}},
     "fields": "tag",
     "value": [],
     "type": "keyword",

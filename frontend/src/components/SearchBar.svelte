@@ -1,5 +1,5 @@
 <script>
-	import { suggestEntry,  index_name, itemConfig, searchList, promiseSearch } from '../components/stores.js';
+	import { suggestEntry, itemConfig, searchList, promiseSearch, userData } from '../components/stores.js';
 	import { format2ES, search } from '../components/utils.js';
 
 	import SearchInput from  '../components/SearchInput.svelte';
@@ -11,7 +11,7 @@
 		const res = await fetch("/api/common/suggest",{
 												method: "POST",
 												body: JSON.stringify({
-															 index_name: $index_name,
+															 index_name: $userData.index_name,
 															 content: $searchList.content.value,
 														 })
 													 });
@@ -28,7 +28,7 @@
 
 	function handleSearch() {
 		console.log("handleSearch")
-		body =  format2ES($itemConfig, $searchList, $index_name)
+		body =  format2ES($itemConfig, $searchList, $userData.index_name)
 		$promiseSearch = search(body)
 	}
 
@@ -48,6 +48,7 @@
 
 </script>
 <div class='search-bar' on:keyup={e=>e.key==="Enter" && handleSearch()}>
+
 
 {#if $searchList.length > 0}
 
@@ -75,7 +76,7 @@
 
 {:then result}
 	{#if ("hits" in result) }
-		<p>{result.hits.length} documents retournés</p>
+		<p>{result.hits.length} documents affichés</p>
 	{/if}
 
 {/await}
