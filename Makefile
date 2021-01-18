@@ -61,6 +61,8 @@ export API_USER_BURST=20 nodelay
 export API_USER_SCOPE=http_x_forwarded_for
 export API_GLOBAL_LIMIT_RATE=20r/s
 export API_GLOBAL_BURST=200 nodelay
+# SWIFT
+export BUCKET_NAME=${INDEX_NAME}
 
 # this is usefull with most python apps in dev mode because if stdout is
 # buffered logs do not shows in realtime
@@ -69,8 +71,6 @@ PYTHONUNBUFFERED=1
 dummy		    := $(shell touch artifacts)
 include ./artifacts
 export
-# SWIFT
-export BUCKET_NAME=${INDEX_NAME}
 
 #vm_max_count            := $(shell cat /etc/sysctl.conf | egrep vm.max_map_count\s*=\s*262144 && echo true)
 #
