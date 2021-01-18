@@ -9,7 +9,7 @@
 	import NewItem from '../components/NewItem.svelte';
 	import File from '../components/file-browser/File.svelte';
 
-	import { pjDir } from '../components/stores.js';
+	import { userData } from '../components/stores.js';
 
 	let meta = [
 						{
@@ -75,7 +75,7 @@
 	<h1>Gestion des pièces-jointes</h1>
 	<br>
 	<p>Vous pouvez ajouter, modifier ou supprimer des pièces-jointes </p>
-	<File baseDir={pjDir} {meta}/>
+	<File baseDir={$userData.pjDir} {meta}/>
 
 </div>
 

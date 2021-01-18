@@ -48,8 +48,7 @@
 
 </script>
 <div class='search-bar' on:keyup={e=>e.key==="Enter" && handleSearch()}>
-<p>	{$userData.logo} </p>
-<p>	{$userData.index_name} </p>
+
 
 {#if $searchList.length > 0}
 
@@ -77,7 +76,7 @@
 
 {:then result}
 	{#if ("hits" in result) }
-		<p>{result.hits.length} documents retournés</p>
+		<p>{result.hits.length} documents affichés</p>
 	{/if}
 
 {/await}

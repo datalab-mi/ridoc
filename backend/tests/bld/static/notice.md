@@ -1,16 +1,16 @@
 # Description de l'outil
-Ce **moteur de recherche** constitue une base de connaissance ouverte de l'IGA; les [bonnes feuilles](https://www.interieur.gouv.fr/Publications/Rapports-de-l-IGA/Bonnes-Feuilles).
+Ce **moteur de recherche** constitue une base de connaissance  de test des outils du bureau de valorisation de la données du Ministère de l’intérieur.
 
 ⚠️ **Attention** ⚠️, il s'agit ici d'une démo, la barre de recherche ainsi que les résultats sont configurables.
 Il peut aussi être utilisé pour des documents sous d'autres formats, avec des champs texte, date ou mots-clefs.
-Pour des questions relatives à son installation ou utilisation, vous pouvez nous contacter [✉️](datalab@interieur.gouv.fr).
+Pour des questions relatives à son installation ou utilisation, vous pouvez nous contacter [✉️](mailto:datalab@interieur.gouv.fr).
 ---
 # Notice d'utilisation
 
 ## Un onglet [recherche](search)
 
 Dans la barre de recherche, on peut effectuer une recherche par mots-clefs avec des **opérateurs spéciaux**:
-La recherche : ("Des Sargasses" -algues) OR (Martinique +plage) retournera les documents avec la séquence "Des Sargasses" sans algues OU les documents avec Martinique et absolument plages.
+La recherche : ("moteur de recherche" -python) OR (Docker +backend) retournera les documents avec la séquence "moteur de recherche" sans python OU les documents avec Docker et backend.
 
 On peut aussi mettre un filtre par tag.
 

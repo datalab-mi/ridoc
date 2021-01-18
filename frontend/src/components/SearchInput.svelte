@@ -13,7 +13,7 @@
   let promiseListKeyword = new Promise(()=>{})
 
   if  (type === "keyword") {
-    promiseListKeyword = get(`api/common/keywords/${$userData.dstDir}/${fields}`)
+    promiseListKeyword = get(`api/common/keywords/${$userData.index_name}/${fields}`)
   }
   const handleInput = e => {
     // in here, you can switch on type and implement

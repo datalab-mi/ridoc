@@ -1,5 +1,5 @@
 <script>
-import { promiseSearch, itemConfig } from '../components/stores.js';
+import { promiseSearch, itemConfig, userData } from '../components/stores.js';
 import { format2ES } from '../components/utils.js';
 
 import { onMount } from 'svelte';
@@ -41,7 +41,7 @@ $: $promiseSearch.then((searchResults) => {add_bar(searchResults)})
 			{#each items as item (item.key)}
 				{#if  item._id === "bar"}
 					<div class="bar">
-						<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Nous vous recommandons de contacter l'<b><a href="mailto://iga@interieur.gouv.fr?subject=Demande_de_consultation">administrateur</a></b>.
+						<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Nous vous recommandons de contacter l'<b><a href="mailto:{$userData.contact}?subject=Demande de consultation">administrateur</a></b>.
 						</p>
 					</div>
 				{:else}
