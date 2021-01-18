@@ -32,7 +32,7 @@ services:
       #restart: always
     volumes:
       - ./nginx/apache2:/etc/nginx/apache2
-      - ./frontend/static/user:/usr/share/nginx/html/export/user
+      - ${FRONTEND_STATIC_USER}:/usr/share/nginx/html/export/user
 
 networks:
   default:
