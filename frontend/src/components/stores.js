@@ -19,8 +19,7 @@ const initial_user = {role:"common", jwToken:null}
 async function testToken(user, set) {
   const response = await fetch('/api/admin/identity', {
     headers: new Headers({'Authorization': `JWT ${user.jwToken}`})
-  });
-  console.log(response)
+    });
   if(response.ok) {
     set(user)
   }
@@ -42,7 +41,6 @@ function createUser(user) {
     updateKey: (key, value) => {
       update(user => user.key = value)
     }
-
   };
 }
 
@@ -79,13 +77,11 @@ function createLogger() {
 
 export const list_logger = createLogger();
 
-
 async function fetchUserData(set) {
   console.log("fetchUserData")
   const res = await fetch('user/env.json');
   if(res.ok) {
     const data_res = await res.json();
-    console.log(data_res);
     set(data_res);
   } else {
     const text = res.text();
@@ -95,8 +91,6 @@ async function fetchUserData(set) {
 
 function getUserData() {
   const { subscribe, set, update } = writable({}, () => fetchUserData(set));
-  console.log('got a data');
-
   return  { subscribe }
 }
 export const userData = getUserData();

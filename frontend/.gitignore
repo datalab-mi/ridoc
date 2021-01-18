@@ -5,5 +5,5 @@ yarn-error.log
 /cypress/screenshots/
 /__sapper__/
 /static/main.css
-/static/data.json
-/static/notice.md
+/static/user/notice.md
+/static/user/env.json

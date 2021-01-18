@@ -1,6 +1,6 @@
 export APP = moteur-de-recherche
 export APP_PATH := $(shell pwd)
-export APP_VERSION	:= 0.3
+export APP_VERSION	:= 1.1
 export DATA_PATH = ${APP_PATH}/backend/tests/iga/data
 #export APP_VERSION	:= $(shell git describe --tags || cat VERSION )
 

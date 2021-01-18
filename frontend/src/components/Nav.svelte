@@ -1,13 +1,12 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
 	import { user, displayLogin, userData } from './stores.js';
+	import { onDestroy } from 'svelte';
 
 	export let segment;
 	let logo = ''
   const unsubscribe = userData.subscribe(value => {
     logo = "user/" + value.logo;
   });
-
 
 	function authClicked() {
 		$displayLogin =! $displayLogin

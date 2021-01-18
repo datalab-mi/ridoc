@@ -8,4 +8,5 @@
 !/frontend/tailwind.config.js
 !/src
 !/static
-/static/user
+/static/user/notice.md
+/static/user/env.json
