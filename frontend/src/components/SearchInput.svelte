@@ -9,6 +9,7 @@
   export let fields = ""
   export let value = ""
   export let type = "text"
+  export let color = "#000"
 
   let promiseListKeyword = new Promise(()=>{})
 
@@ -32,7 +33,7 @@
 {#if type === "keyword"}
   {#await promiseListKeyword}
   {:then autoComplete}
-    <div class="my-custom-class">
+    <div class="my-custom-class" style= "--color: {color}">
       <Tags
         tags={value}
         on:tags={handleTags}
@@ -60,7 +61,7 @@
 <style>
   /* override default Tag style */
   .my-custom-class :global(.svelte-tags-input-tag) {
-      background:#000 !important;
+      background: var(--color) !important;
       cursor: default !important;;
   }
   .my-custom-class :global(.svelte-tags-input-layout) {

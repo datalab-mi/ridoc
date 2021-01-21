@@ -55,7 +55,7 @@
 	{#each $searchList as row, i }
 	<div class="flex mb-4">
 
-		{#each row as {bool, query, fields, value, type, placeholder, innerHtml, style}, j}
+		{#each row as {bool, query, fields, value, type, placeholder, innerHtml, style, color}, j}
 			{#if (i === 0) && (j === 0) }
 				<div class="w-1/6 p-2" >
 					<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded inline-flex items-center itemConfigs-center">
@@ -65,7 +65,7 @@
 				</div>
 			{/if}
 
-			<SearchInput bind:value={value} {fields} {type} {placeholder} {innerHtml} {style} />
+			<SearchInput bind:value={value} {fields} {type} {placeholder} {innerHtml} {style} {color} />
 		{/each}
 		</div>
 

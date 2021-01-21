@@ -33,7 +33,7 @@
     },
     {
     "bool": "filter",
-    "query": {"range": {"date": {"gte":"$value"}}},
+    "query": {"range": {"date": {"lte":"$value"}}},
     "value": "",
     "type": "date",
     "innerHtml": "Jusqu'à : ",

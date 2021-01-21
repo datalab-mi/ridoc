@@ -15,6 +15,26 @@
   [
     {
     "bool": "filter",
+    "query": {"range": {"date": {"gte":"$value"}}},
+    "value": "",
+    "type": "date",
+    "innerHtml": "A partir de : ",
+    "style": "w-3/4 p-2",
+    "highlight": false
+    },
+    {
+    "bool": "filter",
+    "query": {"range": {"date": {"lte":"$value"}}},
+    "value": "",
+    "type": "date",
+    "innerHtml": "Jusqu'à : ",
+    "style": "w-3/4 p-2",
+    "highlight": false
+    }
+  ],
+  [
+    {
+    "bool": "filter",
     "query": {"terms": {"mots cles": "$value"}},
     "fields": "mots cles",
     "value": [],
