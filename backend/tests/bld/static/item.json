@@ -32,6 +32,15 @@
       "rows": 4
     },
     {
+      "key": "date",
+      "type": "text",
+      "placeholder": "",
+      "value": "",
+      "innerHtml": "<b>Date :</b>",
+      "highlight": false,
+      "metadata": false
+    },
+    {
       "key": "pieces jointes",
       "type": "link",
       "placeholder": "NA",

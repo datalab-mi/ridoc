@@ -465,7 +465,7 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
     #import pdb; pdb.set_trace()
     if  filename.suffix == '.pdf':
         data = pdf2json(str(path_document))
-    elif  filename.suffix == '.odt':
+    elif  filename.suffix in ['.odt','.docx']:
         data = odt2json(str(path_document), sections)
     else:
         raise Exception("Format not supported")
@@ -554,6 +554,7 @@ def get_unique_keywords(index_name: str, field: str) -> list:
           "aggs": {
             field: {
               "terms": { "field": field,
+                        "order": { "_key": "asc" },
                         "size": int(1e4) }
             }
           }

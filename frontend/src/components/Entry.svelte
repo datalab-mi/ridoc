@@ -18,10 +18,12 @@
     export let cssClass = 'base'
 
     export let rows = 4
+    export let color = "#000"
     let newValue = ""
     let keywordList = []
-
     let promiseListKeyword = new Promise(()=>{})
+
+
     if  (type === "keyword") {
       if (!readonly && metadata) {
         promiseListKeyword = get(`api/common/keywords/${$userData.index_name}/${key}`)
@@ -44,6 +46,18 @@
         value = event.detail.tags;
     }
 
+    function handleClick(val) {
+      console.log(val)
+      if  (readonly || !metadata) {
+        let found = val.match(/(http.*)/g)
+        if ( found != null) {
+          window.open(found,'_blank')
+        } else {
+          window.open(`/api/common/files/${$userData.pjDir}/${val}`,'_blank')
+        }
+        
+    }
+  }
 </script>
 
 <div>
@@ -66,7 +80,7 @@
     {#if type === "keyword"}
       {#await promiseListKeyword}
       {:then autoComplete}
-        <div class="my-custom-class">
+        <div class="my-custom-class" style= "--color: {color}">
           <Tags
         		tags={value}
             on:tags={handleTags}
@@ -76,6 +90,7 @@
             allowPaste={true}
             onlyUnique={true}
             autoComplete={autoComplete}
+            minChars={1}
             />
         </div>
         {/await}
@@ -92,7 +107,7 @@
                 {:else if type == "textarea"}
                     <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}"   />
                 {:else if type == "link"}
-                    <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={(readonly || !metadata) ? window.open(`/api/common/files/${$userData.pjDir}/${val}`,'_blank'): ()=>{}} type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
+                    <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={handleClick(val)} type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
                 {/if}
                 {#if !readonly  && metadata}
                 <button on:click={() => onDelete(val)}>
@@ -122,7 +137,7 @@
       {:else if type == "textarea"}
         <textarea bind:value={value} {placeholder} readonly="{readonly || !metadata}" {rows} />
       {:else if type == "link"}
-          <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={(readonly || !metadata) ? window.open(`/api/common/files/${$userData.pjDir}/${value}`,'_blank'): ()=>{}} type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
+          <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={handleClick(value)} type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
       {/if}
     {/if}
   {/if}
@@ -133,7 +148,7 @@
 <style>
   /* override default Tag style */
   .my-custom-class :global(.svelte-tags-input-tag) {
-      background:#000 !important;
+      background: var(--color) !important;
       cursor: default !important;;
   }
   .my-custom-class :global(.svelte-tags-input-layout) {

@@ -46,9 +46,8 @@ def odt2json(path: str, sections: list = []) -> dict:
 
     for x in L:
         g = re.match("^({sections})\s*:\s*(.*)".format(sections='|'.join([x['key'] for x in sections] )), normalize(x))
-
         if g:
-            L2 += [g.group(1), x[g.span(2)[0]: g.span(2)[1]]] # span rather group to get origal string
+            L2 += [g.group(1), x[g.regs[-1][0]: g.regs[-1][1]]] # span rather group to get origal string
         else:
             # Section is not present
             L2 += [x]
@@ -59,15 +58,19 @@ def odt2json(path: str, sections: list = []) -> dict:
     data = {}
     section_content = []
     current_section = ''
+    matched_entry = ''
     is_array = False
     for x in L2:
         is_new_section = False
         for entry in sections:
-            if normalize(x) in entry['key']:
+            g2 = re.match("^{entry}$".format(entry=entry['key']), normalize(x))
+            if g2:
+                #if normalize(x) in entry['key']:
                 is_new_section = True
                 is_array = entry.get('array', False)
                 current_section = entry.get("=>", normalize(x))
                 section_content = []
+                matched_entry = entry
         #import pdb; pdb.set_trace()
         if not is_new_section:
             x_match = re.match(reg_list, x)
@@ -80,7 +83,7 @@ def odt2json(path: str, sections: list = []) -> dict:
         if is_array:
             data[current_section] = []
             for el in section_content:
-                data[current_section] += el.split(",")
+                data[current_section] += re.split(';|,| – | - ',el)
         else :
             data[current_section] = ' '.join(section_content)
 
@@ -122,6 +125,17 @@ def save_json(data, json_file: str):
     return 'OK'
 
 if __name__ == '__main__':
+    # Section path
+    path_sections = Path(os.environ['USER_DATA']) / 'sections.json'
+    if path_sections.exists():
+        with open(path_sections, 'r' , encoding = 'utf-8') as json_file:
+            sections = json.load(json_file)
+    else:
+        sections = []
+    doc = "CALLMI_FS_015_Simplifiée - Message terminal déjà utilisé avec une autre carte.odt"
+    path = '/data/user/odt/%s'%doc
+    data = odt2json(path, sections)
+
     path = '/app/tests/doc.odt'
     data = convertisseur_odt_txt(path)
     save_json(data, 'docOdt.json')

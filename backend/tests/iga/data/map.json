@@ -169,6 +169,7 @@
             },
             "tag": {
               "type": "keyword",
+              "ignore_above": 10000,
               "normalizer": "clean_normalizer"
             }
           }

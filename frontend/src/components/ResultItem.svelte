@@ -81,14 +81,14 @@
 	<section class="result-item" id={_id}>
 
 		{#if (readonly) }
-				{#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight, rows}, i }
+				{#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight, rows, color}, i }
 					{#if (! isEmpty(value)) }
-						<Entry  {readonly} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {cssClass} {rows}}/>
+						<Entry  {readonly} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {cssClass} {rows} {color}/>
 					{/if}
 				{/each}
 		{:else}
-			{#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight, rows}, i }
-				<Entry  {readonly} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {cssClass} {rows}}/>
+			{#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight, rows, color}, i }
+				<Entry  {readonly} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {cssClass} {rows} {color}/>
 			{/each}
 		{/if}
 
