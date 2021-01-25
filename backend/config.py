@@ -24,6 +24,7 @@ class Config:
     DST_DIR = getenv('DST_DIR')
     JSON_DIR = getenv('JSON_DIR')
     META_DIR = getenv('META_DIR')
+    AUTH_DIR = getenv('AUTH_DIR')
 
     LOGO = getenv('LOGO', "logo.svg")
     #Authentication

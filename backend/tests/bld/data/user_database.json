@@ -4,8 +4,8 @@
       {"id": 2,"username": "admin", "password": "admin","role":"admin"}
     ],
   "rules":{
-    "admin":["user","admin"],
-    "user":["user"],
-    "visitor":["visitor"]
+    "admin":["user","admin", "visitor"],
+    "user":["user", "visitor"],
+    "visitor":["user", "visitor"]
   }
 }

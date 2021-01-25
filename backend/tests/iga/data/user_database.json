@@ -1,1 +1,11 @@
-{"user_database": [{"id": 1,"username": "admin1", "password": "admin"}, {"id": 2,"username": "admin", "password": "admin"}]}
+{
+  "user_database": [
+      {"id": 1,"username": "user1", "password": "abcxyz", "role": "user"},
+      {"id": 2,"username": "admin", "password": "admin","role":"admin"}
+    ],
+  "rules":{
+    "admin":["user","admin"],
+    "user":["user"],
+    "visitor":["visitor"]
+  }
+}

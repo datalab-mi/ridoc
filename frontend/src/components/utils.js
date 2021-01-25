@@ -2,7 +2,7 @@ import { user } from './stores.js';
 
 var headers =  {}
 const unsubscribe = user.subscribe(value => {
-  headers = {'Authorization': `JWT ${value.jwToken}`}
+  headers = {'Authorization': ` Bearer ${value.jwToken}`}
 });
 
 async function upload(meta, file, method='PUT') {

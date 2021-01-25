@@ -18,7 +18,7 @@ const initial_user = {role:"common", jwToken:null}
 
 async function testToken(user, set) {
   const response = await fetch('/api/admin/identity', {
-    headers: new Headers({'Authorization': `JWT ${user.jwToken}`})
+    headers: new Headers({'Authorization'  : ` Bearer ${user.jwToken}`})
     });
   if(response.ok) {
     set(user)

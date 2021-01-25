@@ -589,6 +589,9 @@ def get_tag(index_name: str, filename: str, fields: str) -> list:
     res = [content['_source'][fields][val["start_offset"]:val["end_offset"]] for key, val in res.items()]
     return  list(set(res))
 
+def get_info():
+    return es.info()
+
 if __name__ == '__main__':
 
     INDEX_NAME = 'prod'
