@@ -4,8 +4,13 @@
       {"id": 2,"username": "admin", "password": "admin","role":"admin"}
     ],
   "rules":{
-    "admin":["user","admin"],
-    "user":["user"],
+    "admin":["visitor","user","admin"],
+    "user":["visitor","user"],
     "visitor":["visitor"]
+  },
+  "resources":{
+    "admin":["search","glossary","expression","admin"],
+    "user":["search"],
+    "visitor":[]
   }
 }

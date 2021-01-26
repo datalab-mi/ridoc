@@ -78,11 +78,16 @@
 
 	<ul>
 		<li><a class="w-12 h-12" href='.'><img src={logo}></a></li>
-		<li><a aria-current='{segment === "search" ? "page" : undefined}' href='search'>recherche</a></li>
-		<li><a aria-current='{segment === "glossary" ? "page" : undefined}' href='glossary'>glossaire</a></li>
-		<li><a aria-current='{segment === "expression" ? "page" : undefined}' href='expression'>expression</a></li>
-
-		{#if ($user.role === "admin")}
+		{#if ($user.resources.includes("search"))}
+			<li><a aria-current='{segment === "search" ? "page" : undefined}' href='search'>recherche</a></li>
+		{/if}
+		{#if ($user.resources.includes("glossary"))}
+			<li><a aria-current='{segment === "glossary" ? "page" : undefined}' href='glossary'>glossaire</a></li>
+		{/if}
+		{#if ($user.resources.includes("expression"))}
+			<li><a aria-current='{segment === "expression" ? "page" : undefined}' href='expression'>expression</a></li>
+		{/if}
+		{#if ($user.resources.includes("admin"))}
 			<li><a aria-current='{segment === "admin" ? "page" : undefined}' href='admin'>admin</a></li>
 		{/if}
 

@@ -14,17 +14,21 @@ export const list_files = writable([])
 
 
 // authentification
-const initial_user = {role:"visitor", jwToken:null}
+const visitor = {role:"visitor", jwToken:null, rules: ["visitor"], resources:[]}
 
 async function testToken(user, set) {
-  const response = await fetch('/api/admin/identity', {
-    headers: new Headers({'Authorization'  : ` Bearer ${user.jwToken}`})
+  const response = await fetch(`/api/authorized_resource/${user.role}`, {
+    headers: new Headers({'Authorization'  : `Bearer ${user.jwToken}`})
     });
   if(response.ok) {
+    user = visitor
+    const data = await response.json()
+    user.rules = data.rules
+    user.resource = data.resources
+    console.log(user)
     set(user)
   }
   else if (response.status === 401) {
-    set(initial_user)
   }
 }
 
@@ -40,15 +44,24 @@ function createUser(user) {
     clean: () => localStorage.removeItem('user'),
     updateKey: (key, value) => {
       update(user => user.key = value)
+    },
+    unauthenticate: async (user) =>  {
+      const response = await fetch(`/api/authorized_resource/visitor`)
+      const data = await response.json()
+      user.rules = data.rules
+      user.resource = data.resources
+      set(user)
+      localStorage.setItem('user', JSON.stringify(user))
+        };
     }
   };
 }
 
 export let user
 if(typeof window !== "undefined") {
-    user = createUser(JSON.parse(localStorage.getItem("user")) || initial_user);
+    user = createUser(JSON.parse(localStorage.getItem("user")) || visitor);
 } else {
-    user = createUser(initial_user);
+    user = createUser(visitor);
 }
 
 export const displayLogin = writable(false)

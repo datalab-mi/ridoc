@@ -6,7 +6,7 @@ from flask_jwt_extended import (
     JWTManager, verify_jwt_in_request, verify_jwt_in_request_optional,
     create_access_token,
     get_jwt_claims,
-    jwt_required, get_jwt_identity
+    jwt_required, jwt_optional,get_jwt_identity, verify_fresh_jwt_in_request
 )
 
 from flask import current_app as app
@@ -49,6 +49,7 @@ users = [User(u['id'], u['username'], u['password'], u.get("role","visitor")) fo
 username_table = {u.username: u for u in users}
 userid_table = {u.id: u for u in users}
 rules_table = user_database["rules"] if "rules" in user_database else {k:k for k in ["admin", "user", "visitor"]}
+resources_table = user_database["resources"] if "resources" in user_database else {k:[] for k in ["admin", "user", "visitor"]}
 
 # define auth route and decorators
 @app.route('/auth', methods=['POST'])
@@ -67,18 +68,34 @@ def login():
     if username_table[username].password != password :
         return jsonify({"msg": "Bad username or password"}), 401
     # Identity can be any data that is json serializable
-    access_token = create_access_token(identity=username_table[username].role)
-    return jsonify(access_token=access_token), 200
+    role = username_table[username].role
+    access_token = create_access_token(identity=role)
+    return jsonify(access_token=access_token,
+                    role=role,
+                    rules=rules_table[role],
+                    resources=resources_table[role]), 200
 
 @app.route('/authorized_resource', methods=['GET'])
-@jwt_required
+@jwt_optional
 def authorized_resource():
     """ If valid token, return role and
     row of matrice role, ie the authorized resources
+    if no token return "visitor"
+    if invalid token, return 422 error
     """
     current_role = get_jwt_identity()
+    if  not (current_role and  current_role in rules_table):
+        current_role = "visitor"
     return jsonify(role=current_role,
-                   resource=rules_table[current_role]), 200
+                   rules=rules_table[current_role]), 200
+
+@app.route('/authorized_resource/<role>', methods=['GET'])
+def authorized_resource2(role):
+    """ Return  authorized resources from role
+    """
+    return jsonify(rules=rules_table.get(role, ['visitor']),
+                    resources=resources_table.get(role, [])), 200
+
 # Admin check
 def admin_required(fn):
     @wraps(fn)

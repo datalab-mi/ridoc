@@ -50,11 +50,16 @@ def test_authorized_resource(app, client, access_headers, role):
     response = client.get('/authorized_resource', headers=access_headers)
     assert response.status_code == 200
     assert response.json == {'resource': ['user', 'admin'], 'role': 'admin'}
-    faked_headers = access_headers.copy()
-    faked_headers["Authorization"] = 'Bearer faked'
+    faked_headers = {"Authorization": 'Bearer faked'}
     faked_response = client.get('/authorized_resource', headers=faked_headers)
+    assert faked_response.status_code == 422
+    no_header_response = client.get('/authorized_resource')
+    assert no_header_response.status_code == 200
+    assert no_header_response.json == {'resource': ['visitor'], 'role': 'visitor'}
+    role_response = client.get('/authorized_resource/admin')
+    assert role_response.json == {'resource': ['user', 'admin']}
 
-    import pdb; pdb.set_trace()
+
 
 def test_healthcheck(client, app):
     # test that viewing the page renders without template errors

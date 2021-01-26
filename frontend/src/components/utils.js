@@ -146,12 +146,15 @@ const format2ES = (item, query_list, index_name) => {
 async function search(body) {
 	const res = await fetch("/api/user/search",{
 											method: "POST",
-											body: JSON.stringify(body)
+											body: JSON.stringify(body),
+                      headers: new Headers(headers)
 												 });
 
 	if (res.ok) {
     const result = await res.json();
 		return result
+  } else if (res.status===401)  {
+    throw new Error('Rôle admin nécessaire pour sauver');
 	} else {
 		throw new Error('Oups');
 	}
