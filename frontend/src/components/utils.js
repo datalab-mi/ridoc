@@ -182,7 +182,7 @@ async function synonym(method, row, filename,key=0) {
   let res;
   if (method === 'GET') {
     res = await fetch(`/api/user/synonym?filename=${filename}`,
-        {method: 'GET'});
+        {method: 'GET', headers: new Headers(headers)});
   } else if (method === 'PUT' || method === 'DELETE') {
     res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
         method: method,

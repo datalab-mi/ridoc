@@ -51,7 +51,7 @@
         })
         .catch(err => {
           console.log($user)
-          user.updateKey("role", "visitor")
+          user.unauthenticate()
           list_logger.concat({level: "error", message: err, ressource: "login"})
           //errors.server = err;
           isLoading = false;

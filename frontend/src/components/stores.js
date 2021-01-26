@@ -45,17 +45,17 @@ function createUser(user) {
     updateKey: (key, value) => {
       update(user => user.key = value)
     },
-    unauthenticate: async (user) =>  {
+    unauthenticate: async () =>  {
       const response = await fetch(`/api/authorized_resource/visitor`)
       const data = await response.json()
-      user.rules = data.rules
-      user.resource = data.resources
-      set(user)
-      localStorage.setItem('user', JSON.stringify(user))
-        };
+      visitor.rules = data.rules
+      visitor.resource = data.resources
+      set(data)
+      localStorage.setItem('user', JSON.stringify(data))
+        }
     }
-  };
 }
+
 
 export let user
 if(typeof window !== "undefined") {
