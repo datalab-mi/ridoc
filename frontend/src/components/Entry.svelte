@@ -26,7 +26,7 @@
 
     if  (type === "keyword") {
       if (!readonly && metadata) {
-        promiseListKeyword = get(`api/common/keywords/${$userData.index_name}/${key}`)
+        promiseListKeyword = get(`api/user/keywords/${$userData.index_name}/${key}`)
       } else {
         promiseListKeyword = [] // no need of promiseListKeyword
       }
@@ -55,7 +55,7 @@
         } else {
           window.open(`/api/common/files/${$userData.pjDir}/${val}`,'_blank')
         }
-        
+
     }
   }
 </script>

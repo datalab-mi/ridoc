@@ -52,7 +52,7 @@
           list_logger.concat({level: "success", message: `Loggé en tant que ${$user.role}`, ressource: "login"})
         })
         .catch(err => {
-          user.updateKey("role", "common")
+          user.updateKey("role", "visitor")
           list_logger.concat({level: "error", message: err, ressource: "login"})
           //errors.server = err;
           isLoading = false;

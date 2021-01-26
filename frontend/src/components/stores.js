@@ -14,7 +14,7 @@ export const list_files = writable([])
 
 
 // authentification
-const initial_user = {role:"common", jwToken:null}
+const initial_user = {role:"visitor", jwToken:null}
 
 async function testToken(user, set) {
   const response = await fetch('/api/admin/identity', {

@@ -8,7 +8,7 @@
 	let body
 
 	async function suggest() {
-		const res = await fetch("/api/common/suggest",{
+		const res = await fetch("/api/user/suggest",{
 												method: "POST",
 												body: JSON.stringify({
 															 index_name: $userData.index_name,

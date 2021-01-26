@@ -75,7 +75,7 @@ async function get(url) {
     const url = filename === "" ? baseDir :  `${baseDir}/${filename}`
 
 		if (method == 'GET') {
-			res = await fetch(`/api/common/files/${url}`,
+			res = await fetch(`/api/user/files/${url}`,
 					{method: 'GET'})
 		} else if (method == 'PUT') {
       const formData = new FormData()
@@ -144,7 +144,7 @@ const format2ES = (item, query_list, index_name) => {
 
 
 async function search(body) {
-	const res = await fetch("/api/common/search",{
+	const res = await fetch("/api/user/search",{
 											method: "POST",
 											body: JSON.stringify(body)
 												 });
@@ -178,7 +178,7 @@ function text_area_resize(el) {
 async function synonym(method, row, filename,key=0) {
   let res;
   if (method === 'GET') {
-    res = await fetch(`/api/common/synonym?filename=${filename}`,
+    res = await fetch(`/api/user/synonym?filename=${filename}`,
         {method: 'GET'});
   } else if (method === 'PUT' || method === 'DELETE') {
     res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {

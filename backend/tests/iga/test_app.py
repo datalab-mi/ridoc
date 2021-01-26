@@ -44,6 +44,17 @@ def test_auth_user(app, client, access_headers, role):
     elif role in ['admin', 'user']:
         assert response.status_code == 200
 
+@pytest.mark.parametrize("role", ['admin'])
+def test_authorized_resource(app, client, access_headers, role):
+    app.config
+    response = client.get('/authorized_resource', headers=access_headers)
+    assert response.status_code == 200
+    assert response.json == {'resource': ['user', 'admin'], 'role': 'admin'}
+    faked_headers = access_headers.copy()
+    faked_headers["Authorization"] = 'Bearer faked'
+    faked_response = client.get('/authorized_resource', headers=faked_headers)
+
+    import pdb; pdb.set_trace()
 
 def test_healthcheck(client, app):
     # test that viewing the page renders without template errors

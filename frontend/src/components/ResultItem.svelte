@@ -16,7 +16,7 @@
 	let isResult = true
 	let cssClass = 'result'
 	let filename = _id.replace(/\+/g, " ")
-	$: url = `/api/common/files/${$userData.dstDir}/${filename}`
+	$: url = `/api/user/files/${$userData.dstDir}/${filename}`
 	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
 
 	const file = {'name': _id.replace(/\+/g, " ")}

@@ -5,7 +5,8 @@ from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import (
     JWTManager, verify_jwt_in_request, verify_jwt_in_request_optional,
     create_access_token,
-    get_jwt_claims
+    get_jwt_claims,
+    jwt_required, get_jwt_identity
 )
 
 from flask import current_app as app
@@ -69,6 +70,15 @@ def login():
     access_token = create_access_token(identity=username_table[username].role)
     return jsonify(access_token=access_token), 200
 
+@app.route('/authorized_resource', methods=['GET'])
+@jwt_required
+def authorized_resource():
+    """ If valid token, return role and
+    row of matrice role, ie the authorized resources
+    """
+    current_role = get_jwt_identity()
+    return jsonify(role=current_role,
+                   resource=rules_table[current_role]), 200
 # Admin check
 def admin_required(fn):
     @wraps(fn)

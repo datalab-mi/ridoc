@@ -5,7 +5,7 @@
 	let promise = get_old_threshold();
 	let thresholds = {};
 	async function get_old_threshold() {
-			thresholds = await get('/api/common/files/threshold.json');
+			thresholds = await get('/api/user/files/threshold.json');
 			return 200
 		}
 
