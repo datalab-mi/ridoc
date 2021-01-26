@@ -518,10 +518,6 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
                     }
             #import pdb; pdb.set_trace()
             es.update(index=index_name,doc_type='_doc',id=str(filename),body=body)
-
-
-
-
     return res
 
 def delete_file(filename, index_name):
@@ -583,11 +579,13 @@ def get_tag(index_name: str, filename: str, fields: str) -> list:
           }
         }
     res = es.termvectors(index=index_name, body=body, id=filename)
-    res = {key: val['tokens'][0] for key, val in res['term_vectors'][fields]['terms'].items()}
-    content = es.get(index=index_name, id=filename, _source = True, _source_includes=[fields])
-
-    res = [content['_source'][fields][val["start_offset"]:val["end_offset"]] for key, val in res.items()]
-    return  list(set(res))
+    if fields in res['term_vectors']: # check if content field not empty
+        res = {key: val['tokens'][0] for key, val in res['term_vectors'][fields]['terms'].items()}
+        content = es.get(index=index_name, id=filename, _source = True, _source_includes=[fields])
+        res = [content['_source'][fields][val["start_offset"]:val["end_offset"]] for key, val in res.items()]
+        return  list(set(res))
+    else:
+        return []
 
 def get_info():
     return es.info()
