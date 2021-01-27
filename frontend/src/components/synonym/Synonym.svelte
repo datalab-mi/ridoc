@@ -109,7 +109,7 @@ onDestroy(() => $list_synonym = [])
 
 		</div>
 
-		<VirtualList items={list_synonym_filter} let:item>
+		<VirtualList height="90%" items={list_synonym_filter} let:item>
 			<SynonymRow {filename} {item} {meta} {totalSize} />
 		</VirtualList>
 
@@ -130,9 +130,8 @@ onDestroy(() => $list_synonym = [])
 
 .containerVL {
 	min-height: 200px;
-	height: calc(100vh - 15em);
+	height: calc(70vh)
 }
-
 
 	.synonym-list {
 		border: 1px solid #aaa;

@@ -13,7 +13,7 @@
 			const res = await fetch(`/api/admin/threshold`, {
 					method: 'PUT',
 					body:  JSON.stringify(thresholds),
-					headers: new Headers({Authorization: `JWT ${$user.jwToken}`})
+					headers: new Headers({"Authorization": ` Bearer ${$user.jwToken}`})
 				});
 			const text = await res.text();
 			if (res.ok) {

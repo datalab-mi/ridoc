@@ -136,7 +136,7 @@ onDestroy(() => $list_files = [])
 
 	.containerVL {
 	min-height: 200px;
-	height: calc(100vh - 15em);
+	height: calc(60vh)
 	}
 
 

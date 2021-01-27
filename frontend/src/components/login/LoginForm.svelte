@@ -16,11 +16,12 @@
       body: JSON.stringify({username: email, password: password}),
       headers: headers
     })
-    if (res.ok) {
-      const resp = await res.json()
+    const resp = await res.json()
+
+    if (res.ok)  {
       return resp
     } else {
-      throw new Error('mauvaise combinaison')
+      throw new Error(resp.msg)
     }
 
   }
@@ -46,16 +47,16 @@
           user.authenticate(request_user)
           isSuccess = true;
           isLoading = false;
-          $displayLogin = false
-          list_logger.concat({level: "success", message: `Loggé en tant que ${$user.role}`, ressource: "login"})
+          list_logger.concat({level: "success", message: `Loggé en tant que ${request_user.role}`, ressource: "login"})
         })
         .catch(err => {
-          console.log($user)
           user.unauthenticate()
           list_logger.concat({level: "error", message: err, ressource: "login"})
           //errors.server = err;
           isLoading = false;
-        });
+        })
+        $displayLogin = false
+
     }
   };
 </script>

@@ -4,6 +4,7 @@
 
 	<meta name="Description" content="Moteur de recherche">
 </svelte:head>
+<div class="background">
 
 <div class="preview">
 <h1>Liens rapides</h1>
@@ -19,8 +20,23 @@
 		<span>Se connecter</span>
 	</button>
 </div>
-<hr>
-{@html marked(indexMd)}
+<div>
+{#if ($user.resources.includes("description"))}
+	<hr>
+	{@html marked(description)}
+{/if}
+</div>
+<div>
+{#if ($user.resources.includes("notice"))}
+	<hr>
+	{@html marked(notice)}
+{/if}
+</div>
+</div>
+
+
+
+
 </div>
 
 <style>
@@ -53,20 +69,33 @@
 		border-style: inset;
 		border-width: 1px;
 	}
+
+div.background {
+	background-image: url("/user/background.jpg");
+	background-size: cover;
+	/* background-image: linear-gradient(rgba(80, 170, 220, 0.5), rgba(255, 34, 62, 0.5))*/
+}
+
 </style>
 
 <script>
 import { onMount } from 'svelte';
 import { user, displayLogin } from '../components/stores.js';
 import marked from 'marked'
-export let indexMd = "";
+let description = "";
+let notice = "";
 
 function authClicked() {
 	$displayLogin = !$displayLogin
 }
 onMount(async () => {
-	const res = await fetch('user/notice.md');
-	indexMd = await res.text();
-	});
-
+	const res1 = await fetch('user/notice.md');
+	if (res1.ok) {
+		notice = await res1.text();
+	}
+	const res2 = await fetch('user/description.md');
+	if (res2.ok) {
+		description = await res2.text();
+	}
+})
 </script>

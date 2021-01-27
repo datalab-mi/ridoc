@@ -7,5 +7,10 @@
     "admin":["user","admin", "visitor"],
     "user":["user", "visitor"],
     "visitor":["user", "visitor"]
+  },
+  "resources":{
+    "admin":["search","glossary","expression","admin","description", "notice"],
+    "user":["search","description"],
+    "visitor":["search","description"]
   }
 }

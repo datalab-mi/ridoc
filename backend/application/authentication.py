@@ -60,13 +60,13 @@ def login():
     username = request.json.get('username', None)
     password = request.json.get('password', None)
     if not username:
-        return jsonify({"msg": "Missing username parameter"}), 400
+        return jsonify({"msg": "Nom utilisateur manquant"}), 400
     if not password:
-        return jsonify({"msg": "Missing password parameter"}), 400
+        return jsonify({"msg": "Mot de passe manquant"}), 400
     if username not in username_table:
-        return jsonify({"msg": "Username unknown"}), 400
+        return jsonify({"msg": "Utilisateur inconnu"}), 400
     if username_table[username].password != password :
-        return jsonify({"msg": "Bad username or password"}), 401
+        return jsonify({"msg": "Mauvais nom d'utilisateur ou mot de passe"}), 401
     # Identity can be any data that is json serializable
     role = username_table[username].role
     access_token = create_access_token(identity=role)

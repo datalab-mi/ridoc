@@ -30,8 +30,8 @@ class Config:
     #Authentication
     # secret_key will change whenever the backend is start if not provided
     secret_key = ''.join(random.choice(string.ascii_lowercase) for i in range(10))
-    SECRET_KEY = getenv('SECRET_KEY', secret_key)
-    JWT_EXPIRATION_DELTA = timedelta(
+    JWT_SECRET_KEY = getenv('SECRET_KEY', secret_key)
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(
         minutes=int(getenv('JWT_EXPIRATION_DELTA', 10))) #10mins token expiration default
     #JWT_AUTH_HEADER_PREFIX = "JWT"
     print('Read config')

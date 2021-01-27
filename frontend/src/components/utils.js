@@ -58,7 +58,10 @@ async function index(index_name, filename, method) {
 }
 
 async function get(url) {
-	const res = await fetch(url, {cache: 'no-cache'})
+	const res = await fetch(url, {
+    cache: 'no-cache',
+    headers: new Headers(headers)
+  })
 	const data = await res.json();
 	if (res.ok)  {
 		return data
@@ -75,8 +78,10 @@ async function get(url) {
     const url = filename === "" ? baseDir :  `${baseDir}/${filename}`
 
 		if (method == 'GET') {
-			res = await fetch(`/api/user/files/${url}`,
-					{method: 'GET'})
+			res = await fetch(`/api/user/files/${url}`, {
+        method: 'GET',
+        headers: new Headers(headers)
+      })
 		} else if (method == 'PUT') {
       const formData = new FormData()
       formData.append('file', file)

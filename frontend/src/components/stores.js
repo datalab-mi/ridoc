@@ -17,18 +17,18 @@ export const list_files = writable([])
 const visitor = {role:"visitor", jwToken:null, rules: ["visitor"], resources:[]}
 
 async function testToken(user, set) {
-  const response = await fetch(`/api/authorized_resource/${user.role}`, {
+  const response = await fetch(`/api/authorized_resource`, {
     headers: new Headers({'Authorization'  : `Bearer ${user.jwToken}`})
     });
   if(response.ok) {
-    user = visitor
-    const data = await response.json()
-    user.rules = data.rules
-    user.resource = data.resources
-    console.log(user)
     set(user)
+    list_logger.concat({level: "success", message:  `Loggé en tant que ${user.role}`, ressource: "login"})
   }
-  else if (response.status === 401) {
+  else if (response.status === 422) {
+    const response = await fetch(`/api/authorized_resource/visitor`)
+    const data = await response.json()
+    set(data)
+    list_logger.concat({level: "error", message: "Token invalide, connecté comme visiteur", ressource: "login"})
   }
 }
 
@@ -48,10 +48,7 @@ function createUser(user) {
     unauthenticate: async () =>  {
       const response = await fetch(`/api/authorized_resource/visitor`)
       const data = await response.json()
-      visitor.rules = data.rules
-      visitor.resource = data.resources
       set(data)
-      localStorage.setItem('user', JSON.stringify(data))
         }
     }
 }

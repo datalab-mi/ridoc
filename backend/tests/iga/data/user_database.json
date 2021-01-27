@@ -9,8 +9,8 @@
     "visitor":["visitor"]
   },
   "resources":{
-    "admin":["search","glossary","expression","admin"],
-    "user":["search"],
-    "visitor":[]
+    "admin":["search","glossary","expression","admin", "description"],
+    "user":["search", "description"],
+    "visitor":["description"]
   }
 }
