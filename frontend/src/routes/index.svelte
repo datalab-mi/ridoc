@@ -1,4 +1,3 @@
-
 <svelte:head>
 	<title>Moteur de recherche • Dnum</title>
 
@@ -10,10 +9,12 @@
 <h1>Liens rapides</h1>
 
 <div class="flex flex-wrap justify-evenly">
+{#if ($user.resources.includes("search"))}
 	<button  onclick="location.href='search'" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded  inline-flex items-center itemConfigs-center">
 		<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/></svg>
 		<span>Rechercher</span>
 	</button>
+{/if}
 
 	<button  on:click={authClicked}  class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded  inline-flex  items-center itemConfigs-center">
 		<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5 5a5 5 0 0 1 10 0v2A5 5 0 0 1 5 7V5zM0 16.68A19.9 19.9 0 0 1 10 14c3.64 0 7.06.97 10 2.68V20H0v-3.32z"/></svg>
@@ -33,9 +34,6 @@
 {/if}
 </div>
 </div>
-
-
-
 
 </div>
 
@@ -72,8 +70,9 @@
 
 div.background {
 	background-image: url("/user/background.jpg");
-	background-size: cover;
-	/* background-image: linear-gradient(rgba(80, 170, 220, 0.5), rgba(255, 34, 62, 0.5))*/
+	/*background-size: cover; */
+	background-size: auto 100%;
+	/*background-image: linear-gradient(rgba(80, 170, 220, 0.5), rgba(255, 34, 62, 0.5))*/
 }
 
 </style>

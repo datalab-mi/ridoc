@@ -71,7 +71,7 @@ onDestroy(() => $list_synonym = [])
 
 
 		<div class="inline-flex bg-{(isAdd) ? 'white': 'gray'}-200 w-full">
-			<div class="inline-flex w-full">
+			<div class="inline-flex" style="flex-grow: 1">
 			{#each meta as {key, type, placeholder, value, innerHtml, size} }
 				<div class="flex-auto w-{size}/{totalSize} text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
 					<input type="search" bind:value={filterRow[key]} placeholder={(isAdd) ? placeholder: 'recherche'} >
@@ -80,7 +80,7 @@ onDestroy(() => $list_synonym = [])
 			</div>
 
 			{#if ($user.role === "admin") }
-				<div class="flex-auto w-1/6 px-4 py-2 m-2">
+				<div class="flex justify-around w-1/6 px-4 py-2 m-2">
 					{#if (isAdd)}
 						{#if Object.keys(filterRow).every((key) => filterRow[key] != '') }
 							<button on:click={handleSubmit} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">

@@ -133,7 +133,7 @@
 		</div>
 
 		<div>
-			{#if _score != 0}
+			{#if (($user.resources.includes("admin")) && (_score != 0))}
 					<p>Score : {Math.round((_score + Number.EPSILON) * 100) / 100}</p>
 			{/if}
 		</div>
