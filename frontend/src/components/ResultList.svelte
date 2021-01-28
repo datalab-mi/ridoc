@@ -42,7 +42,7 @@ $: $promiseSearch.then((searchResults) => {add_bar(searchResults)})
 			{#each items as item (item.key)}
 				{#if  item._id === "bar"}
 					<div class="bar">
-						<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Nous vous recommandons de contacter l'<b><a href="mailto:{$userData.contact}?subject=Demande de consultation">administrateur</a></b>.
+						<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Veuillez contacter l'<b><a href="mailto:{$userData.contact}?subject=Demande de consultation">administrateur</a></b>.
 						</p>
 					</div>
 				{:else}

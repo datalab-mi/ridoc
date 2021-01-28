@@ -3,3 +3,4 @@ export DATA_PATH = ${APP_PATH}/backend/tests/${INDEX_NAME}/data
 export ENV_FILE = ${APP_PATH}/backend/tests/${INDEX_NAME}/.env-${INDEX_NAME}
 export DC_UP_ARGS=
 export FRONTEND_STATIC_USER=${APP_PATH}/backend/tests/${INDEX_NAME}/static
+export ES_MEM=512m

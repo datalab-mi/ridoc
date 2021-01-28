@@ -16,7 +16,7 @@
 	let isResult = true
 	let cssClass = 'result'
 	let filename = _id.replace(/\+/g, " ")
-	$: url = `/api/common/files/${$userData.dstDir}/${filename}`
+	$: url = `/api/user/files/${$userData.dstDir}/${filename}`
 	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
 
 	const file = {'name': _id.replace(/\+/g, " ")}
@@ -133,7 +133,7 @@
 		</div>
 
 		<div>
-			{#if _score != 0}
+			{#if (($user.resources.includes("admin")) && (_score != 0))}
 					<p>Score : {Math.round((_score + Number.EPSILON) * 100) / 100}</p>
 			{/if}
 		</div>

@@ -16,11 +16,12 @@
 
 <style>
 	nav {
-		border-bottom: 1px solid rgba(255,62,0,0.1);
-		font-weight: 300;
+		border-bottom: 2px solid rgba(255,62,0,0.1);
+		font-weight: 400;
 		padding: 0 1em;
 		display: flex;
 		justify-content: space-between;
+		height: 3.5rem
 	}
 
 	ul {
@@ -49,10 +50,10 @@
 		position: absolute;
 		content: '';
 		width: calc(100% - 1em);
-		height: 2px;
+		height: 3px;
 		background-color: rgb(255,62,0);
 		display: block;
-		bottom: -1px;
+		bottom: 0rem;
 	}
 
 	a {
@@ -78,11 +79,16 @@
 
 	<ul>
 		<li><a class="w-12 h-12" href='.'><img src={logo}></a></li>
-		<li><a aria-current='{segment === "search" ? "page" : undefined}' href='search'>recherche</a></li>
-		<li><a aria-current='{segment === "glossary" ? "page" : undefined}' href='glossary'>glossaire</a></li>
-		<li><a aria-current='{segment === "expression" ? "page" : undefined}' href='expression'>expression</a></li>
-
-		{#if ($user.role === "admin")}
+		{#if ($user.resources.includes("search"))}
+			<li><a aria-current='{segment === "search" ? "page" : undefined}' href='search'>recherche</a></li>
+		{/if}
+		{#if ($user.resources.includes("glossary"))}
+			<li><a aria-current='{segment === "glossary" ? "page" : undefined}' href='glossary'>glossaire</a></li>
+		{/if}
+		{#if ($user.resources.includes("expression"))}
+			<li><a aria-current='{segment === "expression" ? "page" : undefined}' href='expression'>expression</a></li>
+		{/if}
+		{#if ($user.resources.includes("admin"))}
 			<li><a aria-current='{segment === "admin" ? "page" : undefined}' href='admin'>admin</a></li>
 		{/if}
 

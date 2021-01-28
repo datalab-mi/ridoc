@@ -2,7 +2,7 @@ import { user } from './stores.js';
 
 var headers =  {}
 const unsubscribe = user.subscribe(value => {
-  headers = {'Authorization': `JWT ${value.jwToken}`}
+  headers = {'Authorization': ` Bearer ${value.jwToken}`}
 });
 
 async function upload(meta, file, method='PUT') {
@@ -58,7 +58,10 @@ async function index(index_name, filename, method) {
 }
 
 async function get(url) {
-	const res = await fetch(url, {cache: 'no-cache'})
+	const res = await fetch(url, {
+    cache: 'no-cache',
+    headers: new Headers(headers)
+  })
 	const data = await res.json();
 	if (res.ok)  {
 		return data
@@ -75,8 +78,10 @@ async function get(url) {
     const url = filename === "" ? baseDir :  `${baseDir}/${filename}`
 
 		if (method == 'GET') {
-			res = await fetch(`/api/common/files/${url}`,
-					{method: 'GET'})
+			res = await fetch(`/api/user/files/${url}`, {
+        method: 'GET',
+        headers: new Headers(headers)
+      })
 		} else if (method == 'PUT') {
       const formData = new FormData()
       formData.append('file', file)
@@ -144,14 +149,17 @@ const format2ES = (item, query_list, index_name) => {
 
 
 async function search(body) {
-	const res = await fetch("/api/common/search",{
+	const res = await fetch("/api/user/search",{
 											method: "POST",
-											body: JSON.stringify(body)
+											body: JSON.stringify(body),
+                      headers: new Headers(headers)
 												 });
 
 	if (res.ok) {
     const result = await res.json();
 		return result
+  } else if (res.status===401)  {
+    throw new Error('Rôle admin nécessaire pour sauver');
 	} else {
 		throw new Error('Oups');
 	}
@@ -178,8 +186,8 @@ function text_area_resize(el) {
 async function synonym(method, row, filename,key=0) {
   let res;
   if (method === 'GET') {
-    res = await fetch(`/api/common/synonym?filename=${filename}`,
-        {method: 'GET'});
+    res = await fetch(`/api/user/synonym?filename=${filename}`,
+        {method: 'GET', headers: new Headers(headers)});
   } else if (method === 'PUT' || method === 'DELETE') {
     res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
         method: method,

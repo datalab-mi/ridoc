@@ -24,9 +24,9 @@
 	let filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
 
 	const keys_to_filter = meta.filter(item => item.type == 'text').map(item => item.key);
-	GetPromise = handleFiles()
+	$: GetPromise = handleFiles(baseDir)
 
-	async function handleFiles() {
+	async function handleFiles(baseDir) {
 		const res = await files('GET', baseDir)
 		//const data = await res.json()
 		$list_files = await res.json()//data.map(element => Object.assign({}, ...keys_to_filter.map(key => ({[key]: element[key]}))))
@@ -67,7 +67,6 @@ onDestroy(() => $list_files = [])
 
 </script>
 
-
 <div class='containerVL'>
 	{#await GetPromise}
 	<p>...Attente de la requête</p>
@@ -83,7 +82,7 @@ onDestroy(() => $list_files = [])
 			{/each}
 			</div>
 
-			<div class="flex-initial w-1/6 px-4 py-2 m-2">
+			<div class="flex justify-around w-1/6 px-4 py-2 m-2">
 				{#if (isAdd)}
 					{#if (file.name === "")}
 					<label for="pjUplaod" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
@@ -113,7 +112,7 @@ onDestroy(() => $list_files = [])
 
 		</div>
 
-		<VirtualList items={list_files_filter} {key} let:item>
+		<VirtualList items={list_files_filter} {key} let:item bind:end>
 			<FileRow {item} {meta} {baseDir} {key}/>
 		</VirtualList>
 
@@ -136,7 +135,7 @@ onDestroy(() => $list_files = [])
 
 	.containerVL {
 	min-height: 200px;
-	height: calc(100vh - 15em);
+	height: calc(60vh)
 	}
 
 

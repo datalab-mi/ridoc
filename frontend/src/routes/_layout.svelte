@@ -18,8 +18,6 @@
 		box-sizing: border-box;
 	}
 
-
-
 </style>
 
 <Nav {segment}/>
@@ -33,6 +31,7 @@
 	{/if}
 
 	<Logger/>
-	<Footer/>
 
 </main>
+
+<Footer/>

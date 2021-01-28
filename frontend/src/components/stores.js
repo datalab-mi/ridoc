@@ -14,17 +14,21 @@ export const list_files = writable([])
 
 
 // authentification
-const initial_user = {role:"common", jwToken:null}
+const visitor = {role:"visitor", jwToken:null, rules: ["visitor"], resources:[]}
 
 async function testToken(user, set) {
-  const response = await fetch('/api/admin/identity', {
-    headers: new Headers({'Authorization': `JWT ${user.jwToken}`})
+  const response = await fetch(`/api/authorized_resource`, {
+    headers: new Headers({'Authorization'  : `Bearer ${user.jwToken}`})
     });
   if(response.ok) {
     set(user)
+    list_logger.concat({level: "success", message:  `Loggé en tant que ${user.role}`, ressource: "login"})
   }
-  else if (response.status === 401) {
-    set(initial_user)
+  else if (response.status === 422) {
+    const response = await fetch(`/api/authorized_resource/visitor`)
+    const data = await response.json()
+    set(data)
+    list_logger.concat({level: "error", message: "Token invalide, connecté comme visiteur", ressource: "login"})
   }
 }
 
@@ -40,15 +44,21 @@ function createUser(user) {
     clean: () => localStorage.removeItem('user'),
     updateKey: (key, value) => {
       update(user => user.key = value)
+    },
+    unauthenticate: async () =>  {
+      const response = await fetch(`/api/authorized_resource/visitor`)
+      const data = await response.json()
+      set(data)
+        }
     }
-  };
 }
+
 
 export let user
 if(typeof window !== "undefined") {
-    user = createUser(JSON.parse(localStorage.getItem("user")) || initial_user);
+    user = createUser(JSON.parse(localStorage.getItem("user")) || visitor);
 } else {
-    user = createUser(initial_user);
+    user = createUser(visitor);
 }
 
 export const displayLogin = writable(false)

@@ -1,1 +1,16 @@
-{"user_database": [{"id": 1,"username": "admin1", "password": "admin"}, {"id": 2,"username": "admin", "password": "admin"}]}
+{
+  "user_database": [
+      {"id": 1,"username": "user1", "password": "abcxyz", "role": "user"},
+      {"id": 2,"username": "admin", "password": "admin","role":"admin"}
+    ],
+  "rules":{
+    "admin":["visitor","user","admin"],
+    "user":["visitor", "user"],
+    "visitor":["visitor"]
+  },
+  "resources":{
+    "admin":["search","glossary","expression","admin", "description"],
+    "user":["search", "description"],
+    "visitor":["description"]
+  }
+}
