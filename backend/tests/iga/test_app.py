@@ -49,15 +49,15 @@ def test_authorized_resource(app, client, access_headers, role):
     app.config
     response = client.get('/authorized_resource', headers=access_headers)
     assert response.status_code == 200
-    assert response.json == {'resource': ['user', 'admin'], 'role': 'admin'}
+    assert response.json == {'rules': ['visitor', 'user', 'admin'], 'role': 'admin'}
     faked_headers = {"Authorization": 'Bearer faked'}
     faked_response = client.get('/authorized_resource', headers=faked_headers)
     assert faked_response.status_code == 422
     no_header_response = client.get('/authorized_resource')
     assert no_header_response.status_code == 200
-    assert no_header_response.json == {'resource': ['visitor'], 'role': 'visitor'}
+    assert no_header_response.json == {'rules': ['visitor'], 'role': 'visitor'}, no_header_response.json
     role_response = client.get('/authorized_resource/admin')
-    assert role_response.json == {'resource': ['user', 'admin']}
+    assert role_response.json == {'resources': ['search', 'glossary', 'expression', 'admin', 'description', 'notice'], 'rules': ['visitor', 'user', 'admin']}, role_response.json
 
 
 
