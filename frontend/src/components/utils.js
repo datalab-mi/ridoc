@@ -57,17 +57,35 @@ async function index(index_name, filename, method) {
 		}
 }
 
-async function get(url) {
-	const res = await fetch(url, {cache: 'no-cache'})
-	const data = await res.json();
-	if (res.ok)  {
-		return data
-	} else {
-		console.log('error')
-		throw new Error('Oups');
+async function get(url, requestInit = { cache: 'no-cache' }) {
+	const res = await fetch(url, requestInit)
+	if (!res.ok) {
+		console.log(`L'appel à "${url}" a échoué`)
+		throw new Error(`L'appel à "${url}" a échoué: ${res.status}`);
 	}
+	console.debug(`L'appel à "${url}" a réussi`)
+	return await res.json();
 }
 
+function httpClient() {
+	const defaultInit = { cache: 'no-cache' };
+
+	const fetchRaw = async (url, requestInit = defaultInit) => {
+		const res = await fetch(url, requestInit)
+		if (!res.ok) {
+			console.log(`L'appel à "${url}" a échoué`)
+			throw new Error(`L'appel à "${url}" a échoué: ${res.status}`);
+		}
+		console.debug(`L'appel à "${url}" a réussi`);
+		return res;
+	}
+	
+	const fetchJson = async (url, requestInit = defaultInit) => {
+		const res = await fetchRaw(url, requestInit);
+		return await res.json();
+	}
+	return { fetch: fetchRaw, fetchJson };
+}
 
 	async function files(method, baseDir,file = {'name': ""}) {
 		let res;
@@ -198,4 +216,4 @@ async function synonym(method, row, filename,key=0) {
   }
 }
 
-export { index, upload, get, synonym, files, format2ES, search, text_area_resize, reIndex };
+export { index, upload, get, httpClient, synonym, files, format2ES, search, text_area_resize, reIndex };

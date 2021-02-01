@@ -17,3 +17,6 @@ frontend/public/build
 bundle.*
 acme.json
 nginx/apache2/*
+esdata
+.vscode
+.history

@@ -1,41 +1,17 @@
 <script>
 	import { suggestEntry, itemConfig, searchList, promiseSearch, userData } from '../components/stores.js';
 	import { format2ES, search } from '../components/utils.js';
-
 	import SearchInput from  '../components/SearchInput.svelte';
+	import SearchKeywordInput from '../components/SearchKeywordInput.svelte';
+	import SearchSuggestInput from '../components/SearchSuggestInput.svelte';
 
-	let promiseSuggest =  new Promise(()=>{})
 	let body
 
-	async function suggest() {
-		const res = await fetch("/api/common/suggest",{
-												method: "POST",
-												body: JSON.stringify({
-															 index_name: $userData.index_name,
-															 content: $searchList.content.value,
-														 })
-													 });
-
-		const result = await res.json();
-		//console.log(itemConfigs)
-		if (res.ok) {
-			$suggestEntry = result
-			return "ok";
-		} else {
-			throw new Error('Oups');
-		}
-	}
-
-	function handleSearch() {
-		console.log("handleSearch")
+	function handleSearch(event) {
+		console.log("handleSearch", event)
 		body =  format2ES($itemConfig, $searchList, $userData.index_name)
 		$promiseSearch = search(body)
-	}
-
-	function handleSuggest() {
-		console.log('handleSuggest')
-		promiseSuggest = suggest()
-	}
+	} 
 
 	function handleSuggestChosen(v) {
 		console.log('handleSuggestChosen')
@@ -44,18 +20,17 @@
 		$searchList.content.value = v
 		$suggestEntry = []
 	}
-
-
+ 
 </script>
-<div class='search-bar' on:keyup={e=>e.key==="Enter" && handleSearch()}>
 
+<div class='search-bar' on:keyup={e=>e.key==="Enter" && handleSearch()}>
 
 {#if $searchList.length > 0}
 
 	{#each $searchList as row, i }
 	<div class="flex mb-4">
 
-		{#each row as {bool, query, fields, value, type, placeholder, innerHtml, style, color}, j}
+		{#each row as { fields, value, type, placeholder, innerHtml, style, color, suggest }, j}
 			{#if (i === 0) && (j === 0) }
 				<div class="w-1/6 p-2" >
 					<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded inline-flex items-center itemConfigs-center">
@@ -65,7 +40,13 @@
 				</div>
 			{/if}
 
-			<SearchInput bind:value={value} {fields} {type} {placeholder} {innerHtml} {style} {color} />
+			{#if type === 'keyword' }
+				<SearchKeywordInput bind:value={value} {fields} {placeholder} {color} />
+			{:else if type === 'search' && suggest }
+				<SearchSuggestInput bind:value={value} {placeholder} {innerHtml} {style} />
+			{:else }
+				<SearchInput bind:value={value} {type} {placeholder} {innerHtml} {style} />
+			{/if}
 		{/each}
 		</div>
 
@@ -97,10 +78,4 @@
 		padding: 1em;
 		margin: 0 0 1em 0;
 	}
-
-	#suggest {
-			z-index: 2;
-			position: absolute;
-			background-color: rgba(255,255,255,1);
-		}
-	</style>
+</style>
