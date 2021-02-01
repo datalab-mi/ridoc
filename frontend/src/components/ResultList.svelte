@@ -1,5 +1,5 @@
 <script>
-import { promiseSearch, itemConfig, userData } from '../components/stores.js';
+import { promiseSearch, itemConfig, userData, list_logger } from '../components/stores.js';
 import { format2ES } from '../components/utils.js';
 
 import { onMount } from 'svelte';
@@ -14,26 +14,28 @@ let items = [];
 let threshold;
 
 function add_bar(x) {
-	let i = 0;
 	items = [];
 	threshold = true
 	for (const hits of x.hits){
-		let item = {}
+		hits['key'] = Math.random() * 1e6  | 0 // Choose random key
 		if (hits._score < x.r_threshold && threshold){
 			threshold = false
-			item = {'_id': "bar"}
-		} else {
-			item = hits
+			items.push({'_id': "bar", 'key' : -1})
 		}
-
-	item['key'] =  Math.random() * 1e6  | 0 // Choose random key
-	items.push(item)
+		items.push(hits)
 	}
 }
 
 // reactive statement, add_bar function is called whenever the promise changes
-$: $promiseSearch.then((searchResults) => {add_bar(searchResults)})
-
+$: {
+	$promiseSearch
+		.then((searchResults) => {
+			add_bar(searchResults)
+		})
+		.catch(err => {
+			list_logger.concat({level: "error", message: err, ressource: "search"})
+	  })
+}
 </script>
 
 	{#if Object.keys($itemConfig).length > 0}
@@ -42,12 +44,11 @@ $: $promiseSearch.then((searchResults) => {add_bar(searchResults)})
 			{#each items as item (item.key)}
 				{#if  item._id === "bar"}
 					<div class="bar">
-						<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Veuillez contacter l'<b><a href="mailto:{$userData.contact}?subject=Demande de consultation">administrateur</a></b>.
+						<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Veuillez contacter l'<b><a href="mailto:{$userData.contact}?subject=Demande de consultation"> administrateur ✉️ </a></b>.
 						</p>
 					</div>
 				{:else}
-					<ResultItem  {...item}/>
-
+					<ResultItem {...item}/>
 				{/if}
 			{/each}
 			</div>

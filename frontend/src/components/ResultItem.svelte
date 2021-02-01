@@ -5,17 +5,18 @@
 	import { userData, itemConfig, user, list_logger } from './stores.js';
 	import { index, upload } from './utils.js'
 
-
 	export let _id;
 	export let _source;
 	export let _score;
 	export let highlight = {}
+	export let key;
 
 	let readonly = true
 	let send = false
 	let isResult = true
 	let cssClass = 'result'
 	let filename = _id.replace(/\+/g, " ")
+
 	$: url = `/api/user/files/${$userData.dstDir}/${filename}`
 	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
 

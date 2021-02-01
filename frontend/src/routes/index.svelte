@@ -22,13 +22,13 @@
 	</button>
 </div>
 <div>
-{#if ($user.resources.includes("description"))}
+{#if ($user.resources.includes("description") && description.length > 0)}
 	<hr>
 	{@html marked(description)}
 {/if}
 </div>
 <div>
-{#if ($user.resources.includes("notice"))}
+{#if ($user.resources.includes("notice") && notice.length > 0)}
 	<hr>
 	{@html marked(notice)}
 {/if}

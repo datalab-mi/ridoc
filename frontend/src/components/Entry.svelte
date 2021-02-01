@@ -60,7 +60,7 @@
   }
 </script>
 
-<div>
+<div class="entry">
 {#if (key == "title") || (key == "titre")}
   <h2>
     <textarea class='{cssClass}-title' type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"    />
@@ -207,7 +207,6 @@
    vertical-align: top;
   }
 
-
   p {
     display: inline;
   }
@@ -216,5 +215,7 @@
     list-style: disc inside;
   }
 
+ .entry {
+ }
 
 </style>

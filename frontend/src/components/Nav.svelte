@@ -17,7 +17,7 @@
 <style>
 	nav {
 		border-bottom: 2px solid rgba(255,62,0,0.1);
-		font-weight: 400;
+		/*font-weight: 350;*/
 		padding: 0 1em;
 		display: flex;
 		justify-content: space-between;
