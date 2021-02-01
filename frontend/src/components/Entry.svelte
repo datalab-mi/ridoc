@@ -53,7 +53,7 @@
         if ( found != null) {
           window.open(found,'_blank')
         } else {
-          window.open(`/api/common/files/${$userData.pjDir}/${val}`,'_blank')
+          window.open(`/api/user/files/${$userData.pjDir}/${val}`,'_blank')
         }
 
     }
