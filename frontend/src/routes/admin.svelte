@@ -40,7 +40,7 @@
 
 </script>
 
-
+<div class="preview">
 <div>
 	<h1>Ajout d'un nouveau document dans le moteur</h1>
 	<br>
@@ -80,9 +80,15 @@
 	<File baseDir={$userData.pjDir} {meta}/>
 
 </div>
+</div>
 
 
 <style>
+
+	div.preview {
+		margin: 0px auto 0px auto;
+		/*max-width: 50rem;*/
+	}
 	h1 {
 	    font-size: 2rem;
 	}

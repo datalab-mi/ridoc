@@ -152,14 +152,15 @@ async function search(body) {
 	const res = await fetch("/api/user/search",{
 											method: "POST",
 											body: JSON.stringify(body),
-                      headers: new Headers(headers)
+                      headers: new Headers(headers),
+                      cache: 'no-cache'
 												 });
 
 	if (res.ok) {
     const result = await res.json();
 		return result
   } else if (res.status===401)  {
-    throw new Error('Rôle admin nécessaire pour sauver');
+    throw new Error('Rôle insuffisant pour rechercher');
 	} else {
 		throw new Error('Oups');
 	}
