@@ -8,6 +8,7 @@
     "placeholder": "Recherche par mots clefs",
     "innerHtml": "",
     "style": "w-5/6 p-2",
+    "suggest": true,
     "highlight": true
     }
   ],

@@ -15,8 +15,9 @@
   "dependencies": {
     "compression": "^1.7.1",
     "polka": "next",
+	"simple-svelte-autocomplete": "1.2.4",
     "sirv": "^0.4.0",
-    "svelte-tags-input": "^2.6.5",
+	"svelte-tags-input": "^2.6.5",
     "marked": "^0.7.0"
   },
   "devDependencies": {
@@ -37,7 +38,7 @@
     "rollup-plugin-terser": "^5.3.0",
     "postcss": "8.0.3",
     "postcss-cli": "7.1.2",
-    "tailwindcss": "1.8.10"
+	"tailwindcss": "1.8.10"
   },
   "peerDependencies": {
     "postcss": "^8.0.0"
