@@ -63,7 +63,7 @@
 
 <div class={style}>
 	<!-- svelte-ignore a11y-label-has-associated-control -->
-	<label>
+	<label class="suggestion">
 		{@html innerHtml}
 		<AutoComplete
 			{placeholder}
@@ -79,3 +79,7 @@
 		/>
 	</label>
 </div>
+
+<style>
+	.suggestion :global(.autocomplete) { width: 100% }
+</style>
