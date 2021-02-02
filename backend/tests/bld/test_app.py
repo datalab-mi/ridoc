@@ -48,15 +48,25 @@ def test_healthcheck(client, app):
 
 @pytest.mark.run(after='test_search')
 @pytest.mark.parametrize("role", ['admin'])
-def test_reindex(client, app, access_headers):
+def test_reindex(client, app, access_headers, form_to_upload):
 
     old_index = get_index_name(INDEX_NAME)
     new_index = replace_blue_green(old_index, INDEX_NAME)
+    # add text extension document, reindex should return list of indexation error
+    resp = client.put(
+            '/admin/files/odt/empty.txt',
+            content_type = 'multipart/form-data',
+            data = form_to_upload,
+            headers=access_headers)
 
     resp = client.get('/admin/%s/reindex'%INDEX_NAME, headers=access_headers)
-
+    assert resp.json["log"] == {'empty.txt': 'Format not supported'}
     assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
     assert resp.json['color'] == new_index
+
+    # clean and delete file
+    resp = client.delete(
+            '/admin/%s'%"empty.txt", headers=access_headers)
 
 def test_search(client, app, search_data):
     with app.test_client() as c:
