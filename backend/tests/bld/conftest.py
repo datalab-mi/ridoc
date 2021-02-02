@@ -5,6 +5,7 @@ from pathlib import Path
 from elasticsearch import Elasticsearch
 
 from application import create_app
+from flask_jwt_extended import create_access_token
 
 INDEX_NAME = 'bld'
 
@@ -22,6 +23,13 @@ def app():
 def client(app):
     """A test client for the app."""
     return app.test_client()
+
+@pytest.fixture
+def access_headers(app, role):
+    """header with token with role logic inside."""
+    with app.test_request_context():
+        access_token = create_access_token(role, fresh=True)
+    return {'Authorization': 'Bearer %s'%access_token}
 
 @pytest.fixture
 def search_data():

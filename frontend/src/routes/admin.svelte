@@ -40,7 +40,7 @@
 
 </script>
 
-
+<div class="preview">
 <div>
 	<h1>Ajout d'un nouveau document dans le moteur</h1>
 	<br>
@@ -65,6 +65,8 @@
 
 <div>
 	<h1>Gestion des seuils</h1>
+	<p>Le seuil d'affichage fixe le nombre de documents que l'utilisateur peut visualiser après une recherche. </p>
+	<p>Le seuil de pertinence place un bandeau dans les résultats de recherche qui indique à l'utilisateur que les documents avec un score inférieur sont peu pertinents. </p>
 	<br>
 	<Threshold/>
 </div>
@@ -78,9 +80,15 @@
 	<File baseDir={$userData.pjDir} {meta}/>
 
 </div>
+</div>
 
 
 <style>
+
+	div.preview {
+		margin: 0px auto 0px auto;
+		/*max-width: 50rem;*/
+	}
 	h1 {
 	    font-size: 2rem;
 	}

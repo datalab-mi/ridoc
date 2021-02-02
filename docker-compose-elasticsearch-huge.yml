@@ -15,13 +15,13 @@ services:
       - cluster.name=matchid-cluster
       - bootstrap.memory_lock=true
       - TAKE_FILE_OWNERSHIP=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
       - discovery.type=single-node
     ulimits:
       memlock:
         soft: -1
         hard: -1
-    # mem_limit: 512mM
+    # mem_limit: 1024mM
     volumes:
      - ${ES_DATA}/node1:/usr/share/elasticsearch/data
      - ${ES_DATA}/extra:/usr/share/elasticsearch/data/extra

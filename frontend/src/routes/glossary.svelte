@@ -29,4 +29,4 @@
 
 </script>
 
-<Synonym meta={meta} filename='glossaire' />
+<Synonym {meta} filename='glossaire' />

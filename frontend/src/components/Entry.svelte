@@ -26,7 +26,7 @@
 
     if  (type === "keyword") {
       if (!readonly && metadata) {
-        promiseListKeyword = get(`api/common/keywords/${$userData.index_name}/${key}`)
+        promiseListKeyword = get(`api/user/keywords/${$userData.index_name}/${key}`)
       } else {
         promiseListKeyword = [] // no need of promiseListKeyword
       }
@@ -53,14 +53,14 @@
         if ( found != null) {
           window.open(found,'_blank')
         } else {
-          window.open(`/api/common/files/${$userData.pjDir}/${val}`,'_blank')
+          window.open(`/api/user/files/${$userData.pjDir}/${val}`,'_blank')
         }
-        
+
     }
   }
 </script>
 
-<div>
+<div class="entry">
 {#if (key == "title") || (key == "titre")}
   <h2>
     <textarea class='{cssClass}-title' type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"    />
@@ -207,7 +207,6 @@
    vertical-align: top;
   }
 
-
   p {
     display: inline;
   }
@@ -216,5 +215,7 @@
     list-style: disc inside;
   }
 
+ .entry {
+ }
 
 </style>

@@ -16,9 +16,10 @@
 		console.log($itemConfig )
 		$searchList = await get('user/search.json')
 		//initial search
-		body =  format2ES($itemConfig, $searchList.flat(2), $userData.index_name)
-		$promiseSearch = search(body)
-
+		if (userData.initialSearch) {
+			body =  format2ES($itemConfig, $searchList.flat(2), $userData.index_name)
+			$promiseSearch = search(body)
+		}
 	});
 
 </script>

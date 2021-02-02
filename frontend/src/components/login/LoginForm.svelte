@@ -16,16 +16,15 @@
       body: JSON.stringify({username: email, password: password}),
       headers: headers
     })
-    if (res.ok) {
-      const resp = await res.json()
-      return resp.access_token
+    const resp = await res.json()
+
+    if (res.ok)  {
+      return resp
     } else {
-      throw new Error('mauvaise combinaison')
+      throw new Error(resp.msg)
     }
 
   }
-
-
 
   let errors = {};
 
@@ -42,21 +41,22 @@
     if (Object.keys(errors).length === 0) {
       isLoading = true;
       submit({ email, password })
-        .then((token) => {
-          console.log(`Your new token is: ${token}`)
-          const admin_user = {display: true, role:"admin", jwToken:token}
-          user.authenticate(admin_user)
+        .then(({access_token, role, rules, resources}) => {
+          console.log(`Your new token is: ${access_token}`)
+          const request_user = {role:role, jwToken:access_token, rules:rules, resources:resources}
+          user.authenticate(request_user)
           isSuccess = true;
           isLoading = false;
-          $displayLogin = false
-          list_logger.concat({level: "success", message: `Loggé en tant que ${$user.role}`, ressource: "login"})
+          list_logger.concat({level: "success", message: `Loggé en tant que ${request_user.role}`, ressource: "login"})
         })
         .catch(err => {
-          user.updateKey("role", "common")
+          user.unauthenticate()
           list_logger.concat({level: "error", message: err, ressource: "login"})
           //errors.server = err;
           isLoading = false;
-        });
+        })
+        $displayLogin = false
+
     }
   };
 </script>

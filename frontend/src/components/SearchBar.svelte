@@ -57,7 +57,7 @@
 
 {:then result}
 	{#if ("hits" in result) }
-		<p>{result.hits.length} documents affichés</p>
+		<p>{result.hits.length} documents {result.hits.length ===0 ? "affiché" :"affichés"}</p>
 	{/if}
 
 {/await}

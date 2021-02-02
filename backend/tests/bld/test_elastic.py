@@ -48,8 +48,9 @@ def test_create_index():
         es.indices.delete_alias(index=[INDEX_NAME + '_blue', INDEX_NAME + '_green'],
             name=INDEX_NAME, ignore=[400, 404])
 
-    create_index(INDEX_NAME, USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
-
+    create_index(INDEX_NAME + '_blue', USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
+    put_alias(index_name=INDEX_NAME + '_blue', alias_name=INDEX_NAME)
+    
 @pytest.mark.run(after='test_create_index')
 def test_inject_documents(sections):
     for path in [JSON_DIR, META_DIR]:
