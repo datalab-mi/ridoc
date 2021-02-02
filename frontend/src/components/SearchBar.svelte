@@ -7,20 +7,11 @@
 
 	let body
 
-	function handleSearch(event) {
-		console.log("handleSearch", event)
+	function handleSearch() {
+		console.log("handleSearch")
 		body =  format2ES($itemConfig, $searchList, $userData.index_name)
 		$promiseSearch = search(body)
 	} 
-
-	function handleSuggestChosen(v) {
-		console.log('handleSuggestChosen')
-
-		//searchList.content.value = e.target.innerHTML
-		$searchList.content.value = v
-		$suggestEntry = []
-	}
- 
 </script>
 
 <div class='search-bar' on:keyup={e=>e.key==="Enter" && handleSearch()}>
