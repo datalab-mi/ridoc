@@ -2,7 +2,7 @@
 	import AutoComplete from 'simple-svelte-autocomplete';
 	import { onMount, onDestroy } from 'svelte';
 	import { userData } from './stores.js';
-	import { httpClient } from './utils.js';
+	import { httpClient, USER_API } from './utils.js';
 
 	export let innerHtml = '';
 	export let style = '';
@@ -51,7 +51,7 @@
 		console.debug('MAJ des suggestions');
 		return !inputText || inputText.length < minCharactersToSuggest
 			? []
-			: await http.fetchJson('/api/user/suggest', {
+			: await http.fetchJson(`${USER_API}/suggest`, {
 					method: 'POST',
 					body: JSON.stringify({
 						index_name: $userData.index_name,

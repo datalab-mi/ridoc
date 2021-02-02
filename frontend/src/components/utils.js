@@ -1,5 +1,7 @@
 import { user } from './stores.js';
 
+export const USER_API = '/api/user';
+
 var headers =  {}
 const unsubscribe = user.subscribe(value => {
   headers = {'Authorization': ` Bearer ${value.jwToken}`}
@@ -96,7 +98,7 @@ function httpClient() {
     const url = filename === "" ? baseDir :  `${baseDir}/${filename}`
 
 		if (method == 'GET') {
-			res = await fetch(`/api/user/files/${url}`, {
+			res = await fetch(`${USER_API}/files/${url}`, {
         method: 'GET',
         headers: new Headers(headers)
       })
@@ -167,7 +169,7 @@ const format2ES = (item, query_list, index_name) => {
 
 
 async function search(body) {
-	const res = await fetch("/api/user/search",{
+	const res = await fetch(`${USER_API}/search`, {
 											method: "POST",
 											body: JSON.stringify(body),
                       headers: new Headers(headers),
@@ -205,7 +207,7 @@ function text_area_resize(el) {
 async function synonym(method, row, filename,key=0) {
   let res;
   if (method === 'GET') {
-    res = await fetch(`/api/user/synonym?filename=${filename}`,
+    res = await fetch(`${USER_API}/synonym?filename=${filename}`,
         {method: 'GET', headers: new Headers(headers)});
   } else if (method === 'PUT' || method === 'DELETE') {
     res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
