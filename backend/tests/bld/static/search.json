@@ -42,7 +42,8 @@
     "placeholder": "Recherche par tags",
     "innerHtml": "",
     "style": "w-5/6 p-2",
-    "highlight": false
+    "highlight": false,
+    "color": "#000066"
     }
   ]
 ]
