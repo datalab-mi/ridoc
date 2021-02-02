@@ -51,7 +51,7 @@
 		console.debug('MAJ des suggestions');
 		return !inputText || inputText.length < minCharactersToSuggest
 			? []
-			: await http.fetchJson('/api/common/suggest', {
+			: await http.fetchJson('/api/user/suggest', {
 					method: 'POST',
 					body: JSON.stringify({
 						index_name: $userData.index_name,

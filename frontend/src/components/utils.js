@@ -74,7 +74,7 @@ function httpClient() {
 	const defaultInit = { cache: 'no-cache' };
 
 	const fetchRaw = async (url, requestInit = defaultInit) => {
-		const res = await fetch(url, requestInit)
+		const res = await fetch(url, { headers: new Headers(headers), ...requestInit })
 		if (!res.ok) {
 			console.log(`L'appel à "${url}" a échoué`)
 			throw new Error(`L'appel à "${url}" a échoué: ${res.status}`);
