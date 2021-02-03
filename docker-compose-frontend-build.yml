@@ -15,6 +15,7 @@ services:
       - http_proxy
       - https_proxy
       - no_proxy
+      - APP_VERSION=${APP_VERSION}
     env_file:
       - $ENV_FILE
 
