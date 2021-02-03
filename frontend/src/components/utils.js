@@ -88,7 +88,7 @@ function httpClient() {
 		console.debug(`L'appel à "${url}" a réussi`);
 		return res;
 	}
-	
+
 	const fetchJson = async (url, requestInit = defaultInit) => {
 		const res = await fetchRaw(url, requestInit);
 		return await res.json();
@@ -135,13 +135,13 @@ function httpClient() {
   		const res = await fetch(`/api/admin/${index_name}/reindex`,{
         headers: buildHeaders()
       });
-  		const text = await res.text();
-
   		if (res.ok) {
-  			return res;
+        const result = await res.json();
+  			return result;
   		} else if (res.status == 401) {
   			throw new Error("Rôle admin nécessaire");
   		} else {
+        const text = await res.text();
   			throw new Error(text);
   		}
   	}

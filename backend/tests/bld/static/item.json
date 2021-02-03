@@ -56,7 +56,8 @@
       "value": [],
       "innerHtml": "<b>Mots clés :</b>",
       "highlight": false,
-      "metadata": true
+      "metadata": true,
+      "color": "#000066"
     }
   ]
 }

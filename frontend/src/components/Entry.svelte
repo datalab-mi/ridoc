@@ -18,7 +18,7 @@
     export let cssClass = 'base'
 
     export let rows = 4
-    export let color = "#000"
+    export let color = "#000066"
     let newValue = ""
     let keywordList = []
     let promiseListKeyword = new Promise(()=>{})

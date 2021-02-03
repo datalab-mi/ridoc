@@ -122,7 +122,6 @@ def upload_file(filename: str):
         file = request.files.get('file', False)
         # if user does not select file, browser also
         # submit an empty part without filename
-
         if file:
             if allowed_file(filename):
                 # save file
@@ -211,7 +210,7 @@ def index(index_name: str):
 
     # inject only json
     META_DIR = Path(app.config['USER_DATA']) / app.config['META_DIR']
-    inject_documents(new_index,
+    log_index = inject_documents(new_index,
                     app.config['USER_DATA'],
                     dst_path = app.config['DST_DIR'],
                     json_path = app.config['JSON_DIR'],
@@ -221,8 +220,7 @@ def index(index_name: str):
     # Switch index in alias
     put_alias(new_index, index_name)
     delete_alias(old_index, index_name)
-
-    return make_response({'color': new_index}, 200)
+    return make_response({'color': new_index, 'log': log_index}, 200)
 
 @admin_bp.route('/threshold', methods=['PUT'])
 @admin_required

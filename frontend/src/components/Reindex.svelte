@@ -1,14 +1,14 @@
 <script>
 import { userData, isReindex, list_logger } from './stores.js';
 import {reIndex} from './utils.js'
-let promise;
+import VirtualList from './VirtualList.svelte';
 
-
-
+let promise = new Promise(() => {});
 
 	function handleIndex() {
     $isReindex = true
 		promise = reIndex($userData.index_name)
+		promise
 		.then(res => {
 			$isReindex = false
 			list_logger.concat({level: "success", message: "Réindexation terminée", status: res.status, ressource: "Reindex"})
@@ -34,11 +34,29 @@ let promise;
     </button>
   </div>
 
+	{#await promise then result}
+		{#if (result.log.length > 0)}
+		<p style="color: red">{result.log.length} documents non indexés</p>
+		<ul>
+			{#each result.log as item}
+				<li><b>{item.filename}</b></li>
+				<p>{item.msg}</p>
+
+			{/each}
+		</ul>
+		{/if}
+	{/await}
+
+	<!-- <div class='containerVL'> -->
+	<!-- 	<VirtualList key={'filename'} items={result.log} let:item> -->
+	<!-- 		<p>{item.filename} : {item.msg}</p> -->
+	<!-- 	</VirtualList> -->
+	<!-- </div> -->
 <!-- svelte-ignore empty-block -->
 <!--{#await promise} -->
 <!--{:catch error} -->
 <!--<p style="color:red">Error</p>-->
-<!-- <iframe srcdoc={error.message} height="300">
+<!-- <iframe srcdoc={error.message} height="300">  -->
 <!--</iframe> -->
 <!--{/await}  -->
 <style>
@@ -53,5 +71,14 @@ let promise;
 @keyframes svelte-spinner_infinite-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+.containerVL {
+max-height: 50rem;
+height: calc(20vh)
+}
+
+ul {
+	list-style: disc inside;
 }
 </style>

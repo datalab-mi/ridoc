@@ -52,7 +52,8 @@
       "innerHtml": "<b>Tag :</b>",
       "highlight": false,
       "metadata": true,
-      "canBeEmpty": true
+      "canBeEmpty": true,
+      "color": "#003300"
     }
   ]
 
