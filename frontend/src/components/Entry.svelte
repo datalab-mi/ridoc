@@ -1,6 +1,6 @@
 <script>
     import { userData } from './stores.js';
-    import { get, text_area_resize } from '../components/utils.js';
+    import { USER_API, get, text_area_resize } from '../components/utils.js';
     import Tags from "svelte-tags-input";
 
     export let key
@@ -26,7 +26,7 @@
 
     if  (type === "keyword") {
       if (!readonly && metadata) {
-        promiseListKeyword = get(`api/user/keywords/${$userData.index_name}/${key}`)
+        promiseListKeyword = get(`${USER_API}/keywords/${$userData.index_name}/${key}`)
       } else {
         promiseListKeyword = [] // no need of promiseListKeyword
       }

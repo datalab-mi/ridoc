@@ -1,11 +1,15 @@
-import { user } from './stores.js';
+import { user as userStore } from './stores.js';
 
 export const USER_API = '/api/user';
 
-var headers =  {}
-const unsubscribe = user.subscribe(value => {
-  headers = {'Authorization': ` Bearer ${value.jwToken}`}
-});
+const currentUser = { token: undefined };
+userStore.subscribe(value => currentUser.token = value.jwToken);
+
+function buildHeaders() {
+	return !!currentUser.token ?
+		new Headers({ 'Authorization': `Bearer ${currentUser.token}` }) :
+		new Headers();
+}
 
 async function upload(meta, file, method='PUT') {
   const filename = file.name
@@ -24,7 +28,7 @@ async function upload(meta, file, method='PUT') {
   const upload = await fetch(`/api/admin/${filename}`, {
       method: method,
       body: body,
-      headers: new Headers(headers)
+      headers: buildHeaders()
       });
 
   if (upload.ok) {
@@ -47,7 +51,7 @@ async function index(index_name, filename, method) {
     // Make the  http request
     const index = await fetch(`/api/admin/${index_name}/_doc/${filename}`,{
       method: method,
-      headers: new Headers(headers)
+      headers: buildHeaders()
     });
 		if (statusOK(index)) {
 			return index.status
@@ -62,7 +66,7 @@ async function index(index_name, filename, method) {
 async function get(url) {
 	const res = await fetch(url, {
       cache: 'no-cache',
-      headers: new Headers(headers)
+      headers: buildHeaders()
     })
 	if (!res.ok) {
 		console.log(`L'appel à "${url}" a échoué`)
@@ -76,7 +80,7 @@ function httpClient() {
 	const defaultInit = { cache: 'no-cache' };
 
 	const fetchRaw = async (url, requestInit = defaultInit) => {
-		const res = await fetch(url, { headers: new Headers(headers), ...requestInit })
+		const res = await fetch(url, { headers: buildHeaders(), ...requestInit })
 		if (!res.ok) {
 			console.log(`L'appel à "${url}" a échoué`)
 			throw new Error(`L'appel à "${url}" a échoué: ${res.status}`);
@@ -100,7 +104,7 @@ function httpClient() {
 		if (method == 'GET') {
 			res = await fetch(`${USER_API}/files/${url}`, {
         method: 'GET',
-        headers: new Headers(headers)
+        headers: buildHeaders()
       })
 		} else if (method == 'PUT') {
       const formData = new FormData()
@@ -108,12 +112,12 @@ function httpClient() {
 			res = await fetch(`/api/admin/files/${url}`, {
 					method: 'PUT',
           body: formData,
-          headers: new Headers(headers)
+          headers: buildHeaders()
       })
 		} else if (method == 'DELETE') {
 			res = await fetch(`/api/admin/files/${url}`, {
 					method: 'DELETE',
-          headers: new Headers(headers)
+          headers: buildHeaders()
       })
 	}
 		if (res.ok) {
@@ -129,7 +133,7 @@ function httpClient() {
 
   async function reIndex(index_name) {
   		const res = await fetch(`/api/admin/${index_name}/reindex`,{
-        headers: new Headers(headers)
+        headers: buildHeaders()
       });
   		const text = await res.text();
 
@@ -172,7 +176,7 @@ async function search(body) {
 	const res = await fetch(`${USER_API}/search`, {
 											method: "POST",
 											body: JSON.stringify(body),
-                      headers: new Headers(headers),
+                      headers: buildHeaders(),
                       cache: 'no-cache'
 												 });
 
@@ -208,12 +212,12 @@ async function synonym(method, row, filename,key=0) {
   let res;
   if (method === 'GET') {
     res = await fetch(`${USER_API}/synonym?filename=${filename}`,
-        {method: 'GET', headers: new Headers(headers)});
+        {method: 'GET', headers: buildHeaders()});
   } else if (method === 'PUT' || method === 'DELETE') {
     res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
         method: method,
         body: JSON.stringify(row),
-        headers: new Headers(headers)
+        headers: buildHeaders()
     })
   }
   let data = await res.json();
