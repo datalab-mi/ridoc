@@ -424,7 +424,7 @@ def inject_documents(index_name: str, user_data: str, dst_path: str, json_path: 
     (Path(user_data) / json_path).mkdir(parents=True, exist_ok=True)
     # empty it in case
     empty_tree(Path(user_data) / json_path)
-    dict_res = dict()
+    list_res = []
     for path_document in (Path(user_data) / dst_path).iterdir():
         try:
             #path_document = pdf_path / filename
@@ -441,10 +441,15 @@ def inject_documents(index_name: str, user_data: str, dst_path: str, json_path: 
             print(20*'*')
             print('Error, cannot upload %s'%path_document)
             print(20*'*')
-            dict_res[filename] = str(e)
+            if hasattr(e, 'info'): # catch ES error
+                msg = e.info.get("error",{}).get("reason","unknown reason")
+            else:
+                msg = str(e)
+
+            list_res.append(dict(filename=filename, msg=msg))
 
     print("There is %s documents without metadata match"%no_match)
-    return dict_res
+    return list_res
 
 def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
             json_path: str, meta_path, sections=[]):

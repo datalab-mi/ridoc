@@ -15,12 +15,14 @@ export const list_files = writable([])
 
 // authentification
 const visitor = {role:"visitor", jwToken:null, rules: ["visitor"], resources:[]}
+const dictKeyInclude = (dic1, dic2) => Object.keys(dic1).every(v => Object.keys(dic2).includes(v))
 
 async function testToken(user, set) {
+  console.log(user)
   const response = await fetch(`/api/authorized_resource`, {
     headers: new Headers({'Authorization'  : `Bearer ${user.jwToken}`})
     });
-  if(response.ok) {
+  if (response.ok) {
     set(user)
     list_logger.concat({level: "success", message:  `Loggé en tant que ${user.role}`, ressource: "login"})
   }
@@ -33,6 +35,8 @@ async function testToken(user, set) {
 }
 
 function createUser(user) {
+  // test if user has enough keys
+  user = dictKeyInclude(visitor, user) ? user : visitor
   const { subscribe, set, update } = writable(user, () => testToken(user, set))
   console.log('got a user');
   return {

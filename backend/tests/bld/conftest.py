@@ -82,6 +82,12 @@ def form_to_upload():
                 }
 
 @pytest.fixture
+def bad_form_to_upload():
+    yield {"file": (open(USER_DATA + '/' + filename, "rb"), filename),
+            "date": '14/1451-52'
+                }
+
+@pytest.fixture
 def file_name():
     return filename
 

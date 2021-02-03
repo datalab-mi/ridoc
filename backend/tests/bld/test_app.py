@@ -48,19 +48,29 @@ def test_healthcheck(client, app):
 
 @pytest.mark.run(after='test_search')
 @pytest.mark.parametrize("role", ['admin'])
-def test_reindex(client, app, access_headers, form_to_upload):
+def test_reindex(client, app, access_headers, file_name, form_to_upload, bad_form_to_upload):
 
     old_index = get_index_name(INDEX_NAME)
     new_index = replace_blue_green(old_index, INDEX_NAME)
     # add text extension document, reindex should return list of indexation error
+    form_to_upload1 = form_to_upload.copy()
     resp = client.put(
             '/admin/files/odt/empty.txt',
             content_type = 'multipart/form-data',
-            data = form_to_upload,
+            data = form_to_upload1,
+            headers=access_headers)
+
+    form_to_upload["mots cles"] = ''
+
+    resp = client.put(
+            '/admin/%s'%file_name,
+            content_type = 'multipart/form-data',
+            data = bad_form_to_upload,
             headers=access_headers)
 
     resp = client.get('/admin/%s/reindex'%INDEX_NAME, headers=access_headers)
-    assert resp.json["log"] == {'empty.txt': 'Format not supported'}
+    assert resp.json["log"] == [{'filename': 'ignit_pnigitis.pdf', 'msg': "failed to parse field [date] of type [date] in document with id 'ignit_pnigitis.pdf'. Preview of field's value: '14/1451-52'"},
+                                {'filename': 'empty.txt', 'msg': 'Format not supported'}]
     assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
     assert resp.json['color'] == new_index
 
