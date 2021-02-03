@@ -1,4 +1,7 @@
 import { user as userStore } from './stores.js';
+import { fromFetch } from 'rxjs/fetch'
+import { from, of } from 'rxjs'
+import { catchError, flatMap, switchMap } from 'rxjs/operators'
 
 export const USER_API = '/api/user';
 
@@ -93,7 +96,32 @@ function httpClient() {
 		const res = await fetchRaw(url, requestInit);
 		return await res.json();
 	}
-	return { fetch: fetchRaw, fetchJson };
+	
+	const fetchRawRxjs = (url, requestInit = defaultInit) =>
+		fromFetch(url, { headers: buildHeaders(), ...requestInit })
+		.pipe(
+			switchMap(res => {
+				if (!res.ok) {
+					console.log(`L'appel à "${url}" a échoué`)
+					return of({ error: true, message: `L'appel à "${url}" a échoué: ${res.status}` });
+				}
+				console.debug(`L'appel à "${url}" a réussi`);
+				return of(res);
+			}),
+			catchError(err => of({ error: true, message: err.message })),
+		);
+	
+	const fetchJsonRxjs = (url, requestInit = defaultInit) =>
+		fetchRawRxjs(url, requestInit).pipe(flatMap(res => from(res.json())));
+	
+	return {
+		fetch: fetchRaw,
+		fetchJson,
+		rxjs: {
+			fetch: fetchRawRxjs,
+			fetchJson: fetchJsonRxjs
+		}
+	};
 }
 
 	async function files(method, baseDir,file = {'name': ""}) {
