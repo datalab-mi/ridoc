@@ -2,6 +2,7 @@
 
   import { onMount } from "svelte";
   import { user, list_logger, displayLogin } from '../stores.js';
+  import { clickOutside } from '../../utils/event-utils';
   let email = "";
   let password = "";
 
@@ -61,7 +62,7 @@
   };
 </script>
 
-<div class="form-popup">
+<div use:clickOutside on:clickoutside={() => $displayLogin = false} class="form-popup">
 
 <form on:submit|preventDefault={handleSubmit} >
 
