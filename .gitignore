@@ -20,3 +20,5 @@ nginx/apache2/*
 esdata
 .vscode
 .history
+IGA-BF
+node_modules
