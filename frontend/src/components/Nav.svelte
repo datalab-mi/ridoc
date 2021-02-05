@@ -73,6 +73,9 @@
 		cursor: pointer;
 	}
 
+	.artifact {
+		display: none;
+	}
 </style>
 
 <nav>
@@ -99,7 +102,7 @@
 </nav>
 
 <!-- Hidden links to redirect Client side rendering app  -->
-<a hidden href="search"></a>
-<a hidden href="expression"></a>
-<a hidden href="glossary"></a>
-<a hidden href="admin"></a>
+<a class="artifact" hidden href="search"></a>
+<a class="artifact" hidden href="expression"></a>
+<a class="artifact" hidden href="glossary"></a>
+<a class="artifact" hidden href="admin"></a>
