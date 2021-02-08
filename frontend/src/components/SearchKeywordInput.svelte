@@ -1,6 +1,6 @@
 <script>
 	import Tags from "svelte-tags-input";
-	import { userData } from "./stores.js";
+	import { userData } from '../common/user-data.store';
 	import { USER_API, get } from "./utils.js";
 	import { onMount } from "svelte";
 

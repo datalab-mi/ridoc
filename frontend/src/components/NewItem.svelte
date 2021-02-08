@@ -27,7 +27,7 @@
 <section class="new-item">
 
 {#each item.inputs as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight}, i }
-  <Entry required={required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight}}/>
+  <Entry required={required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} />
 {/each}
 
 <div>

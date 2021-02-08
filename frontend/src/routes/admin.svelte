@@ -8,8 +8,7 @@
 	import Threshold from '../components/Threshold.svelte';
 	import NewItem from '../components/NewItem.svelte';
 	import File from '../components/file-browser/File.svelte';
-
-	import { userData } from '../components/stores.js';
+	import { userData } from '../common/user-data.store';
 
 	let meta = [
 						{

@@ -1,5 +1,6 @@
 <script>
-import { userData, isReindex, list_logger } from './stores.js';
+import { isReindex, list_logger } from './stores.js';
+import { userData } from '../common/user-data.store';
 import {reIndex} from './utils.js'
 import VirtualList from './VirtualList.svelte';
 

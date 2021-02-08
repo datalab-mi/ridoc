@@ -3,7 +3,7 @@ import { readable, writable, derived } from 'svelte/store';
 // auth: https://www.toptal.com/front-end/svelte-framework-guide
 export const itemConfig = writable({})
 export const searchList = writable([[]])
-export const promiseSearch = writable(new Promise((resolve, reject)=>{resolve({"hits":[]})}))
+export const promiseSearch = writable(Promise.resolve({ hits: [] }))
 
 export const suggestEntry = writable([]);
 
@@ -38,7 +38,7 @@ function createUser(user) {
   // test if user has enough keys
   user = dictKeyInclude(visitor, user) ? user : visitor
   const { subscribe, set, update } = writable(user, () => testToken(user, set))
-  console.log('got a user');
+  // console.log('got a user');
   return {
     subscribe,
     authenticate: (user) => {

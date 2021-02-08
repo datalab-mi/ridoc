@@ -3,7 +3,7 @@
 	// props
 	export let items;
 	export let height = '100%';
-	export let itemHeight;
+	export let itemHeight = undefined;
 	let foo;
 	// read-only, but visible to consumers via bind:start
 	export let start = 0;

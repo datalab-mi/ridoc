@@ -2,14 +2,14 @@
 	import PutItem from './PutItem.svelte'
 	import Entry from './Entry.svelte'
 
-	import { userData, itemConfig, user, list_logger } from './stores.js';
+	import { itemConfig, user, list_logger } from './stores.js';
+	import { userData } from '../common/user-data.store';
 	import { index, upload } from './utils.js'
 
 	export let _id;
 	export let _source;
 	export let _score;
 	export let highlight = {}
-	export let key;
 
 	let readonly = true
 	let send = false
@@ -144,21 +144,12 @@
 	</section>
 {/if}
 
-
 <style>
-.result-item {
-	border: 1px solid #aaa;
-	border-radius: 2px;
-	box-shadow: 2px 2px 8px rgba(0,0,255,1);
-	padding: 1em;
-	margin: 1em 1em 1em 1em;
-}
-.base-item {
-	width: 100%;
-	border: 1px solid #aaa;
-	border-radius: 4px;
-	box-shadow: 2px 2px 8px rgba(0,0,0,1);
-	padding: 1em;
-	margin: 0 0 1em 0;
-}
+	.result-item {
+		border: 1px solid #aaa;
+		border-radius: 2px;
+		box-shadow: 2px 2px 8px rgba(0, 0, 255, 1);
+		padding: 1em;
+		margin: 1em 1em 1em 1em;
+	}
 </style>
