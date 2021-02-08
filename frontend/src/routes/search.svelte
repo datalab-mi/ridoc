@@ -13,7 +13,6 @@
 	let body
 	onMount(async () => {
 		$itemConfig = await get('user/item.json')
-		console.log($itemConfig )
 		$searchList = await get('user/search.json')
 		//initial search
 		if ($userData.initialSearch) {

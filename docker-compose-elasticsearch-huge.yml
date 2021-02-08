@@ -1,4 +1,4 @@
-version: '2'
+version: '3.4'
 
 services:
   elasticsearch:
@@ -29,6 +29,8 @@ services:
      #- ${DATA_PATH}:/data
     ports:
        - "9200:9200"
+    logging:
+        driver: none
 
 networks:
   default:

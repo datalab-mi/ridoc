@@ -23,7 +23,6 @@
 			: undefined;
 
 	function handleSearch() {
-		console.log("handleSearch")
 		body = format2ES($itemConfig, $searchList, $userData.index_name)
 		$promiseSearch = search(body)
 	}

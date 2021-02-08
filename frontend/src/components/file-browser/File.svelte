@@ -30,12 +30,12 @@
 		const res = await files('GET', baseDir)
 		//const data = await res.json()
 		$list_files = await res.json()//data.map(element => Object.assign({}, ...keys_to_filter.map(key => ({[key]: element[key]}))))
+		$list_files.sort((a,b) => a[key].localeCompare(b[key]))
 		return res.status
 	}
 
 
 	async function handleSubmit() {
-		console.log(file[0])
 		filterRow.name = file[0].name
 		files('PUT', baseDir, file[0])
 			.then(() => {
@@ -57,7 +57,6 @@
 	}
 
 	$: { // filter $list_files with filterRow on its keys (expressionA, expressionB...)
-		console.log($list_files)
 		list_files_filter = $list_files.filter((item) => keys_to_filter.every((key) => item[key].toLowerCase().includes(filterRow[key].toLowerCase())))
 
 	}

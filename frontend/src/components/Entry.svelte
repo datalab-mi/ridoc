@@ -47,7 +47,6 @@
     }
 
     function handleClick(val) {
-      console.log(val)
       if  (readonly || !metadata) {
         let found = val.match(/(http.*)/g)
         if ( found != null) {
