@@ -18,7 +18,6 @@ const visitor = {role:"visitor", jwToken:null, rules: ["visitor"], resources:[]}
 const dictKeyInclude = (dic1, dic2) => Object.keys(dic1).every(v => Object.keys(dic2).includes(v))
 
 async function testToken(user, set) {
-  console.log(user)
   const response = await fetch(`/api/authorized_resource`, {
     headers: new Headers({'Authorization'  : `Bearer ${user.jwToken}`})
     });
@@ -38,7 +37,6 @@ function createUser(user) {
   // test if user has enough keys
   user = dictKeyInclude(visitor, user) ? user : visitor
   const { subscribe, set, update } = writable(user, () => testToken(user, set))
-  console.log('got a user');
   return {
     subscribe,
     authenticate: (user) => {
@@ -74,7 +72,6 @@ const inital_logger_list = [{level: "error",message: "erreur grave", ressource: 
 // custom store for the logger, every 10 seconds lost first element (the oldest)
 function createLogger() {
 	const { subscribe, set, update } = writable([], () => {
-	console.log('got a subscriber');
 	const interval = setInterval(() => {
 		update(n => n.slice(1, n.length))
 	}, 10000);	return () => console.log('no more subscribers');
@@ -92,7 +89,6 @@ function createLogger() {
 export const list_logger = createLogger();
 
 async function fetchUserData(set) {
-  console.log("fetchUserData")
   const res = await fetch('user/env.json');
   if(res.ok) {
     const data_res = await res.json();

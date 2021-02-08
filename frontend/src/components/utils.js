@@ -13,8 +13,6 @@ function buildHeaders() {
 
 async function upload(meta, file, method='PUT') {
   const filename = file.name
-  console.log('upload :')
-  console.log(file)
   const body = new FormData();
 
   if (method === "PUT") {
@@ -58,7 +56,6 @@ async function index(index_name, filename, method) {
     } else if (index.status === 401)  {
       throw new Error('Rôle admin nécessaire pour indexer');
     } else {
-      console.log('error')
 			throw new Error('Oups');
 		}
 }
@@ -158,9 +155,6 @@ const format2ES = (item, query_list, index_name) => {
 				if (!(obj.bool in query_dic)) {
 					query_dic[obj.bool] = []
 				}
-        console.log('***')
-        console.log(JSON.stringify(obj.query))
-        console.log(JSON.stringify(obj.query).replace('"\$value"', JSON.stringify(obj.value)))
 				clause = JSON.parse(JSON.stringify(obj.query).replace('"\$value"', JSON.stringify(obj.value)))
 				query_dic[obj.bool].push(clause)
 			}
@@ -194,8 +188,6 @@ async function search(body) {
 function resize({ target }) {
   target.style.height = "1px";
 	target.style.height = (+target.scrollHeight)+"px";
-  console.log(target)
-
 }
 
 function text_area_resize(el) {

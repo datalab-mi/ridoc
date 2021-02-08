@@ -97,8 +97,6 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
         analyse = indices.analyze(index= index_name, body = body)
 
         analyzed = [ananyse_tokens['token'] for ananyse_tokens in analyse["tokens"]]
-        print(analyzed)
-
         length_of_request = len(analyzed)
 
 
@@ -118,8 +116,8 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
     for expression in list_expression:
         if expression in analyzed :
             req_expression.append(expression)
-            print('req_expression :')
-            print(req_expression)
+            #print('req_expression :')
+            #print(req_expression)
 
     #import pdb; pdb.set_trace()
     body = { "query": {

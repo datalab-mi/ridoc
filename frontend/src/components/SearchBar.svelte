@@ -8,10 +8,9 @@
 	let body
 
 	function handleSearch() {
-		console.log("handleSearch")
 		body =  format2ES($itemConfig, $searchList, $userData.index_name)
 		$promiseSearch = search(body)
-	} 
+	}
 </script>
 
 <div class='search-bar' on:keyup={e=>e.key==="Enter" && handleSearch()}>

@@ -33,7 +33,11 @@ services:
     volumes:
       - ./nginx/apache2:/etc/nginx/apache2
       - ${FRONTEND_STATIC_USER}:/usr/share/nginx/html/export/user
-
+    logging:
+        #driver: none
+        options:
+          max-size: "10m"
+          max-file: "1"
 networks:
   default:
     external:
