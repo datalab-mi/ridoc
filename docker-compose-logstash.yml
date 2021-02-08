@@ -1,4 +1,4 @@
-version: '2'
+version: '3.4'
 
 services:
   logstash:
@@ -11,7 +11,8 @@ services:
       ES_PORT: ${ES_PORT}
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
-
+    logging:
+        driver: none
 networks:
   default:
     external:

@@ -1,4 +1,4 @@
-version: '2'
+version: '3.4'
 
 services:
   backend:
@@ -22,6 +22,11 @@ services:
       BACKEND_PORT: ${BACKEND_PORT}
     env_file:
       - ${ENV_FILE}
+    logging:
+      #driver: none
+      options:
+        max-size: "10m"
+        max-file: "1"
   tika:
     image: logicalspark/docker-tikaserver
     container_name: tika
@@ -33,6 +38,9 @@ services:
       - http_proxy
       - https_proxy
       - no_proxy
+    logging:
+      driver: none
+
 
 networks:
   default:

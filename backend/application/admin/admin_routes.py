@@ -31,7 +31,6 @@ if path_sections.exists():
         sections = json.load(json_file)
 else:
     sections = []
-print(sections)
 
 @admin_bp.route('/cluster', methods=['GET'])
 @admin_required
