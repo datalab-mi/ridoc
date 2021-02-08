@@ -89,11 +89,9 @@
 
 <style>
 	.result-list {
-		width: 100%;
+		@apply w-full;
+		@apply rounded;
 		border: 1px solid #aaa;
-		border-radius: 4px;
-		padding: 1em;
-		margin: 0 0 1em 0;
 		min-height: 200px;
 	}
 	.bar {

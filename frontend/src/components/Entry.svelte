@@ -61,8 +61,8 @@
 
 <div class="entry">
 {#if (key == "title") || (key == "titre")}
-  <h2>
-    <textarea class='{cssClass}-title' type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"    />
+  <h2 class="mb-2">
+    <textarea class="{cssClass}-title" type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}" />
   </h2>
 
 {:else if type == "date"}
@@ -145,76 +145,73 @@
 
 
 <style>
-  /* override default Tag style */
-  .my-custom-class :global(.svelte-tags-input-tag) {
-      background: var(--color) !important;
-      cursor: default !important;;
-  }
-  .my-custom-class :global(.svelte-tags-input-layout) {
-      background:#FFF !important;
-      border-style: none !important;
-      cursor: default !important;;
-  }
-  .my-custom-class :global(.svelte-tags-input) {
-      background:#FFF !important;
-      cursor: default !important;;
-  }
+	/* override default Tag style */
+	.my-custom-class :global(.svelte-tags-input-tag) {
+		background: var(--color) !important;
+		cursor: default !important;
+	}
+	.my-custom-class :global(.svelte-tags-input-layout) {
+		background: #fff !important;
+		border-style: none !important;
+		cursor: default !important;
+	}
+	.my-custom-class :global(.svelte-tags-input) {
+		background: #fff !important;
+		cursor: default !important;
+	}
 
-  .result-item {
-    border: 1px solid #aaa;
-    border-radius: 2px;
-    box-shadow: 2px 2px 8px rgba(0,0,255,1);
-    padding: 1em;
-    margin: 1em 1em 1em 1em;
-  }
+	.result-item {
+		border: 1px solid #aaa;
+		border-radius: 2px;
+		padding: 1em;
+		margin: 1em 1em 1em 1em;
+	}
 	.base-item {
 		width: 100%;
 		border: 1px solid #aaa;
 		border-radius: 4px;
-		box-shadow: 2px 2px 8px rgba(0,0,0,1);
+		box-shadow: 2px 2px 8px rgba(0, 0, 0, 1);
 		padding: 1em;
 		margin: 0 0 1em 0;
 	}
-  .clickable {
-    color: blue;
-    font-weight: normal;
-    cursor: pointer;
-  }
+	.clickable {
+		color: blue;
+		font-weight: normal;
+		cursor: pointer;
+	}
 
-  .no-clickable {
-    color: blue;
-    font-weight: normal;
-  }
+	.no-clickable {
+		color: blue;
+		font-weight: normal;
+	}
 
- .base-title {
-	 font-weight: bold;
-	 margin: 0;
-	 padding: 0;
- }
+	.base-title {
+		font-weight: bold;
+		margin: 0;
+		padding: 0;
+	}
 
- .result-title {
-  color: blue;
-  font-weight: bold;
-  margin: 0;
-  padding: 0;
- }
+	.result-title {
+		color: blue;
+		font-weight: bold;
+		margin: 0;
+		padding: 0;
+	}
 
- input, textarea{
-   border:none;
-   width: 90%;
-   resize: none;
-   vertical-align: top;
-  }
+	input,
+	textarea {
+		border: none;
+		@apply w-full;
+		resize: none;
+		vertical-align: top;
+		@apply bg-transparent;
+	}
 
-  p {
-    display: inline;
-  }
+	p {
+		display: inline;
+	}
 
-  ul {
-    list-style: disc inside;
-  }
-
- .entry {
- }
-
+	ul {
+		list-style: disc inside;
+	}
 </style>
