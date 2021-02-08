@@ -23,8 +23,10 @@ services:
     env_file:
       - ${ENV_FILE}
     logging:
-      driver: none
-
+      #driver: none
+      options:
+        max-size: "10m"
+        max-file: "1"
   tika:
     image: logicalspark/docker-tikaserver
     container_name: tika
@@ -37,10 +39,8 @@ services:
       - https_proxy
       - no_proxy
     logging:
-        #driver: none
-        options:
-          max-size: "10m"
-          max-file: "1"
+      driver: none
+
 
 networks:
   default:
