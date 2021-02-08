@@ -1,4 +1,4 @@
-import { readable, writable, derived } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 
 // auth: https://www.toptal.com/front-end/svelte-framework-guide
 export const itemConfig = writable({})
@@ -87,20 +87,3 @@ function createLogger() {
 }
 
 export const list_logger = createLogger();
-
-async function fetchUserData(set) {
-  const res = await fetch('user/env.json');
-  if(res.ok) {
-    const data_res = await res.json();
-    set(data_res);
-  } else {
-    const text = res.text();
-    throw new Error(text);
-  }
-}
-
-function getUserData() {
-  const { subscribe, set, update } = writable({}, () => fetchUserData(set));
-  return  { subscribe }
-}
-export const userData = getUserData();
