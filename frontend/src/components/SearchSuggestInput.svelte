@@ -3,6 +3,8 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { userData } from './stores.js';
 	import { httpClient, USER_API } from './utils.js';
+	import { BehaviorSubject, of } from 'rxjs'
+	import { debounceTime, distinctUntilChanged, filter, share, switchMap, take, tap } from 'rxjs/operators'
 
 	export let innerHtml = '';
 	export let style = '';
@@ -11,10 +13,12 @@
 
 	const http = httpClient();
 
+	// constantes
 	const inputId = "suggest-" + Math.floor(Math.random() * 1000);
 	const minCharactersToSuggest = 4;
 	const valueFieldName = 'text';
 	const labelFieldName = 'text';
+	const inputDelayMs = 250;
 
 	// méthodes qui permettent de synchroniser le champ 'value' et le texte du champ <input />
 	let onSuggestionInput;
@@ -40,25 +44,66 @@
 	 */
 	const keywordsFunction = (/* suggestion */) => value || '';
 
+	// RxJS ------------------------------------------------------------- START
+	
+	/** équivalent d'un store 'writable' (sans valeur initiale) */
+	const searchTrigger = new BehaviorSubject();
+	
 	/**
-	 * fonction asynchrone de recherche des suggestions.
+	 * équivalent d'un store 'readable', fournit les suggestions.
+	 * 
+	 * besoin :
+	 * éviter de mitrailler le serveur si l'utilisateur tape plusieurs caractères rapidement
+	 * 
+	 * Toute la 'magie' vient des opérateurs du pipe (doc conseillée) :
+	 * - filter               : ne laisse pas passer null ou undefined
+	 * - distinctUntilChanged : une seule émission pour 2 valeurs successives identiques
+	 * - debounceTime         : garde une valeur s'il se passe un temps suffisant avant la prochaine
+	 * - switchMap            : permet ici de se désinscrire de l'ancien observable avant de transformer le nouveau
+	 *                          + couplé à un appel passant par 'fromFetch' pour pouvoir annuler les anciennes requêtes
+	 * - share                : évite de lancer une requête par souscription
+	 */
+	const searchObservable = searchTrigger.asObservable().pipe(
+		filter(v => v !== null && v !== undefined),
+		distinctUntilChanged(),
+        debounceTime(inputDelayMs),
+        switchMap(v => searchSuggestions(v)),
+		share()
+	);
+	
+	/**
+	 * fonction "asynchrone" (RxJS) de recherche des suggestions.
 	 * Le serveur n'est appelé qu'à partir d'une certaine longueur de chaîne.
 	 * 
 	 * note : on n'utilise pas l'option 'minCharactersToSearch' car elle fonctionne mal avec la validation sur 'Enter',
 	 * en effet la première valeur de la dernière liste de suggestions est utilisée, ce n'est pas ce qu'on veut.
+	 * 
+	 * @return observable contenant les suggestions
 	 */
-	const searchFunction = async (inputText) => {
+	const searchSuggestions = (inputText) => {
 		console.debug('MAJ des suggestions');
 		return !inputText || inputText.length < minCharactersToSuggest
-			? []
-			: await http.fetchJson(`${USER_API}/suggest`, {
+			? of([])
+			: http.rxjs.fetchJson(`${USER_API}/suggest`, {
 					method: 'POST',
 					body: JSON.stringify({
 						index_name: $userData.index_name,
 						content: inputText,
-					}),
-			  });
+					})
+			})
 	};
+	
+	/**
+	 * fonction asynchrone de recherche des suggestions.
+	 * Crée une Promise contenant la prochaine valeur de l'observable, puis provoque la recherche.
+	 */
+	const searchFunction = async (inputText) => {
+		const deferred = searchObservable.pipe(take(1)).toPromise();
+		searchTrigger.next(inputText);
+		return deferred;
+	};
+
+	// RxJS --------------------------------------------------------------- END
 </script>
 
 <div class={style}>
