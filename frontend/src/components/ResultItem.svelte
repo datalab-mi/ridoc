@@ -1,4 +1,6 @@
 <script>
+
+	import BaseItem from './BaseItem.svelte'
 	import PutItem from './PutItem.svelte'
 	import Entry from './Entry.svelte'
 
@@ -12,6 +14,7 @@
 	export let highlight = {}
 
 	let readonly = true
+	const required = true;
 	let send = false
 	let isResult = true
 	let cssClass = 'result'
@@ -79,23 +82,25 @@
 </script>
 
 {#if (display) }
-	<section class="result-item" id={_id}>
 
-		{#if (readonly) }
+	<BaseItem {cssClass} {_id}>
+
+		<div slot="fields">
+			{#if (readonly) }
+					{#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight, rows, color}, i }
+						{#if (! isEmpty(value)) }
+							<Entry {readonly} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {cssClass} {rows} {color} {required}/>
+						{/if}
+					{/each}
+			{:else}
 				{#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight, rows, color}, i }
-					{#if (! isEmpty(value)) }
-						<Entry  {readonly} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {cssClass} {rows} {color}/>
-					{/if}
+					<Entry {readonly} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {cssClass} {rows} {color} {required}/>
 				{/each}
-		{:else}
-			{#each meta as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight, rows, color}, i }
-				<Entry  {readonly} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {cssClass} {rows} {color}/>
-			{/each}
-		{/if}
+			{/if}
+		</div>
 
-		<div class="flex justify-between">
+		<div slot="button">
 
-		<div>
 			<button on:click="{window.open(url,'_blank')}" class="hover:bg-gray-400">
 			<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M.2 10a11 11 0 0 1 19.6 0A11 11 0 0 1 .2 10zm9.8 4a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0-2a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
 				<span>CONSULTER</span>
@@ -133,28 +138,17 @@
 
 		</div>
 
-		<div>
+		<div slot="score">
 			{#if (($user.resources.includes("admin")) && (_score != 0))}
 					<p>Score : {Math.round((_score + Number.EPSILON) * 100) / 100}</p>
 			{/if}
 		</div>
 
-		</div>
-
-	</section>
+	</BaseItem>
 {/if}
 
 <style>
-	.result-item {
-		border: 1px solid #aaa;
-		@apply rounded-sm;
-		@apply p-2;
-	} 
-	@screen sm {
-		.result-item {
-			@apply p-4;
-		}
-	}
+
 	button {
 		@apply mt-1;
 		@apply px-4;
@@ -166,4 +160,5 @@
 		@apply inline-flex;
 		@apply items-center;
 	}
+
 </style>
