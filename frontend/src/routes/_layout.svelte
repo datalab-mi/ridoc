@@ -10,16 +10,16 @@
 	import Nav from '../layouts/Nav.svelte';
 
 	export let segment;
-	
+
 	const login = createOpenCloseStore();
-	
+
 	const bgColorProp = '--bg-color';
 	const styleProps = { 'background-color': `var(${bgColorProp})` };
 
 	let rootNode;
 
 	onMount(() => rootNode = document.documentElement);
-	
+
 	$: {
 		if (rootNode) {
 			styleProps[bgColorProp] = $userTheme.backgroundColor;
