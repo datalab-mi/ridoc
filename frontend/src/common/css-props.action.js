@@ -9,12 +9,14 @@
 export function cssProps(node, props) {
 
 	const updateProperties = (_props) => {
-		for (const prop of Object.keys(_props)) {
-			const value = _props[prop];
-			if (value) {
-				node.style.setProperty(prop, value);
-			} else {
-				node.style.removeProperty(prop);
+		if (_props) {
+			for (const prop of Object.keys(_props)) {
+				const value = _props[prop];
+				if (value) {
+					node.style.setProperty(prop, value);
+				} else {
+					node.style.removeProperty(prop);
+				}
 			}
 		}
 	}

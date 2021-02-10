@@ -5,9 +5,6 @@
 	import { itemConfig, list_logger, promiseSearch } from '../components/stores.js';
 	import { userData } from '../common/user-data.store';
 
-	const bgColorProp = '--search-results-bg-color';
-	const styleProps = {};
-
 	let items = [];
 	let threshold;
 	let resultMessage;
@@ -39,13 +36,6 @@
 
 	// reactive statement, add_bar function is called whenever the promise changes
 	$: {
-		styleProps[bgColorProp] =
-			$userTheme.search &&
-			$userTheme.search.results &&
-			$userTheme.search.results.backgroundColor
-				? $userTheme.search.results.backgroundColor
-				: undefined;
-		
 		$promiseSearch
 			.then((searchResults) => {
 				add_bar(searchResults);
@@ -69,7 +59,7 @@
 
 {#if Object.keys($itemConfig).length > 0}
 	{#if items.length > 0}
-		<div class="result-list" use:cssProps={styleProps} style="background-color: var({bgColorProp})">
+		<div class="result-list" use:cssProps={$userTheme.search && $userTheme.search.results}>
 		{#each items as item (item.key)}
 			{#if  item._id === "bar"}
 				<div class="bar">
