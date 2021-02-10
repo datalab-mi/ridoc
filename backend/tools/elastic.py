@@ -508,7 +508,7 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
     save_json(data, path_json)
 
     res = es.index(index = index_name, body=data , id = path_document.name)
-    # generate tag if needed
+    # generate tag if needed, must be after indexation
     for entry in sections:
         if entry.get('tag',False):
             #import pdb; pdb.set_trace()
@@ -518,7 +518,7 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
                         "source": "ctx._source.tag=params.list_tag",
                         "lang": "painless",
                         "params" : {
-                            "list_tag" : res_tag
+                            "list_tag" : list(set(data.get("tag", []) + res_tag))
                                     }
                                 }
                     }
