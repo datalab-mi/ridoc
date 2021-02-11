@@ -3,16 +3,16 @@
 	import { files } from '../utils.js';
 	import FileRow from './FileRow.svelte';
 	import VirtualList from '../VirtualList.svelte';
-  import { onDestroy } from 'svelte'
+  import { onMount, onDestroy } from 'svelte'
 
 	export let baseDir
 	export let meta
+	export let readonly = false
 
 	let GetPromise = new Promise(()=>{})
 	let PutPromise = new Promise(()=>{})
 
 	let isAdd = false
-	let readonly = true
 	let send = false
 
 	let start
@@ -24,14 +24,20 @@
 	let filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})));
 
 	const keys_to_filter = meta.filter(item => item.type == 'text').map(item => item.key);
+
+
 	$: GetPromise = handleFiles(baseDir)
 
 	async function handleFiles(baseDir) {
 		const res = await files('GET', baseDir)
-		//const data = await res.json()
-		$list_files = await res.json()//data.map(element => Object.assign({}, ...keys_to_filter.map(key => ({[key]: element[key]}))))
-		$list_files.sort((a,b) => a[key].localeCompare(b[key]))
-		return res.status
+		const data = await res.json()
+		if (res.ok) {
+			$list_files = data//data.map(element => Object.assign({}, ...keys_to_filter.map(key => ({[key]: element[key]}))))
+			$list_files.sort((a,b) => a[key].localeCompare(b[key]))
+			return res.status
+		} else {
+			throw new Error(data);
+		}
 	}
 
 
@@ -70,17 +76,15 @@ onDestroy(() => $list_files = [])
 	{#await GetPromise}
 	<p>...Attente de la requête</p>
 	{:then status}
-
-
 		<div class="inline-flex bg-{(isAdd) ? 'white': 'gray'}-200 w-full">
-			<div class="inline-flex w-5/6">
+			<div class="inline-flex" style="flex-grow: 1">
 			{#each meta as {key, type, placeholder, value, innerHtml, size} }
 				<div class="flex-grow w-{size} text-gray-700 text-center bg-gray-400 px-4 py-2 m-2">
 					<input type="search" bind:value={filterRow[key]} placeholder={(isAdd) ? '': placeholder} >
 				</div>
 			{/each}
 			</div>
-
+			{#if (! readonly) }
 			<div class="flex justify-around w-1/6 px-4 py-2 m-2">
 				{#if (isAdd)}
 					{#if (file.name === "")}
@@ -105,18 +109,18 @@ onDestroy(() => $list_files = [])
 					<span>AJOUTER</span>
 				</button>
 				{/if}
-
-
 			</div>
-
+			{/if}
+			<div class="w-2"/>
 		</div>
 
-		<VirtualList items={list_files_filter} {key} let:item bind:end>
-			<FileRow {item} {meta} {baseDir} {key}/>
+		<VirtualList height="80vh" items={list_files_filter} {key} let:item bind:start bind:end>
+			<FileRow {item} {meta} {baseDir} {key} {readonly}/>
 		</VirtualList>
+		<p>{start}-{end} sur {list_files_filter.length} documents </p>
 
 	{:catch error}
-		{#if error.satus === 404}
+		{#if (error && (error.status === 404))}
 			<p style="color: red">Pas de pièces jointes</p>
 
 		{:else}
@@ -134,30 +138,9 @@ onDestroy(() => $list_files = [])
 
 	.containerVL {
 	min-height: 200px;
-	height: calc(60vh)
+	height: calc(100vh)
 	}
 
-
-	.synonym-list {
-		border: 1px solid #aaa;
-		border-radius: 4px;
-		box-shadow: 2px 2px 8px rgba(0,0,0,1);
-		width: 60em;
-		overflow: auto;
-		margin: 10px
-	}
-
-	.synonym-add {
-		border: 1px solid #aaa;
-		border-radius: 4px;
-		box-shadow: 2px 2px 8px rgba(0,0,0,1);
-		flex-grow: 1;
-		height: 30vh;
-		width: 30em;
-		margin: 10px
-
-
-	}
 
 	.value {
 		width: 80%

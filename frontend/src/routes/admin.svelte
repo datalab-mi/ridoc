@@ -15,7 +15,7 @@
 						{
 							key: 'name',
 							type: 'text',
-							placeholder: 'Rechercher une pièce jointe',
+							placeholder: 'Recherchez un document...',
 							value: '',
 							innerHtml: '',
 							size: '4/6'
@@ -74,12 +74,20 @@
 <hr>
 
 <div>
+	<h1>Gestion des documents</h1>
+	<br>
+	<File baseDir={$userData.dstDir} {meta} readonly={true}/>
+
+</div>
+<hr>
+<div>
 	<h1>Gestion des pièces-jointes</h1>
 	<br>
 	<p>Vous pouvez ajouter, modifier ou supprimer des pièces-jointes </p>
 	<File baseDir={$userData.pjDir} {meta}/>
-
 </div>
+
+
 </div>
 
 

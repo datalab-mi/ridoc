@@ -26,7 +26,6 @@
 	const keys_to_keep = meta.map(item => item.key);
 	keys_to_keep.push('key') // Add row number to the list of key to keep
 
-
 	GetPromise = synonym('GET', filterRow, filename)
 	GetPromise.then((list) => {
 		$list_synonym = list.map(element => Object.assign({}, ...keys_to_keep.map(key => ({[key]: element[key]}))))
@@ -59,15 +58,12 @@ $: { // filter $list_synonym with filterRow on its keys (expressionA, expression
 
 onDestroy(() => $list_synonym = [])
 
-
 </script>
-
 
 <div class='containerVL'>
 	{#await GetPromise}
 	<p>...Attente de la requête</p>
 	{:then status}
-
 
 		<div class="inline-flex bg-{(isAdd) ? 'white': 'gray'}-200 w-full">
 			<div class="inline-flex" style="flex-grow: 1">
@@ -105,52 +101,27 @@ onDestroy(() => $list_synonym = [])
 					{/if}
 				</div>
 			{/if}
-
+			<div class="w-2"/>
 		</div>
 
 		<VirtualList height="90%" items={list_synonym_filter} let:item>
 			<SynonymRow {filename} {item} {meta} {totalSize} />
 		</VirtualList>
 
-
 	{:catch error}
 		<p style="color: red">{error.message}</p>
 	{/await}
 </div>
 
-
-
 <style>
 
-
-.container {
-	width: 90%;
-}
-
-.containerVL {
-	min-height: 200px;
-	height: calc(70vh)
-}
-
-	.synonym-list {
-		border: 1px solid #aaa;
-		border-radius: 4px;
-		box-shadow: 2px 2px 8px rgba(0,0,0,1);
-		width: 60em;
-		overflow: auto;
-		margin: 10px
+	.container {
+		width: 90%;
 	}
 
-	.synonym-add {
-		border: 1px solid #aaa;
-		border-radius: 4px;
-		box-shadow: 2px 2px 8px rgba(0,0,0,1);
-		flex-grow: 1;
-		height: 30vh;
-		width: 30em;
-		margin: 10px
-
-
+	.containerVL {
+		min-height: 200px;
+		height: calc(70vh)
 	}
 
 	.value {
