@@ -6,13 +6,15 @@
 
 	import { itemConfig, user, list_logger } from './stores.js';
 	import { userData } from '../common/user-data.store';
-	import { index, upload } from './utils.js'
+	import { httpClient, index, upload } from './utils.js'
 
 	export let _id;
 	export let _source;
 	export let _score;
 	export let highlight = {}
 
+	const http = httpClient();
+	
 	let readonly = true
 	const required = true;
 	let send = false
@@ -101,7 +103,7 @@
 
 		<div slot="button">
 
-			<button on:click="{window.open(url,'_blank')}" class="hover:bg-gray-400">
+			<button on:click="{http.fetchBlob(url)}" class="hover:bg-gray-400">
 			<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M.2 10a11 11 0 0 1 19.6 0A11 11 0 0 1 .2 10zm9.8 4a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0-2a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
 				<span>CONSULTER</span>
 			</button>
