@@ -101,7 +101,7 @@
 		@apply w-full;
 		@apply px-2;
 		@apply py-2;
-		@apply border-b;
+		/* @apply border-b; */
 		@apply outline-none;
 		@apply text-left;
 	}
@@ -110,10 +110,12 @@
 		@apply duration-700;
 	}
 	/** ignore this warning (unused) */
+	/*
 	li + li {
 		@apply border-t;
 	}
 	li:last-child {
 		@apply border-b;
 	}
+	*/
 </style>

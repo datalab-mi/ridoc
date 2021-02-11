@@ -32,6 +32,7 @@
 	.accordion {
 		@apply mx-auto;
 	}
+	/*
 	ul {
 		@apply border-t;
 		@apply border-l;
@@ -40,4 +41,5 @@
 	ul:empty {
 		@apply border-b;
 	}
+	*/
 </style>
