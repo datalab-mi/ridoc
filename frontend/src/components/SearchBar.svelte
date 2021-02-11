@@ -10,18 +10,8 @@
 	import { itemConfig, promiseSearch, searchList } from '../components/stores.js';
 	import { format2ES, search } from '../components/utils.js';
 
-	const bgColorProp = '--search-criteria-bg-color';
-	const styleProps = {};
-
 	let body
 	
-	$: styleProps[bgColorProp] =
-		$userTheme.search &&
-		$userTheme.search.criteria &&
-		$userTheme.search.criteria.backgroundColor
-			? $userTheme.search.criteria.backgroundColor
-			: undefined;
-
 	function handleSearch() {
 		body = format2ES($itemConfig, $searchList, $userData.index_name)
 		$promiseSearch = search(body)
@@ -29,7 +19,7 @@
 </script>
 
 <div class='search-bar' on:keyup={e => e.key === 'Enter' && handleSearch()}
-	use:cssProps={styleProps} style="background-color: var({bgColorProp})">
+	use:cssProps={$userTheme.search && $userTheme.search.criteria}>
 
 {#if $searchList.length > 0}
 

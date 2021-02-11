@@ -13,19 +13,11 @@
 
 	const login = createOpenCloseStore();
 
-	const bgColorProp = '--bg-color';
-	const styleProps = { 'background-color': `var(${bgColorProp})` };
-
 	let rootNode;
 
 	onMount(() => rootNode = document.documentElement);
 
-	$: {
-		if (rootNode) {
-			styleProps[bgColorProp] = $userTheme.backgroundColor;
-			cssProps(rootNode, styleProps);
-		}
-	}
+	$: rootNode && cssProps(rootNode, $userTheme.root);
 </script>
 
 <div>
@@ -43,8 +35,8 @@
 	</header> -->
 	<main>
 		<div class="max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-6 lg:px-8">
-			<slot></slot>
-			<Logger/>
+			<slot />
+			<Logger />
 		</div>
 	</main>
 	<Footer />
