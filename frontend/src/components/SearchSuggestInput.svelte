@@ -1,7 +1,7 @@
 <script>
 	import AutoComplete from 'simple-svelte-autocomplete';
 	import { onMount, onDestroy } from 'svelte';
-	import { userData } from './stores.js';
+	import { userData } from '../common/user-data.store';
 	import { httpClient, USER_API } from './utils.js';
 
 	export let innerHtml = '';

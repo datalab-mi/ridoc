@@ -4,7 +4,8 @@
 !/package-lock.json
 !/rollup.config.js
 !/postcss.config.js
-!/frontend/tailwind.config.js
+!/svelte.config.js
+!/tailwind.config.js
 !/src
 !/static
 /static/user/notice.md

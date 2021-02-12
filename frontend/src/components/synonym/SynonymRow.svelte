@@ -7,7 +7,6 @@
 	export let item ;
 	export let meta ;
 	export let totalSize ;
-	export let admin ;
 
 	let DeletePromise = new Promise(()=>{});
 	let UpdatePromise = new Promise(()=>{});

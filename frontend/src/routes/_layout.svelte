@@ -1,37 +1,43 @@
 <script>
-	import Nav from '../components/Nav.svelte';
-	import Footer from '../components/Footer.svelte';
-	import LoginForm from '../components/login/LoginForm.svelte';
+	import { onMount } from 'svelte';
+	import { cssProps } from '../common/css-props.action';
+	import { createOpenCloseStore } from '../common/store.utils';
+	import { userTheme } from '../common/theme.store';
 	import Logger from '../components/Logger.svelte';
-	import { user, displayLogin, list_logger  } from '../components/stores.js';
+	import LoginForm from '../components/login/LoginForm.svelte';
+	import { displayLogin } from '../components/stores.js';
+	import Footer from '../layouts/Footer.svelte';
+	import Nav from '../layouts/Nav.svelte';
 
 	export let segment;
+
+	const login = createOpenCloseStore();
+
+	let rootNode;
+
+	onMount(() => rootNode = document.documentElement);
+
+	$: rootNode && cssProps(rootNode, $userTheme.root);
 </script>
 
-<style>
-	main {
-		position: relative;
-		max-width: 120em;
-		background-color: white;
-		padding: 2em;
-		margin: 0;
-		box-sizing: border-box;
-	}
-
-</style>
-
-<Nav {segment}/>
-
-<main>
-
-	<slot></slot>
-
-	{#if $displayLogin}
-		<LoginForm/>
+<div>
+	{#if $displayLogin || $login}
+		<LoginForm state={login} />
 	{/if}
+	<Nav {segment} {login} />
 
-	<Logger/>
-
-</main>
-
-<Footer/>
+	<!-- <header>
+		<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+			<h1 class="text-3xl font-bold leading-tight text-gray-900">
+				Dashboard
+			</h1>
+		</div>
+	</header> -->
+	<main>
+		<div class="max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-6 lg:px-8">
+			<slot />
+			<Logger />
+		</div>
+	</main>
+	<Footer />
+</div>

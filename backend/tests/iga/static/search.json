@@ -7,7 +7,7 @@
     "type": "search",
     "placeholder": "Recherche par mots clefs",
     "innerHtml": "",
-    "style": "w-5/6 p-2",
+    "style": "",
     "suggest": true,
     "highlight": true
     }
@@ -20,7 +20,7 @@
     "type": "search",
     "placeholder": "Paul Dupond, Anne-Marie",
     "innerHtml": "Nom ou Prénom",
-    "style": "w-3/4 p-2",
+    "style": "flex-auto",
     "highlight": true
     },
     {
@@ -29,7 +29,7 @@
     "value": "",
     "type": "date",
     "innerHtml": "A partir de : ",
-    "style": "w-3/4 p-2",
+    "style": "flex flex-initial",
     "highlight": true
     },
     {
@@ -38,7 +38,7 @@
     "value": "",
     "type": "date",
     "innerHtml": "Jusqu'à : ",
-    "style": "w-3/4 p-2",
+    "style": "flex flex-initial",
     "highlight": true
     }
   ],
@@ -51,7 +51,7 @@
     "type": "keyword",
     "placeholder": "Recherche par tags",
     "innerHtml": "",
-    "style": "w-5/6 p-2",
+    "style": "flex-auto",
     "highlight": false,
     "color": "#003300"
     }

@@ -1,13 +1,21 @@
 <script>
+	import { clickOutside } from '../../common/click-outside.action';
+	import { displayLogin, list_logger, user } from '../stores.js';
 
-  import { onMount } from "svelte";
-  import { user, list_logger, displayLogin } from '../stores.js';
-  import { clickOutside } from '../../utils/event-utils';
   let email = "";
   let password = "";
 
   let isLoading = false;
   let isSuccess = false;
+  
+  	/** store créé par createOpenCloseStore */
+	export let state;
+	
+	const handleClickOutside = (event) => {
+		$displayLogin = false;
+		state.close();
+		event.detail && event.detail.originalEvent && event.detail.originalEvent.stopPropagation();
+	};
 
   async function submit({ email, password }) {
     var headers = new Headers();
@@ -43,7 +51,7 @@
       isLoading = true;
       submit({ email, password })
         .then(({access_token, role, rules, resources}) => {
-          console.log(`Your new token is: ${access_token}`)
+          // console.log(`Your new token is: ${access_token}`)
           const request_user = {role:role, jwToken:access_token, rules:rules, resources:resources}
           user.authenticate(request_user)
           isSuccess = true;
@@ -62,7 +70,7 @@
   };
 </script>
 
-<div use:clickOutside on:clickoutside={() => $displayLogin = false} class="form-popup">
+<div use:clickOutside on:clickoutside={handleClickOutside} class="form-popup">
 
 <form on:submit|preventDefault={handleSubmit} >
 

@@ -1,9 +1,12 @@
-/** Dispatch event on click outside of node */
+/**
+ * Envoie un événement 'clickoutside' en cas de clic à l'extérieur de l'élément.
+ * detail: { originalEvent: <événement de clic> }
+*/
 export function clickOutside(node) {
 
 	const handleClick = event => {
 		if (node && !node.contains(event.target) && !event.defaultPrevented) {
-			node.dispatchEvent(new CustomEvent('clickoutside', node));
+			node.dispatchEvent(new CustomEvent('clickoutside', { detail: { originalEvent: event } }));
 		}
 	}
 

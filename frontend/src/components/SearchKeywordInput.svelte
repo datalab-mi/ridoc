@@ -1,9 +1,10 @@
 <script>
 	import Tags from "svelte-tags-input";
-	import { userData } from "./stores.js";
+	import { userData } from '../common/user-data.store';
 	import { USER_API, get } from "./utils.js";
 	import { onMount } from "svelte";
 
+	export let style = '';
 	export let placeholder = "";
 	export let fields = "";
 	export let value = "";
@@ -21,7 +22,7 @@
 </script>
 
 {#await promiseListKeyword then autoComplete}
-	<div class="my-custom-class" style="--color: {color}">
+	<div class="my-custom-class {style}" style="--color: {color}">
 		<Tags
 			tags={value}
 			on:tags={handleTags}
