@@ -26,9 +26,6 @@
 	let file;
 	$: file = { name: filename }
 	
-	let meta;
-	$: meta = createMeta($itemConfig.inputs, _source)
-	
 	let url;
 	$: url = `/api/user/files/${$userData.dstDir}/${filename}`
 	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
@@ -60,6 +57,9 @@
 			return copy;
 		});
 	}
+
+	// ne pas modifier par la suite sinon l'édition ne fonctionne plus
+	const meta = createMeta($itemConfig.inputs, _source);
 
 	function handleDelete() {
 		console.log(`Delete ${filename}`)

@@ -25,7 +25,7 @@
     },
     {
       "key": "author",
-      "type": "text",
+      "type": "textarea",
       "placeholder": "NA",
       "value": "",
       "innerHtml": "<b>Auteurs :</b>",
