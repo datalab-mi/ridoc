@@ -126,7 +126,7 @@
 				{#if link.href === segment}
 					<a href={link.href} class="block navlink hover:bg-gray-200" aria-current="page">{link.text}</a>
 				{:else}
-					<a href={link.href} class="block navlink hover:bg-gray-200">{link.text}</a>
+					<a href={link.href} on:click={nav.close} class="block navlink hover:bg-gray-200">{link.text}</a>
 				{/if}
 			{/each}
 			</div>
