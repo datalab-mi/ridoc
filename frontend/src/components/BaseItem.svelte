@@ -1,36 +1,21 @@
 <script>
-export let cssClass; // specify type of baseitem, result or new, not used yet
-export let _id;
+	import { cssProps } from '../common/css-props.action';
 
+	export let id;
+	export let componentCssProps = undefined
 </script>
 
-<section class="item" id={_id}>
+<section {id} use:cssProps={componentCssProps} class="base-item rounded-sm p-2 sm:p-4">
+	<slot name="fields" />
 
-  <slot name="fields">
-  </slot>
-
-  <div class="flex justify-between">
-
-    <slot name="button">
-    </slot>
-
-    <slot name="score">
-    </slot>
-
-  </div>
-
+	<div class="flex justify-between">
+		<slot name="buttons" />
+		<slot name="score" />
+	</div>
 </section>
 
 <style>
-	.item {
+	.base-item {
 		border: 1px solid #aaa;
-		@apply rounded-sm;
-		@apply p-2;
 	}
-	@screen sm {
-		.item {
-			@apply p-4;
-		}
-	}
-
 </style>

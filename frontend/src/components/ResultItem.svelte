@@ -1,4 +1,5 @@
 <script>
+	import { userTheme } from '../common/theme.store';
 	import { userData } from '../common/user-data.store';
 	import BaseItem from './BaseItem.svelte';
 	import Entry from './Entry.svelte';
@@ -18,7 +19,6 @@
 	let display = true;
 	let readonly = true;
 	let send = false;
-	let cssClass = 'result'
 	
 	let filename;
 	$: filename = _id.replace(/\+/g, ' '), console.log('updated filename')
@@ -129,12 +129,12 @@
 </script>
 
 {#if display}
-	<BaseItem {_id}>
+	<BaseItem id={_id} componentCssProps={$userTheme.search && $userTheme.search.results}>
 
 		<div slot="fields" class="flex-col space-y-1">
 			{#each meta as { value, key, type, placeholder, innerHtml, highlight, metadata, isHighlight, rows, color} (key)}
 				{#if !readonly || !isEmpty(value)}
-					<Entry {readonly} {cssClass} {required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {rows} {color} />
+					<Entry {readonly} {required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {rows} {color} />
 				{/if}
 			{/each}
 		</div>
@@ -197,5 +197,8 @@
 		@apply rounded;
 		@apply inline-flex;
 		@apply items-center;
+	}
+	div[slot='fields'] :global(.entry-title) {
+		color: blue;
 	}
 </style>

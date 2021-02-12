@@ -1,15 +1,14 @@
 <script>
-  import BaseItem from './BaseItem.svelte'
-  import Entry from './Entry.svelte'
-  import PutItem from './PutItem.svelte'
-
-  import { get } from '../components/utils.js';
+	import { userTheme } from '../common/theme.store';
+	import { get } from '../components/utils.js';
+	import BaseItem from './BaseItem.svelte';
+	import Entry from './Entry.svelte';
+	import PutItem from './PutItem.svelte';
 
   let files ;
   let fileNameList = [];
   let send = false;
   const _id = -1
-  const cssClass = "new"
 
   const required = false;
 
@@ -26,15 +25,15 @@
 <p>... Récuperation de la configuration</p>
 {:then item}
 
-  <BaseItem {cssClass} {_id}>
+<BaseItem id={_id} componentCssProps={$userTheme.search && $userTheme.search.results}>
 
-    <div slot="fields">
-      {#each item.inputs as {key, type, placeholder, value, innerHtml, highlight, metadata, isHighlight, rows, color}, i }
-        <Entry  bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {color} {required}/>
+    <div slot="fields" class="flex-col space-y-1">
+      {#each item.inputs as { value, key, type, placeholder, innerHtml, highlight, metadata, isHighlight, color} (key)}
+        <Entry {required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {color} />
       {/each}
     </div>
 
-    <div slot="button">
+    <div slot="buttons">
       <label for="docUpload" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
         Choisir un fichier
       </label>
@@ -67,12 +66,11 @@
 {/await}
 
 <style>
+	.fileUpload {
+		display: none;
+	}
 
-  .fileUpload {
-    display: none;
-  }
-
-  button {
+	button {
 		@apply mt-1;
 		@apply px-4;
 		@apply py-2;
@@ -83,5 +81,4 @@
 		@apply inline-flex;
 		@apply items-center;
 	}
-
 </style>
