@@ -5,8 +5,8 @@
 	import Entry from './Entry.svelte';
 	import PutItem from './PutItem.svelte';
 	import { itemConfig } from './search/item-config.store';
-	import { list_logger,user } from './stores.js';
-	import { httpClient,index,upload } from './utils.js';
+	import { list_logger, user } from './stores.js';
+	import { httpClient, index, upload } from './utils.js';
 
 	export let _id;
 	export let _source;
@@ -19,42 +19,19 @@
 	let display = true;
 	let readonly = true;
 	let send = false;
-	
+
 	let filename;
-	$: filename = _id.replace(/\+/g, ' '), console.log('updated filename')
+	$: filename = _id.replace(/\+/g, ' ')
 	
 	let file;
-	$: file = { name: filename }, console.log('updated file')
+	$: file = { name: filename }
 	
 	let meta;
-	$: meta = createMeta($itemConfig.inputs, _source), console.log('updated meta')
+	$: meta = createMeta($itemConfig.inputs, _source)
 	
 	let url;
-	$: url = `/api/user/files/${$userData.dstDir}/${filename}`, console.log('updated url')
+	$: url = `/api/user/files/${$userData.dstDir}/${filename}`
 	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
-
-	const createMeta0 = (items, source) => {
-		const autre = JSON.parse(JSON.stringify(items))
-
-		// replace value to the result value contained in _source or in highlight key
-		// if present and if needed
-		autre.forEach((x, index) => {
-			//console.log(highlight)
-			if (x.highlight && highlight && (x.key in highlight)) {
-				autre[index].value = highlight[x.key].join(' [...] ')
-				autre[index].isHighlight = true
-			} else {
-				autre[index].value =  x.key in source  ? source[x.key] : x.value
-				autre[index].isHighlight = false
-			}
-			// test if item should be displayed if empty
-			if (!( autre[index].canBeEmpty === undefined) && (! autre[index].canBeEmpty) && (isEmpty(autre[index].value))) {
-				display = false
-			}
-		})
-		// console.log('createMeta0', autre);
-		return autre;
-	}
 
 	/**
 	 * Copie et adapte les métadonnées.
@@ -64,16 +41,11 @@
 	 * @return copie adaptée
 	 */
 	const createMeta = (items, source) => {
-		const ref = createMeta0(items, source);
-		
-		const result = [];
-
-		// replace value to the result value contained in source or in highlight key
-		// if present and if needed
-		for (const item of items) {
+		return items.map(item => {
 			const copy = { ...item };
-			// console.log('item', item, copy);
 
+			// replace value to the result value contained in source or in highlight key
+			// if present and if needed
 			if (copy.highlight && highlight && (copy.key in highlight)) {
 				copy.value = highlight[copy.key].join(' [...] ')
 				copy.isHighlight = true
@@ -85,12 +57,8 @@
 			if (copy.canBeEmpty !== undefined && !copy.canBeEmpty && isEmpty(copy.value)) {
 				display = false
 			}
-			result.push(copy);
-			// console.log('result', result)
-		}
-		if (JSON.stringify(ref) != JSON.stringify(result)) { console.error('differents', ref, result)}
-		// console.log('createMeta', result);
-		return result;
+			return copy;
+		});
 	}
 
 	function handleDelete() {
