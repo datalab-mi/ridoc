@@ -3,10 +3,12 @@
 	import { writable } from 'svelte/store';
 	import { cssProps } from '../css-props.action';
 	import { contextKey } from './accordion';
+	import { fly } from 'svelte/transition';
+	import { cubicInOut } from 'svelte/easing';
 
 	/** store pour la valeur de sélection */
 	export let selection = getContext(contextKey) || writable(null);
-	
+
 	/** valeur correspondant à la sélection de cette section */
 	export let itemValue = 1;
 
@@ -18,13 +20,13 @@
 
 	/** classe(s) CSS du bouton */
 	export let buttonClass = undefined;
-	
+
 	/** styles CSS du bouton */
 	export let buttonStyle = undefined;
-	
+
 	/** classe(s) CSS du contenu */
 	export let contentClass = undefined;
-	
+
 	/** styles CSS du contenu */
 	export let contentStyle = undefined;
 
@@ -33,38 +35,44 @@
 	 * alternative : passer un slot 'title'
 	*/
 	export let title = 'titre';
-	
+
 	/**
 	 * texte pour le contenu
 	 * alternative : passer un slot 'content'
 	*/
 	export let content = 'contenu';
-	
+
 	const dispatch = createEventDispatcher();
 	const bgHeightProp = 'max-height';
 	const styleProps = {};
-	
+
 	/** élément DOM externe (élément de liste) */
 	let itemNode;
-	
-	/** élément DOM correspondant au contenu */
-	let contentNode;
-	
+
 	let expanded;
-	
-	$: {
-		const oldValue = expanded;
-		expanded = $selection === itemValue;
-		styleProps[bgHeightProp] =
-			contentNode && expanded
-				? contentNode.scrollHeight + 'px'
-				: undefined;
-		if (oldValue != expanded) {
-			dispatch('expand', { itemNode, expanded });
-		}
+
+
+	function expand(node, params) {
+		const nodeHeight = node.scrollHeight
+		return {
+			delay: params.delay || 0,
+			duration: params.duration || 800,
+			easing: params.easing || cubicInOut,
+			css: (t, u) => `max-height: ${nodeHeight*t}px;`,
+			tick: (t, u) => node.style.overflow = (t === 1) || (u === 1)? "visible" : 'hidden'
+		};
 	}
 
-	const toggleSelection = () => selection.update(v => v !== itemValue ? itemValue : null);
+	$: {
+	const oldValue = expanded;
+	expanded = $selection === itemValue;
+	if (oldValue != expanded) {
+		dispatch('expand', { itemNode, expanded });
+		}
+	}
+	const toggleSelection = () => {
+		selection.update(v => v !== itemValue ? itemValue : null)
+	};
 </script>
 
 <li bind:this={itemNode} class="relative {itemClass || ''}" style={itemStyle}>
@@ -83,14 +91,18 @@
 			</div>
 		</slot>
 	</button>
+	{#if expanded}
+	<div transition:expand class="overflow-hidden {contentClass || ''}" style={contentStyle}>
+		<p>essai</p>
+		<p>truc</p>
 
-	<div bind:this={contentNode} use:cssProps={styleProps} class="relative overflow-hidden max-h-0 {contentClass || ''}" style={contentStyle}>
 		<slot name="content">
 			<div class="p-6">
 				<p>{content}</p>
 			</div>
 		</slot>
 	</div>
+	{/if}
 </li>
 
 <style>
@@ -104,10 +116,6 @@
 		/* @apply border-b; */
 		@apply outline-none;
 		@apply text-left;
-	}
-	button + div {
-		@apply transition-all;
-		@apply duration-700;
 	}
 	/** ignore this warning (unused) */
 	/*
