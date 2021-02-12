@@ -1,10 +1,8 @@
 <script>
 	import { createEventDispatcher, getContext } from 'svelte';
-	import { writable } from 'svelte/store';
-	import { cssProps } from '../css-props.action';
-	import { contextKey } from './accordion';
-	import { fly } from 'svelte/transition';
 	import { cubicInOut } from 'svelte/easing';
+	import { writable } from 'svelte/store';
+	import { contextKey } from './accordion';
 
 	/** store pour la valeur de sélection */
 	export let selection = getContext(contextKey) || writable(null);
@@ -43,14 +41,11 @@
 	export let content = 'contenu';
 
 	const dispatch = createEventDispatcher();
-	const bgHeightProp = 'max-height';
-	const styleProps = {};
 
 	/** élément DOM externe (élément de liste) */
 	let itemNode;
 
 	let expanded;
-
 
 	function expand(node, params) {
 		const nodeHeight = node.scrollHeight
@@ -59,7 +54,7 @@
 			duration: params.duration || 800,
 			easing: params.easing || cubicInOut,
 			css: (t, u) => `max-height: ${nodeHeight*t}px;`,
-			tick: (t, u) => node.style.overflow = (t === 1) || (u === 1)? "visible" : 'hidden'
+			tick: (t, u) => node.style.overflow = expanded && t === 1 ? "visible" : 'hidden'
 		};
 	}
 
@@ -92,10 +87,7 @@
 		</slot>
 	</button>
 	{#if expanded}
-	<div transition:expand class="overflow-hidden {contentClass || ''}" style={contentStyle}>
-		<p>essai</p>
-		<p>truc</p>
-
+	<div transition:expand|local class="overflow-hidden {contentClass || ''}" style={contentStyle}>
 		<slot name="content">
 			<div class="p-6">
 				<p>{content}</p>
@@ -106,9 +98,6 @@
 </li>
 
 <style>
-	.max-h-0 {
-		max-height: 0;
-	}
 	button {
 		@apply w-full;
 		@apply px-2;
