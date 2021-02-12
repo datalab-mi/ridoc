@@ -1,9 +1,8 @@
 <script>
-	import { cssProps } from '../common/css-props.action';
-	import { userTheme } from '../common/theme.store';
-	import ResultItem from '../components/ResultItem.svelte';
-	import { itemConfig, list_logger, promiseSearch } from '../components/stores.js';
 	import { userData } from '../common/user-data.store';
+	import ResultItem from '../components/ResultItem.svelte';
+	import { list_logger, promiseSearch } from '../components/stores.js';
+	import { itemConfig } from './search/item-config.store';
 
 	let items = [];
 	let threshold;
@@ -59,7 +58,7 @@
 
 {#if Object.keys($itemConfig).length > 0}
 	{#if items.length > 0}
-		<div class="result-list" use:cssProps={$userTheme.search && $userTheme.search.results}>
+		<div class="result-list">
 		{#each items as item (item.key)}
 			{#if  item._id === "bar"}
 				<div class="bar">

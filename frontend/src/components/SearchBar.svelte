@@ -7,7 +7,8 @@
 	import SearchInput from '../components/SearchInput.svelte';
 	import SearchKeywordInput from '../components/SearchKeywordInput.svelte';
 	import SearchSuggestInput from '../components/SearchSuggestInput.svelte';
-	import { itemConfig, promiseSearch, searchList } from '../components/stores.js';
+	import { promiseSearch, searchList } from '../components/stores.js';
+	import { itemConfig } from './search/item-config.store';
 	import { format2ES, search } from '../components/utils.js';
 
 	let body

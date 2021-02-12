@@ -1,7 +1,6 @@
 import { writable, derived } from 'svelte/store';
 
 // auth: https://www.toptal.com/front-end/svelte-framework-guide
-export const itemConfig = writable({})
 export const searchList = writable([[]])
 export const promiseSearch = writable(Promise.resolve({ hits: [] }))
 
