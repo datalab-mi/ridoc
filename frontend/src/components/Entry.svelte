@@ -154,13 +154,17 @@
 		cursor: default !important;
 	}
 	.my-custom-class :global(.svelte-tags-input-layout) {
-		background: #fff !important;
 		border-style: none !important;
 		cursor: default !important;
 	}
+	.my-custom-class :global(.svelte-tags-input-layout.sti-layout-disable) {
+		background-color: transparent !important;
+	}
 	.my-custom-class :global(.svelte-tags-input) {
-		background: #fff !important;
 		cursor: default !important;
+	}
+	.my-custom-class :global(.svelte-tags-input:disabled) {
+		background-color: transparent !important;
 	}
 
 	.clickable {
