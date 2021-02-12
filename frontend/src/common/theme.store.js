@@ -5,7 +5,7 @@ import { userPreferences } from './user-data.store';
  * Renvoie un store contenant le thème de l'application
  * TODO alimenter
  */
-export const appTheme = writable({ backgroundColor: 'white' }, () => {
+export const appTheme = writable({ root: { 'background-color': 'white' } }, () => {
 	return () => console.debug('appTheme: no more subscribers');
 });
 

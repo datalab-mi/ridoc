@@ -3,6 +3,7 @@
 </svelte:head>
 
 <script>
+	import { elasticInOut, expoInOut } from 'svelte/easing';
 	import { writable } from 'svelte/store';
 	import Accordion from '../common/accordion/Accordion.svelte';
 	import AccordionItem from '../common/accordion/AccordionItem.svelte';
@@ -72,6 +73,15 @@
 				<p>ouvert au départ</p>
 				<ul>
 					<AccordionItem selection={writable('peuImporte')} itemValue={'peuImporte'} />
+				</ul>
+			</div>
+
+			<div>
+				<p>avec transition personnalisée</p>
+				<ul>
+					<AccordionItem title="easing" itemValue={1} contentStyle="height: 100px" slideParams={{ easing: elasticInOut }} />
+					<AccordionItem title="durée" itemValue={2} contentStyle="height: 200px" slideParams={{ duration: 5000 }} />
+					<AccordionItem title="durée + easing" itemValue={3} contentStyle="height: 300px" slideParams={{ duration: 3000, easing: expoInOut }} />
 				</ul>
 			</div>
 

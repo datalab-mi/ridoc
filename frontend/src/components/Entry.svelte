@@ -15,14 +15,15 @@
     export let readonly = false;
     export let required = true
 
-    export let cssClass = 'base'
-
     export let rows = 4
     export let color = "#000066"
-    let newValue = ""
+
+	let derivedReadonly;
+	$: derivedReadonly = readonly || !metadata;
+
+	let newValue = ""
     let keywordList = []
     let promiseListKeyword = new Promise(()=>{})
-
 
     if  (type === "keyword") {
       if (!readonly && metadata) {
@@ -47,7 +48,7 @@
     }
 
     function handleClick(val) {
-      if  (readonly || !metadata) {
+      if (derivedReadonly) {
         let found = val.match(/(http.*)/g)
         if ( found != null) {
           window.open(found,'_blank')
@@ -62,16 +63,18 @@
 <div class="entry">
 {#if (key == "title") || (key == "titre")}
   <h2 class="mb-2">
-    <textarea class="{cssClass}-title" type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}" />
+    <textarea class="entry-title" type="text" bind:value={value} {placeholder} readonly={derivedReadonly} />
   </h2>
 
 {:else if type == "date"}
-  <label> {@html innerHtml} </label>
+  <label>
+	{@html innerHtml}
   {#if required}
-    <input type='date' bind:value={value} {placeholder} readonly="{readonly || !metadata}" required />
+    <input type="date" bind:value={value} {placeholder} readonly={derivedReadonly} required />
   {:else}
-    <input type='date' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
+    <input type="date" bind:value={value} {placeholder} readonly={derivedReadonly} />
   {/if}
+  </label>
 
 {:else}
   <label> {@html innerHtml} </label>
@@ -83,8 +86,8 @@
           <Tags
         		tags={value}
             on:tags={handleTags}
-            disable={(readonly || !metadata)}
-            placeholder={(readonly || !metadata) ? false:placeholder}
+            disable={derivedReadonly}
+            placeholder={derivedReadonly ? false : placeholder}
             allowDrop={true}
             allowPaste={true}
             onlyUnique={true}
@@ -102,11 +105,11 @@
                   <p> &laquo; {@html val} &raquo; </p>
               {:else}
                 {#if type == "text"}
-                    <input type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
+                    <input type="text" bind:value={val} {placeholder} readonly={derivedReadonly} />
                 {:else if type == "textarea"}
-                    <textarea bind:value={val} {placeholder} readonly="{readonly || !metadata}"   />
+                    <textarea bind:value={val} {placeholder} readonly={derivedReadonly} />
                 {:else if type == "link"}
-                    <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={handleClick(val)} type='text' bind:value={val} {placeholder} readonly="{readonly || !metadata}"/>
+                    <input class={derivedReadonly ? 'clickable': 'no-clickable'} on:click={handleClick(val)} type='text' bind:value={val} {placeholder} readonly={derivedReadonly} />
                 {/if}
                 {#if !readonly  && metadata}
                 <button on:click={() => onDelete(val)}>
@@ -132,11 +135,11 @@
         <p> &laquo; {@html value} &raquo; </p>
     {:else}
       {#if type == "text"}
-        <input type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
+        <input type="text" bind:value={value} {placeholder} readonly={derivedReadonly} />
       {:else if type == "textarea"}
-        <textarea bind:value={value} {placeholder} readonly="{readonly || !metadata}" {rows} />
+        <textarea bind:value={value} {placeholder} readonly={derivedReadonly} {rows} />
       {:else if type == "link"}
-          <input class={(readonly || !metadata) ? "clickable":"no-clickable"} on:click={handleClick(value)} type='text' bind:value={value} {placeholder} readonly="{readonly || !metadata}"/>
+          <input class={derivedReadonly ? 'clickable' : 'no-clickable' } on:click={handleClick(value)} type='text' bind:value={value} {placeholder} readonly={derivedReadonly} />
       {/if}
     {/if}
   {/if}
@@ -160,20 +163,6 @@
 		cursor: default !important;
 	}
 
-	.result-item {
-		border: 1px solid #aaa;
-		border-radius: 2px;
-		padding: 1em;
-		margin: 1em 1em 1em 1em;
-	}
-	.base-item {
-		width: 100%;
-		border: 1px solid #aaa;
-		border-radius: 4px;
-		box-shadow: 2px 2px 8px rgba(0, 0, 0, 1);
-		padding: 1em;
-		margin: 0 0 1em 0;
-	}
 	.clickable {
 		color: blue;
 		font-weight: normal;
@@ -185,25 +174,33 @@
 		font-weight: normal;
 	}
 
-	.base-title {
+	.entry-title {
 		font-weight: bold;
 		margin: 0;
-		padding: 0;
-	}
-
-	.result-title {
-		color: blue;
-		font-weight: bold;
-		margin: 0;
-		padding: 0;
 	}
 
 	input,
 	textarea {
 		border: none;
-		@apply w-full;
+		@apply my-1;
+		@apply p-1;
 		resize: none;
 		vertical-align: top;
+	}
+
+	input:not([type='date']),
+	textarea {
+		@apply w-full;
+	}
+	
+	input[type='date'] {
+		@apply flex;
+		@apply flex-initial;
+	}
+
+	input:read-only,
+	textarea:read-only {
+		@apply p-0;
 		@apply bg-transparent;
 	}
 

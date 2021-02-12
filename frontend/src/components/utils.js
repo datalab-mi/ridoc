@@ -90,7 +90,63 @@ function httpClient() {
 		const res = await fetchRaw(url, requestInit);
 		return await res.json();
 	}
-	return { fetch: fetchRaw, fetchJson };
+
+	/**
+	 * Extrait le nom de fichier des entêtes de la réponse
+	 * @param  response  Response obtenue par fetch
+	 * @return nom de fichier ou null
+	 */
+	const extractFilename = response => {
+		let filename = null;
+		const disposition = response.headers.get('Content-Disposition');
+		if (disposition && disposition.indexOf('attachment') !== -1) {
+			const matches = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+			if (matches && matches[1]) { 
+			  filename = matches[1].replace(/['"]/g, '');
+			}
+		}
+		return filename;
+	}
+	
+	/**
+	 * Provoque le téléchargement d'un fichier déjà récupéré.
+	 * @param  blob      blob déjà récupéré
+	 * @param  filename  nom du fichier à télécharger
+	 */
+	const downloadFile = (blob, filename) => {
+		
+		// indiquer le type MIME explicitement pour éviter les surprises avec certains navigateurs
+		const newBlob = new Blob([blob], { type: blob.type || 'application/octet-stream' })
+
+		// IE : il faut utiliser msSaveOrOpenBlob, on ne peut pas utiliser un objet blob comme cible de lien
+		if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+			window.navigator.msSaveOrOpenBlob(newBlob);
+			return;
+		} 
+
+		// ajout d'un lien qui pointe vers un ObjectURL contenant le blob
+		const data = window.URL.createObjectURL(newBlob);
+		const link = document.createElement('a');
+		link.href = data;
+		link.download = filename || 'file_' + Date.now();
+		link.click();
+		
+		// délai car Firefox en a besoin
+		setTimeout(() => window.URL.revokeObjectURL(data), 100);
+	}
+	
+	/**
+	 * Récupère un blob, puis provoque le téléchargement par le navigateur.
+	 * @see API fetch
+	 * @see Response.blob()
+	 */
+	const fetchBlob = async (url, requestInit = defaultInit) => {
+		const res = await fetchRaw(url, requestInit);
+		const blob = await res.blob();
+		downloadFile(blob, extractFilename(res));
+	}
+	
+	return { fetch: fetchRaw, fetchJson, fetchBlob };
 }
 
 	async function files(method, baseDir,file = {'name': ""}) {
@@ -147,7 +203,9 @@ const format2ES = (item, query_list, index_name) => {
     query_list = query_list.flat(2)
 		let query_dic = {index_name: index_name};
 		let obj;
-		let highlight_fields = item.inputs.filter(obj => obj.highlight).map(x => x.key)
+		let highlight_fields = item && item.inputs
+			? item.inputs.filter(obj => obj.highlight).map(x => x.key)
+			: [];
 		for (obj of query_list) {
 			let clause = {}
 			if (obj.value != "") {

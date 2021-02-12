@@ -34,10 +34,7 @@
 {/if}
 </div>
 </div>
-
 </div>
-
-
 
 <style>
 

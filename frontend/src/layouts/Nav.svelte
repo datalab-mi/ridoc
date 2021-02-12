@@ -4,12 +4,12 @@
 	import { createOpenCloseStore } from '../common/store.utils';
 
 	export let segment;
-	
+
 	/** store créé par createOpenCloseStore */
 	export let login;
 
 	const nav = createOpenCloseStore();
-	
+
 	const allLinks = [
 		{ text: 'recherche',  href: 'search',     role: 'user'  },
 		{ text: 'glossaire',  href: 'glossary',   role: 'admin' },
@@ -17,7 +17,7 @@
 		{ text: 'admin',      href: 'admin',      role: 'admin' },
 		{ text: 'tests',      href: 'tests',      role: 'admin' }
 	];
-	
+
 	let logo;
 	let links = [];
 
@@ -44,7 +44,7 @@
 		@apply left-0;
 		@apply w-full;
 	}
-	
+
 	.navlink {
 		@apply px-3;
 		@apply py-2;
@@ -52,6 +52,10 @@
 		@apply text-base;
 		@apply font-normal;
 	}
+
+	.artifact {
+	display: none;
+}
 </style>
 
 <nav>
@@ -62,7 +66,7 @@
 			</div>
 			<div class="flex-1">
 				<div class="flex flex-col">
-					<div class="hidden sm:flex ml-2 font-bold text-2xl">Recherche dans les rapports IGA</div>
+					<div class="hidden sm:flex ml-2 font-bold text-2xl">{$userData.navTitle}</div>
 					<div class="flex items-center justify-between h-10">
 						<div class="flex items-center">
 							{#if links.length}
@@ -113,7 +117,7 @@
 	{#if links.length}
 		<!--
 			Mobile menu, toggle classes based on menu state.
-			
+
 			Menu open: "block", Menu closed: "hidden"
 		-->
 		<div class:block={$nav} class:hidden={!$nav} class="md:hidden">
@@ -122,7 +126,7 @@
 				{#if link.href === segment}
 					<a href={link.href} class="block navlink hover:bg-gray-200" aria-current="page">{link.text}</a>
 				{:else}
-					<a href={link.href} class="block navlink hover:bg-gray-200">{link.text}</a>
+					<a href={link.href} on:click={nav.close} class="block navlink hover:bg-gray-200">{link.text}</a>
 				{/if}
 			{/each}
 			</div>
@@ -131,8 +135,7 @@
 </nav>
 
 <!-- Hidden links to redirect Client side rendering app  -->
-<div class="hidden">
-	{#each links as link}
-		<a href={link.href} hidden>{link.text}</a>
-	{/each}
-</div>
+{#each allLinks as link}
+	<a class="artifacts" href={link.href} hidden></a>
+{/each}
+<a class="artifact" hidden href="search"></a>
