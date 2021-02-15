@@ -22,16 +22,19 @@
 	$: derivedReadonly = readonly || !metadata;
 
 	let newValue = ""
-    let keywordList = []
-    let promiseListKeyword = new Promise(()=>{})
+  let keywordList = []
+  let promiseListKeyword = new Promise(()=>{})
 
+  $ : {
     if  (type === "keyword") {
-      if (!readonly && metadata) {
+      if (!derivedReadonly) {
         promiseListKeyword = get(`${USER_API}/keywords/${$userData.index_name}/${key}`)
       } else {
         promiseListKeyword = [] // no need of promiseListKeyword
       }
     }
+
+  }
 
 
     function onDelete(val){
@@ -161,6 +164,7 @@
 		background-color: transparent !important;
 	}
 	.my-custom-class :global(.svelte-tags-input) {
+		background: transparent !important;
 		cursor: default !important;
 	}
 	.my-custom-class :global(.svelte-tags-input:disabled) {
@@ -196,11 +200,12 @@
 	textarea {
 		@apply w-full;
 	}
-	
+
 	input[type='date'] {
 		@apply flex;
 		@apply flex-initial;
 	}
+
 
 	input:read-only,
 	textarea:read-only {

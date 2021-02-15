@@ -15,17 +15,16 @@
 
 	const http = httpClient();
 	const required = true;
-	
 	let display = true;
 	let readonly = true;
 	let send = false;
 
 	let filename;
 	$: filename = _id.replace(/\+/g, ' ')
-	
+
 	let file;
 	$: file = { name: filename }
-	
+
 	let url;
 	$: url = `/api/user/files/${$userData.dstDir}/${filename}`
 	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
@@ -33,30 +32,34 @@
 	/**
 	 * Copie et adapte les métadonnées.
 	 * note : met à jour 'display'
-	 * 
+	 *
 	 * @param  items  tableau de métadonnées
 	 * @return copie adaptée
 	 */
-	const createMeta = (items, source) => {
-		return items.map(item => {
-			const copy = { ...item };
-
-			// replace value to the result value contained in source or in highlight key
-			// if present and if needed
-			if (copy.highlight && highlight && (copy.key in highlight)) {
-				copy.value = highlight[copy.key].join(' [...] ')
-				copy.isHighlight = true
-			} else {
-				copy.value = copy.key in source ? source[copy.key] : copy.value
-				copy.isHighlight = false
-			}
-			// test if item should be displayed if empty
-			if (copy.canBeEmpty !== undefined && !copy.canBeEmpty && isEmpty(copy.value)) {
-				display = false
-			}
-			return copy;
-		});
-	}
+	 const createMeta = (items, source, highlight) => {
+ 		return items.map(item => {
+ 			const copy = { ...item };
+ 			// replace value to the result value contained in source or in highlight key
+ 			// if present and if needed
+ 			if (copy.highlight && highlight && (copy.key in highlight)) {
+ 				copy.value = highlight[copy.key].join(' [...] ')
+ 				copy.isHighlight = true
+ 			} else {
+ 				copy.value = copy.key in source ? source[copy.key] : copy.value
+ 				copy.isHighlight = false
+ 			}
+ 			// test if item should be displayed if empty
+ 			if (copy.canBeEmpty !== undefined && !copy.canBeEmpty && isEmpty(copy.value)) {
+ 				display = false
+ 			}
+ 			return copy;
+ 		});
+ 	}
+	//$: meta = readonly ? createMeta(inputs, _source, highlight) : createMeta(inputs, _source)
+	// !!! doesn't work, need to do this ugly workaround
+	const meta1 = createMeta($itemConfig.inputs, _source, highlight)
+	const meta2 = createMeta($itemConfig.inputs, _source)
+	$: meta = readonly ? meta1 : meta2
 
 	// ne pas modifier par la suite sinon l'édition ne fonctionne plus
 	const meta = createMeta($itemConfig.inputs, _source);
