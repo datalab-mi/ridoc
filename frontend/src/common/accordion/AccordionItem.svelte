@@ -7,7 +7,7 @@
 
 	/** store pour la valeur de sélection */
 	export let selection = getContext(contextKey) || writable(null);
-	
+
 	/** valeur correspondant à la sélection de cette section */
 	export let itemValue = 1;
 
@@ -19,13 +19,13 @@
 
 	/** classe(s) CSS du bouton */
 	export let buttonClass = undefined;
-	
+
 	/** styles CSS du bouton */
 	export let buttonStyle = undefined;
-	
+
 	/** classe(s) CSS du contenu */
 	export let contentClass = undefined;
-	
+
 	/** styles CSS du contenu */
 	export let contentStyle = undefined;
 
@@ -37,23 +37,23 @@
 	 * alternative : passer un slot 'title'
 	*/
 	export let title = 'titre';
-	
+
 	/**
 	 * texte pour le contenu
 	 * alternative : passer un slot 'content'
 	*/
 	export let content = 'contenu';
-	
+
 	const dispatch = createEventDispatcher();
-	
+
 	/** élément DOM externe (élément de liste) */
 	let itemNode;
-	
+
 	let derivedSlideParams;
 	$: derivedSlideParams = { duration: 700, easing: sineInOut, ...slideParams };
-	
+
 	let expanded;
-	
+
 	$: {
 		const oldValue = expanded;
 		expanded = $selection === itemValue;

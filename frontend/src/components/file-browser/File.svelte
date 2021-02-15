@@ -1,5 +1,5 @@
 <script>
-	import { list_files, list_logger } from '../stores.js';
+	import { list_logger } from '../stores.js';
 	import { files } from '../utils.js';
 	import FileRow from './FileRow.svelte';
 	import VirtualList from '../VirtualList.svelte';
@@ -9,9 +9,12 @@
 	export let meta
 	export let readonly = false
 
+	let list_files = []
+
 	let GetPromise = new Promise(()=>{})
 	let PutPromise = new Promise(()=>{})
 
+	let result
 	let isAdd = false
 	let send = false
 
@@ -26,14 +29,14 @@
 	const keys_to_filter = meta.filter(item => item.type == 'text').map(item => item.key);
 
 
-	$: GetPromise = handleFiles(baseDir)
+	GetPromise = handleFiles()
 
-	async function handleFiles(baseDir) {
+	async function handleFiles() {
 		const res = await files('GET', baseDir)
 		const data = await res.json()
 		if (res.ok) {
-			$list_files = data//data.map(element => Object.assign({}, ...keys_to_filter.map(key => ({[key]: element[key]}))))
-			$list_files.sort((a,b) => a[key].localeCompare(b[key]))
+			list_files = data//data.map(element => Object.assign({}, ...keys_to_filter.map(key => ({[key]: element[key]}))))
+			list_files.sort((a,b) => a[key].localeCompare(b[key]))
 			return res.status
 		} else {
 			throw new Error(data);
@@ -46,16 +49,14 @@
 		files('PUT', baseDir, file[0])
 			.then(() => {
 				list_logger.concat({level: "success", message: `Fichier  ajouté avec succès!`, ressource: "files"})
+				GetPromise = handleFiles()
+				// reset filter and file
+				filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})))
+				file = {'name': ""}
 			})
 			.catch(err => {
 				list_logger.concat({level: "error", message: err, ressource: "files"})
 			})
-
-		GetPromise = handleFiles()
-		// reset filter and file
-		filterRow = Object.assign({}, ...meta.map((x) => ({[x.key]: ''})))
-		file = {'name': ""}
-
 	}
 
 	function handleAdd() {
@@ -63,11 +64,22 @@
 	}
 
 	$: { // filter $list_files with filterRow on its keys (expressionA, expressionB...)
-		list_files_filter = $list_files.filter((item) => keys_to_filter.every((key) => item[key].toLowerCase().includes(filterRow[key].toLowerCase())))
-
+		list_files_filter = list_files.filter((item) => keys_to_filter.every((key) => item[key].toLowerCase().includes(filterRow[key].toLowerCase())))
 	}
 
-onDestroy(() => $list_files = [])
+	async function handleDelete(event) {
+		const file =  {"name": event.detail}
+		files('DELETE', baseDir, file)
+			.then(() => {
+				list_logger.concat({level: "success", message: `Fichier  supprimé avec succès!`, ressource: "files"})
+				GetPromise = handleFiles()
+			})
+			.catch(err => {
+				list_logger.concat({level: "error", message: err, ressource: "files"})
+			})
+	}
+
+onDestroy(() => list_files = [])
 
 
 </script>
@@ -114,8 +126,8 @@ onDestroy(() => $list_files = [])
 			<div class="w-2"/>
 		</div>
 
-		<VirtualList height="80vh" items={list_files_filter} {key} let:item bind:start bind:end>
-			<FileRow {item} {meta} {baseDir} {key} {readonly}/>
+		<VirtualList height="200px" items={list_files_filter} {key} let:item bind:start bind:end>
+			<FileRow {item} {meta} {key} {readonly} on:delete="{handleDelete}"/>
 		</VirtualList>
 		<p>{start}-{end} sur {list_files_filter.length} documents </p>
 
@@ -132,13 +144,9 @@ onDestroy(() => $list_files = [])
 
 <style>
 
-	.container {
-	width: 90%;
-	}
-
 	.containerVL {
+	max-height: 400px;
 	min-height: 200px;
-	height: calc(100vh)
 	}
 
 
