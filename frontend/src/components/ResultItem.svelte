@@ -59,6 +59,7 @@
 	// !!! doesn't work, need to do this ugly workaround
 	const meta1 = createMeta($itemConfig.inputs, _source, highlight)
 	const meta2 = createMeta($itemConfig.inputs, _source)
+	console.log(meta1)
 	$: meta = readonly ? meta1 : meta2
 
 	function handleDelete() {
@@ -100,11 +101,17 @@
 	<BaseItem id={_id} componentCssProps={$userTheme.search && $userTheme.search.results}>
 
 		<div slot="fields" class="flex-col space-y-1">
-			{#each meta as { value, key, type, placeholder, innerHtml, highlight, metadata, isHighlight, rows, color} (key)}
-				{#if !readonly || !isEmpty(value)}
-					<Entry {readonly} {required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {rows} {color} />
+		{#if readonly}
+			{#each meta1 as { value, key, type, placeholder, innerHtml, highlight, metadata, isHighlight, rows, color} (key)}
+				{#if !isEmpty(value)}
+					<Entry {readonly} {required} {value} {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {rows} {color} />
 				{/if}
 			{/each}
+		{:else}
+			{#each meta2 as { value, key, type, placeholder, innerHtml, highlight, metadata, isHighlight, rows, color} (key)}
+				<Entry {readonly} {required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {rows} {color} />
+			{/each}
+		{/if}
 		</div>
 
 		<div slot="buttons">
@@ -125,7 +132,7 @@
 						<svg {...svgAttrs}><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>
 						<span>MODIFIER</span>
 					</button>
-					<PutItem meta={meta} file={file} />
+					<PutItem meta={meta2} file={file} />
 				{:else if readonly || send}
 					<button on:click={() => readonly = !readonly} {...btnAttrs}>
 						<svg {...svgAttrs}><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>
