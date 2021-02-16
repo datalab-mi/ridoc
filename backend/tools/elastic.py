@@ -229,7 +229,7 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
             'r_threshold': thresholds.get('r_threshold', 1)}
 
 
-def suggest(req: str , index_name: str):
+def suggest(req: str , index_name: str, field="content") -> list:
     """Perform a ES search in  suggest mode
     Args:
         index_name (str): The index name
@@ -238,34 +238,37 @@ def suggest(req: str , index_name: str):
         list: List of suggestions
 
     """
-    D = es.search(index = index_name , body = {
-      "suggest": {
-        "text" : req,
-        "simple_phrase" : {
-          "phrase" : {
-            "field" : "content.trigram",
-            "highlight": {
-                "pre_tag": "<b>",
-                "post_tag": "</b>"
-              },
-            "size" : 3,
-            "direct_generator" : [ {
-              "field" : "content.trigram",
-              "suggest_mode" : "always"
-            }, {
-              "field" : "content.reverse",
-              "suggest_mode" : "always",
-              "pre_filter" : "reverse",
-              "post_filter" : "reverse"
-            } ]
-          }
-        }
-      }
-    })
-
     res = []
-    for suggestion in D['suggest']['simple_phrase'][0]['options']:
-        res.append(suggestion)
+    try:
+        D = es.search(index = index_name , body = {
+          "suggest": {
+            "text" : req,
+            "simple_phrase" : {
+              "phrase" : {
+                "field" : "%s.trigram"%field,
+                "highlight": {
+                    "pre_tag": "<b>",
+                    "post_tag": "</b>"
+                  },
+                "size" : 3,
+                "direct_generator" : [ {
+                  "field" : "%s.trigram"%field,
+                  "suggest_mode" : "always"
+                }, {
+                  "field" : "%s.reverse"%field,
+                  "suggest_mode" : "always",
+                  "pre_filter" : "reverse",
+                  "post_filter" : "reverse"
+                } ]
+              }
+            }
+          }
+        })
+        for suggestion in D['suggest']['simple_phrase'][0]['options']:
+            res.append(suggestion)
+    except elasticsearch.exceptions.RequestError as e:
+        pass
+
     return res
 
 

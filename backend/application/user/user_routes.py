@@ -131,9 +131,11 @@ def suggest():
     content = request.get_json(force=True)
     user_entry = content.get('content', None)
     index_name = content.get('index_name', None)
-
-    res = elastic_suggest(user_entry,
-                index_name)
+    fields = content.get('fields', [])
+    res = []
+    for field in fields:
+        res += elastic_suggest(user_entry,
+                    index_name, field=field)
 
     return json.dumps(res)#.encode('utf8')
 
