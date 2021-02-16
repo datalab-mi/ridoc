@@ -22,16 +22,19 @@
 	$: derivedReadonly = readonly || !metadata;
 
 	let newValue = ""
-    let keywordList = []
-    let promiseListKeyword = new Promise(()=>{})
+  let keywordList = []
+  let promiseListKeyword = new Promise(()=>{})
 
+  $ : {
     if  (type === "keyword") {
-      if (!readonly && metadata) {
+      if (!derivedReadonly) {
         promiseListKeyword = get(`${USER_API}/keywords/${$userData.index_name}/${key}`)
       } else {
         promiseListKeyword = [] // no need of promiseListKeyword
       }
     }
+
+  }
 
 
     function onDelete(val){
@@ -111,7 +114,7 @@
                 {:else if type == "link"}
                     <input class={derivedReadonly ? 'clickable': 'no-clickable'} on:click={handleClick(val)} type='text' bind:value={val} {placeholder} readonly={derivedReadonly} />
                 {/if}
-                {#if !readonly  && metadata}
+                {#if (!derivedReadonly) }
                 <button on:click={() => onDelete(val)}>
                   <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 2l2-2h4l2 2h4v2H2V2h4zM3 6h14l-1 14H4L3 6zm5 2v10h1V8H8zm3 0v10h1V8h-1z"/></svg>
                   </button>
@@ -119,7 +122,7 @@
               {/if}
             </li>
         {/each}
-      {#if !readonly && metadata}
+      {#if (!derivedReadonly) }
         <li>
           <input type='text' bind:value={newValue} placeholder="Nouvelle entrée"/>
           <button on:click={onAdd}>
@@ -161,6 +164,7 @@
 		background-color: transparent !important;
 	}
 	.my-custom-class :global(.svelte-tags-input) {
+		background: transparent !important;
 		cursor: default !important;
 	}
 	.my-custom-class :global(.svelte-tags-input:disabled) {
@@ -196,11 +200,17 @@
 	textarea {
 		@apply w-full;
 	}
-	
+
+  ul input:not([type='date']),
+	ul textarea {
+		@apply w-5/6;
+	}
+
 	input[type='date'] {
 		@apply flex;
 		@apply flex-initial;
 	}
+
 
 	input:read-only,
 	textarea:read-only {

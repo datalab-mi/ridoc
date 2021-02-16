@@ -285,5 +285,5 @@ upload: chmod
 start: elasticsearch backend-start kibana logstash nginx
 stop: nginx-stop backend-stop elasticsearch-stop kibana-stop logstash-stop
 
-dev: network frontend-dev backend-dev elasticsearch kibana nginx-dev
-down: frontend-dev-stop backend-dev-stop elasticsearch-stop kibana-stop nginx-dev-stop
+dev: network frontend-dev backend-dev elasticsearch kibana logstash nginx-dev
+down: frontend-dev-stop backend-dev-stop elasticsearch-stop kibana-stop logstash-stop nginx-dev-stop

@@ -101,20 +101,20 @@ function httpClient() {
 		const disposition = response.headers.get('Content-Disposition');
 		if (disposition && disposition.indexOf('attachment') !== -1) {
 			const matches = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-			if (matches && matches[1]) { 
+			if (matches && matches[1]) {
 			  filename = matches[1].replace(/['"]/g, '');
 			}
 		}
 		return filename;
 	}
-	
+
 	/**
 	 * Provoque le téléchargement d'un fichier déjà récupéré.
 	 * @param  blob      blob déjà récupéré
 	 * @param  filename  nom du fichier à télécharger
 	 */
 	const downloadFile = (blob, filename) => {
-		
+
 		// indiquer le type MIME explicitement pour éviter les surprises avec certains navigateurs
 		const newBlob = new Blob([blob], { type: blob.type || 'application/octet-stream' })
 
@@ -122,7 +122,7 @@ function httpClient() {
 		if (window.navigator && window.navigator.msSaveOrOpenBlob) {
 			window.navigator.msSaveOrOpenBlob(newBlob);
 			return;
-		} 
+		}
 
 		// ajout d'un lien qui pointe vers un ObjectURL contenant le blob
 		const data = window.URL.createObjectURL(newBlob);
@@ -130,11 +130,11 @@ function httpClient() {
 		link.href = data;
 		link.download = filename || 'file_' + Date.now();
 		link.click();
-		
+
 		// délai car Firefox en a besoin
 		setTimeout(() => window.URL.revokeObjectURL(data), 100);
 	}
-	
+
 	/**
 	 * Récupère un blob, puis provoque le téléchargement par le navigateur.
 	 * @see API fetch
@@ -145,7 +145,7 @@ function httpClient() {
 		const blob = await res.blob();
 		downloadFile(blob, extractFilename(res));
 	}
-	
+
 	return { fetch: fetchRaw, fetchJson, fetchBlob };
 }
 
