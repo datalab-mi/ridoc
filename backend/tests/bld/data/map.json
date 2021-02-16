@@ -173,7 +173,17 @@
           "reponse":{
             "type": "text",
             "analyzer" : "my_analyzer",
-            "search_analyzer" : "my_search_analyzer"
+            "search_analyzer" : "my_search_analyzer",
+            "fields" :{
+              "trigram": {
+                "type": "text",
+                "analyzer": "trigram"
+              },
+              "reverse": {
+                "type": "text",
+                "analyzer": "reverse"
+              }
+            }
           },
           "mots cles":{
             "type": "keyword",

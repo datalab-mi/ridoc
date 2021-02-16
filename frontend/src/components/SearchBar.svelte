@@ -12,7 +12,7 @@
 	import { format2ES, search } from '../components/utils.js';
 
 	let body
-	
+
 	function handleSearch() {
 		body = format2ES($itemConfig, $searchList, $userData.index_name)
 		$promiseSearch = search(body)
@@ -38,7 +38,7 @@
 					{#if type === 'keyword' }
 						<SearchKeywordInput bind:value={value} {fields} {placeholder} {color} />
 					{:else if type === 'search' && suggest }
-						<SearchSuggestInput bind:value={value} {placeholder} {innerHtml} style="flex-1 my-auto {style}" />
+						<SearchSuggestInput bind:value={value} {placeholder} {innerHtml} {fields} style="flex-1 my-auto {style}" />
 					{:else }
 						<SearchInput bind:value={value} {type} {placeholder} {innerHtml} style="flex-1 my-auto {style}" />
 					{/if}

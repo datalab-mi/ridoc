@@ -8,6 +8,7 @@
 	export let style = '';
 	export let placeholder = '';
 	export let value = '';
+	export let fields = '';
 
 	const http = httpClient();
 
@@ -27,12 +28,12 @@
 		const nestedInput = document.getElementById(inputId);
 		nestedInput && nestedInput.addEventListener('input', onSuggestionInput);
 	});
-	
+
 	onDestroy(() => {
 		const nestedInput = document.getElementById(inputId);
 		nestedInput && nestedInput.removeEventListener('input', onSuggestionInput);
 	});
-	
+
 	/**
 	 * fonction de mapping suggestion => keyword
 	 * Le but initial du composant est de conserver uniquement les valeurs contenant le texte du champ <input />,
@@ -43,7 +44,7 @@
 	/**
 	 * fonction asynchrone de recherche des suggestions.
 	 * Le serveur n'est appelé qu'à partir d'une certaine longueur de chaîne.
-	 * 
+	 *
 	 * note : on n'utilise pas l'option 'minCharactersToSearch' car elle fonctionne mal avec la validation sur 'Enter',
 	 * en effet la première valeur de la dernière liste de suggestions est utilisée, ce n'est pas ce qu'on veut.
 	 */
@@ -56,6 +57,7 @@
 					body: JSON.stringify({
 						index_name: $userData.index_name,
 						content: inputText,
+						fields: fields
 					}),
 			  });
 	};

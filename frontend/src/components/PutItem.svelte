@@ -8,7 +8,6 @@ export let meta;
 export let file;
 
 meta = meta.filter(obj => obj.metadata)
-
 let msg
 const filename = file.name.replace(/\+/g, " ")
 
