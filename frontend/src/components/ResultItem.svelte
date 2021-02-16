@@ -28,7 +28,7 @@
 	let url;
 	$: url = `/api/user/files/${$userData.dstDir}/${filename}`
 	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
-
+	let meta;
 	/**
 	 * Copie et adapte les métadonnées.
 	 * note : met à jour 'display'
@@ -60,9 +60,6 @@
 	const meta1 = createMeta($itemConfig.inputs, _source, highlight)
 	const meta2 = createMeta($itemConfig.inputs, _source)
 	$: meta = readonly ? meta1 : meta2
-
-	// ne pas modifier par la suite sinon l'édition ne fonctionne plus
-	const meta = createMeta($itemConfig.inputs, _source);
 
 	function handleDelete() {
 		console.log(`Delete ${filename}`)
