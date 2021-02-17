@@ -22,7 +22,7 @@
 	let onSuggestionSelected;
 
 	onMount(() => {
-		onSuggestionInput = (event) => (value = event.target.value);
+		onSuggestionInput = (event) => (value = event.target.value); console.log('suggest')
 		onSuggestionSelected = (selected) => (value = selected[valueFieldName]);
 
 		const nestedInput = document.getElementById(inputId);
@@ -50,17 +50,27 @@
 	 */
 	const searchFunction = async (inputText) => {
 		console.debug('MAJ des suggestions');
-		return !inputText || inputText.length < minCharactersToSuggest
-			? []
-			: await http.fetchJson(`${USER_API}/suggest`, {
+		if (!inputText || inputText.length < minCharactersToSuggest) {
+			return []
+		} else {
+			const res = await http.fetchJson(`${USER_API}/suggest`, {
 					method: 'POST',
 					body: JSON.stringify({
 						index_name: $userData.index_name,
 						content: inputText,
 						fields: fields
 					}),
-			  });
+			  })
+			if (res.length > 0) {
+				res.push({"text":inputText})
+				res.reverse()
+				return res
+			} else {
+				return []
+			}
+		}
 	};
+
 </script>
 
 <div class={style}>
@@ -84,4 +94,8 @@
 
 <style>
 	.suggestion :global(.autocomplete) { width: 100% }
+	.suggestion :global(.autocomplete-list-item:first-child) {
+		display: none;
+		}
+
 </style>

@@ -28,7 +28,7 @@ async function testToken(user, set) {
     const response = await fetch(`/api/authorized_resource/visitor`)
     const data = await response.json()
     set(data)
-    list_logger.concat({level: "error", message: "Token invalide, connecté comme visiteur", ressource: "login"})
+    list_logger.concat({level: "success", message: "Loggé en tant que visiteur", ressource: "login"})
   }
 }
 

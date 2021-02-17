@@ -8,9 +8,10 @@ services:
       context: ./elasticsearch
       dockerfile: Dockerfile
       args:
-        - http_proxy=${http_proxy}
-        - https_proxy=${http_proxy}
-        - ES_VERSION=${ES_VERSION}
+        http_proxy: ${http_proxy}
+        https_proxy: ${http_proxy}
+        ES_VERSION: ${ES_VERSION}
+        no_proxy: ${no_proxy}
     environment:
       - cluster.name=matchid-cluster
       - bootstrap.memory_lock=true
