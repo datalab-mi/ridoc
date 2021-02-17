@@ -191,7 +191,7 @@
           },
           "date": {
             "type": "date",
-            "format": "yyyy-MM-dd||dd/MM/yyyy||dd /MM /yyyy"
+            "format": "yyyy-MM-dd||dd/MM/yyyy||dd /MM /yyyy||dd/MM/yy"
           }
       }
   }

@@ -253,7 +253,9 @@ def suggest(req: str , index_name: str, field="content") -> list:
                 "size" : 3,
                 "direct_generator" : [ {
                   "field" : "%s.trigram"%field,
-                  "suggest_mode" : "always"
+                  "suggest_mode" : "always",
+                  "min_word_length" :  1
+
                 }, {
                   "field" : "%s.reverse"%field,
                   "suggest_mode" : "always",
