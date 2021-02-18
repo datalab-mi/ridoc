@@ -42,7 +42,7 @@
 
 </script>
 
-<div class="preview">
+<div class="preview text-justify">
 
 <Accordion selection={writable(1)}>
 

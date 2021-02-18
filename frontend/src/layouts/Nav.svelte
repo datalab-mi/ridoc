@@ -2,6 +2,8 @@
 	import { userData } from '../common/user-data.store';
 	import { user } from '../components/stores';
 	import { createOpenCloseStore } from '../common/store.utils';
+	import { cssProps } from '../common/css-props.action';
+	import { userTheme } from '../common/theme.store';
 
 	export let segment;
 
@@ -15,7 +17,7 @@
 		{ text: 'glossaire',  href: 'glossary',   role: 'admin' },
 		{ text: 'expression', href: 'expression', role: 'admin' },
 		{ text: 'admin',      href: 'admin',      role: 'admin' },
-		{ text: 'tests',      href: 'tests',      role: 'admin' }
+		//{ text: 'tests',      href: 'tests',      role: 'admin' }
 	];
 
 	let logo;
@@ -58,9 +60,9 @@
 }
 </style>
 
-<nav>
+<nav use:cssProps={$userTheme.nav}>
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<div class="flex mt-2">
+		<div class="flex">
 			<div class:hidden={!logo} class="flex-shrink-0">
 				<a href="."><img class="block h-8 sm:h-20 w-8 sm:w-20" src={logo} alt="logo"></a>
 			</div>
