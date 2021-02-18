@@ -200,7 +200,7 @@ function httpClient() {
   	}
 
 const format2ES = (item, query_list, index_name) => {
-    query_list = query_list.flat(2)
+    //query_list = query_list.flat(2)
 		let query_dic = {index_name: index_name};
 		let obj;
 		let highlight_fields = item && item.inputs

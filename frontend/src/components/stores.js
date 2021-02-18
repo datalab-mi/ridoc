@@ -22,13 +22,13 @@ async function testToken(user, set) {
     });
   if (response.ok) {
     set(user)
-    list_logger.concat({level: "success", message:  `Loggé en tant que ${user.role}`, ressource: "login"})
+    list_logger.concat({level: "success", message:  `Connecté en tant que ${user.role}`, ressource: "login"})
   }
   else if (response.status === 422) {
     const response = await fetch(`/api/authorized_resource/visitor`)
     const data = await response.json()
     set(data)
-    list_logger.concat({level: "success", message: "Loggé en tant que visiteur", ressource: "login"})
+    list_logger.concat({level: "success", message: "Connecté en tant que visiteur", ressource: "login"})
   }
 }
 

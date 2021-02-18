@@ -14,7 +14,7 @@
 	let body
 
 	function handleSearch() {
-		body = format2ES($itemConfig, $searchList, $userData.index_name)
+		body = format2ES($itemConfig, $searchList.flat(2).filter(x => x.type !== "button"), $userData.index_name)
 		$promiseSearch = search(body)
 	}
 </script>
@@ -24,50 +24,43 @@
 
 {#if $searchList.length > 0}
 
-	<!-- recherche basique -->
-	{#each $searchList as row, i}
-		{#each row as { fields, value, type, placeholder, innerHtml, style, color, suggest }, j}
-			{#if i === 0 && j === 0}
-				<div class="flex flex-row-reverse space-x-reverse space-x-3">
-					<div class="flex-none my-auto" >
-						<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded inline-flex items-center itemConfigs-center">
-							<svg class="fill-current w-4 h-4 sm:mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/></svg>
-							<span class="hidden sm:inline">Rechercher</span>
-						</button>
-					</div>
-					{#if type === 'keyword' }
-						<SearchKeywordInput bind:value={value} {fields} {placeholder} {color} />
-					{:else if type === 'search' && suggest }
-						<SearchSuggestInput bind:value={value} {placeholder} {innerHtml} {fields} style="flex-1 my-auto {style}" />
-					{:else }
-						<SearchInput bind:value={value} {type} {placeholder} {innerHtml} style="flex-1 my-auto {style}" />
-					{/if}
+	<!-- recherche basique, première ligne du tableau -->
+	<div class="flex flex-row space-x-3">
+		{#each $searchList[0] as { fields, value, type, placeholder, innerHtml, style, color, suggest }, j}
+			{#if type == "button"}
+				<div class="flex-none my-auto" >
+					<button on:click={handleSearch} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded inline-flex items-center itemConfigs-center">
+						<svg class="fill-current w-4 h-4 sm:mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/></svg>
+						<span class="hidden sm:inline">{innerHtml || "Rechercher"}</span>
+					</button>
 				</div>
+			{:else if type === 'keyword' }
+				<SearchKeywordInput bind:value={value} {fields} {placeholder} {color} />
+			{:else if type === 'search' && suggest }
+				<SearchSuggestInput bind:value={value} {placeholder} {innerHtml} {fields} style="flex-1 my-auto {style}" />
+			{:else }
+				<SearchInput bind:value={value} {type} {placeholder} {innerHtml} style="flex-1 my-auto {style}" />
 			{/if}
 		{/each}
-	{/each}
+	</div>
 
-	<!-- recherche avancée -->
-	{#if $searchList[0].length > 1 || $searchList.length > 1}
+	<!-- recherche avancée, le reste du tableau dans un accordion -->
+	{#if $searchList.length > 1}
 		<Accordion containerClass="mt-4">
 			<AccordionItem title="Recherche avancée" buttonStyle="padding-left: 0">
 				<div slot="content" class="flex-col space-y-4">
-					{#each $searchList as row, i}
-						{#if i !== 0 || row.length > 1}
+					{#each $searchList.slice(1) as row, i}
 							<div class="flex flex-col sm:flex-row space-x-0 sm:space-x-3 space-y-2 sm:space-y-0">
 								{#each row as { fields, value, type, placeholder, innerHtml, style, color, suggest }, j}
-									{#if i !== 0 || j !== 0}
-										{#if type === 'keyword' }
-											<SearchKeywordInput bind:value={value} {fields} {placeholder} {color} {style} />
-										{:else if type === 'search' && suggest }
-											<SearchSuggestInput bind:value={value} {placeholder} {innerHtml} {style} />
-										{:else }
-											<SearchInput bind:value={value} {type} {placeholder} {innerHtml} {style} />
-										{/if}
+									{#if type === 'keyword' }
+										<SearchKeywordInput bind:value={value} {fields} {placeholder} {color} {style} />
+									{:else if type === 'search' && suggest }
+										<SearchSuggestInput bind:value={value} {placeholder} {innerHtml} {style} />
+									{:else }
+										<SearchInput bind:value={value} {type} {placeholder} {innerHtml} {style} />
 									{/if}
 								{/each}
 							</div>
-						{/if}
 					{/each}
 				</div>
 			</AccordionItem>

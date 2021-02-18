@@ -11,7 +11,13 @@
     "style": "",
     "suggest": true,
     "highlight": true
-    }
+  },
+  {
+  "type": "button",
+  "placeholder": "Recherche par mots clefs",
+  "innerHtml": "Recherche",
+  "style": "w-5/6 p-2"
+  }
   ],
   [
     {
