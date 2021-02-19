@@ -24,17 +24,15 @@
 
 </script>
 
-<div>
-	{#if $displayLogin || $login}
-		<LoginForm state={login} />
-	{/if}
-	<Nav {segment} {login} />
+{#if $displayLogin || $login}
+	<LoginForm state={login} />
+{/if}
+<Nav {segment} {login} />
 
-	<main>
-		<div class="max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-6 lg:px-8">
-			<slot />
-			<Logger />
-		</div>
-	</main>
-	<Footer />
-</div>
+<main>
+	<div class="max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-6 lg:px-8">
+		<slot />
+		<Logger />
+	</div>
+</main>
+<Footer />

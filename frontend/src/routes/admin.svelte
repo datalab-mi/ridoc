@@ -111,7 +111,9 @@ Quand la liste des synonymes ou que la manière d'analyser les documents changen
 		max-width: 50rem;
 	}
 	h1 {
-	    font-size: 2rem;
+			font-size: 2rem;
+			margin-bottom: 1rem;
+			margin-top: 1rem;
 	}
 	h2 {
 	    font-size: 1.5rem;
