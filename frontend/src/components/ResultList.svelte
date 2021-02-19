@@ -7,7 +7,9 @@
 	let items = [];
 	let threshold;
 	let resultMessage;
-
+	let message;
+	$: message = $userData.message ||  "Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Veuillez contacter l'<b><a href='mailto:{$userData.contact}?subject=Demande de consultation'> administrateur ✉️</a></b>."
+	//let message = ($userData.message === undefined) ? dafaultMessage : $userData.message
 	function add_bar(x) {
 		items = [];
 		threshold = true;
@@ -62,8 +64,7 @@
 		{#each items as item (item.key)}
 			{#if  item._id === "bar"}
 				<section class="bar rounded-sm p-2 sm:p-4">
-					<p>Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Veuillez contacter l'<b><a href="mailto:{$userData.contact}?subject=Demande de consultation"> administrateur ✉️ </a></b>.
-					</p>
+					<p>{@html message}</p>
 				</section>
 			{:else}
 				<ResultItem  {... ( ({ _id, _source, _score, highlight }) => ({ _id, _source, _score, highlight }) )(item) } />

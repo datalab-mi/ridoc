@@ -62,8 +62,7 @@
 					}),
 			  })
 			if (res.length > 0) {
-				res.push({"text":inputText})
-				res.reverse()
+				res.unshift({"text":inputText})
 				return res
 			} else {
 				return []

@@ -7,10 +7,10 @@
 
   let isLoading = false;
   let isSuccess = false;
-  
+
   	/** store créé par createOpenCloseStore */
 	export let state;
-	
+
 	const handleClickOutside = (event) => {
 		$displayLogin = false;
 		state.close();
@@ -56,7 +56,7 @@
           user.authenticate(request_user)
           isSuccess = true;
           isLoading = false;
-          list_logger.concat({level: "success", message: `Loggé en tant que ${request_user.role}`, ressource: "login"})
+          list_logger.concat({level: "success", message: `Connecté en tant que ${request_user.role}`, ressource: "login"})
         })
         .catch(err => {
           user.unauthenticate()

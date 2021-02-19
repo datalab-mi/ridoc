@@ -6,6 +6,15 @@ body {
 	color: #333;
 }
 
+#sapper {
+	display: flex; /*flex to fill entire screen*/
+	flex-direction: column;
+	min-height: 100vh;
+}
+main {
+  flex: 1; /*flex to fill entire screen*/
+}
+
 h1, h2, h3, h4, h5, h6 {
 	margin: 0 0 0.5em 0;
 	font-weight: 400;

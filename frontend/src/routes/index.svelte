@@ -5,7 +5,7 @@
 </svelte:head>
 <div class="background">
 
-<div class="preview">
+<div class="preview text-justify">
 <div>
 {#if ($user.resources.includes("description") && description.length > 0)}
 	{@html marked(description)}
@@ -40,6 +40,11 @@
 		max-width: 50rem;
 	}
 
+	/* a paragraph proceeded by another paragraph will have a top margin */
+	div.preview :global(p + p) {
+	    margin-top: 8px;
+	}
+
 	div.preview :global(h1) {
 			font-size: 2rem;
 			margin-bottom: 1rem;
@@ -64,7 +69,7 @@
 		border-width: 1px;
 	}
 
-div.background {
+:golbal(main) {
 	background-image: url("/user/background.jpg");
 	/*background-size: cover; */
 	background-size: auto 100%;
@@ -74,16 +79,18 @@ div.background {
 </style>
 
 <script>
-import { onMount } from 'svelte';
+import { onMount, onDestroy } from 'svelte';
 import { user, displayLogin } from '../components/stores.js';
 import marked from 'marked'
 let description = "";
 let notice = "";
-
+let mainNode;
 function authClicked() {
 	$displayLogin = !$displayLogin
 }
 onMount(async () => {
+	mainNode = document.getElementsByTagName("main")[0]
+
 	const res1 = await fetch('user/notice.md');
 	if (res1.ok) {
 		notice = await res1.text();
@@ -93,4 +100,15 @@ onMount(async () => {
 		description = await res2.text();
 	}
 })
+
+$: {
+	mainNode && mainNode.style.setProperty("background-image", 'url("/user/background.jpg")')
+	mainNode && mainNode.style.setProperty("background-size", "auto 100%")
+}
+
+onDestroy(() => {
+	mainNode && mainNode.style.removeProperty("background-image")
+	mainNode && mainNode.style.removeProperty("background-size")
+});
+
 </script>

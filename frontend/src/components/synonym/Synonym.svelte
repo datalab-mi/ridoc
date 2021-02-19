@@ -121,7 +121,7 @@ onDestroy(() => $list_synonym = [])
 
 	.containerVL {
 		min-height: 200px;
-		height: calc(70vh)
+		height: calc(60vh)
 	}
 
 	.value {
