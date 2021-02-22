@@ -14,7 +14,7 @@
         },
         "new_line": {
           "type": "mapping",
-          "mappings": ["-\\u0020=>"]
+          "mappings": ["\\u002d\\u0020=>"]
         }
       },
       "filter" : {

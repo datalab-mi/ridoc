@@ -10,8 +10,8 @@ import re
 from pathlib import Path
 import unidecode
 
-# remove "-"" at the beginning and the withespaces
-reg_list = re.compile('^\-\s*(.*)')
+# remove hyphens at the beginning and the withespaces
+reg_list = re.compile('^[\-\–\—]\s*(.*)')
 
 def normalize(string: str):
     """Strip lower and accent removal

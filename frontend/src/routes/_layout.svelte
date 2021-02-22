@@ -3,6 +3,7 @@
 	import { cssProps } from '../common/css-props.action';
 	import { createOpenCloseStore } from '../common/store.utils';
 	import { userTheme } from '../common/theme.store';
+	import { user } from '../components/stores';
 	import Logger from '../components/Logger.svelte';
 	import LoginForm from '../components/login/LoginForm.svelte';
 	import { displayLogin } from '../components/stores.js';
@@ -27,8 +28,13 @@
 {#if $displayLogin || $login}
 	<LoginForm state={login} />
 {/if}
-<Nav {segment} {login} />
 
+
+<!-- {#if $user.resources.includes("nav") }
+	<Nav {segment} {login} />
+{/if}
+-->
+<Nav {segment} {login} />
 <main>
 	<div class="max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-6 lg:px-8">
 		<slot />

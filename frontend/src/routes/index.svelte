@@ -5,7 +5,7 @@
 </svelte:head>
 <div class="background">
 
-<div class="preview text-justify">
+<div class="preview text-justify" use:cssProps={$userTheme.index}>
 <div>
 {#if ($user.resources.includes("description") && description.length > 0)}
 	{@html marked(description)}
@@ -69,18 +69,13 @@
 		border-width: 1px;
 	}
 
-:golbal(main) {
-	background-image: url("/user/background.jpg");
-	/*background-size: cover; */
-	background-size: auto 100%;
-	/*background-image: linear-gradient(rgba(80, 170, 220, 0.5), rgba(255, 34, 62, 0.5))*/
-}
-
 </style>
 
 <script>
 import { onMount, onDestroy } from 'svelte';
 import { user, displayLogin } from '../components/stores.js';
+import { cssProps } from '../common/css-props.action';
+import { userTheme } from '../common/theme.store';
 import marked from 'marked'
 let description = "";
 let notice = "";
