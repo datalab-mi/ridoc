@@ -69,13 +69,6 @@
 		border-width: 1px;
 	}
 
-:golbal(main) {
-	background-image: url("/user/background.jpg");
-	/*background-size: cover; */
-	background-size: auto 100%;
-	/*background-image: linear-gradient(rgba(80, 170, 220, 0.5), rgba(255, 34, 62, 0.5))*/
-}
-
 </style>
 
 <script>
