@@ -42,7 +42,13 @@ function createUser(user) {
       set(user)
       localStorage.setItem('user', JSON.stringify(user))
     },
-    clean: () => localStorage.removeItem('user'),
+    clean: async () => {
+      localStorage.removeItem('user')
+      const response = await fetch(`/api/authorized_resource/visitor`)
+      const data = await response.json()
+      set(data)
+      localStorage.setItem('user', JSON.stringify(data))
+    },
     updateKey: (key, value) => {
       update(user => user.key = value)
     },
