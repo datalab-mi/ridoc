@@ -24,7 +24,7 @@ import re
 
 
 #On établit une connection
-es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
+es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}],timeout=30, max_retries=10, retry_on_timeout=True)
 indices = elasticsearch.client.IndicesClient(es)
 
 def simple_request(index_name, size):
