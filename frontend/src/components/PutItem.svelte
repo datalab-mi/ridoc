@@ -1,7 +1,7 @@
 <script>
 
 import { list_logger } from './stores.js';
-import { userData } from '../common/user-data.store';
+import { userData } from '../components/user-data.store';
 import { index, upload } from './utils.js'
 
 export let meta;

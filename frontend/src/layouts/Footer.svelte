@@ -1,7 +1,7 @@
 <script>
-	import { userData } from '../common/user-data.store';
-	import { cssProps } from '../common/css-props.action';
-	import { userTheme } from '../common/theme.store';
+	import { userData } from '../components/user-data.store';
+	import { cssProps } from '../components/css-props.action';
+	import { userTheme } from '../components/theme.store';
 
 	const appVersion = 'APP_VERSION';
 </script>

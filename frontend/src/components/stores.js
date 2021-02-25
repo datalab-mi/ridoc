@@ -1,17 +1,5 @@
 import { writable, derived } from 'svelte/store';
 
-// auth: https://www.toptal.com/front-end/svelte-framework-guide
-export const searchList = writable([[]])
-export const promiseSearch = writable(Promise.resolve({ hits: [] }))
-
-export const suggestEntry = writable([]);
-
-export const isReindex = writable(false)
-
-export const list_synonym = writable([])
-export const list_files = writable([])
-
-
 // authentification
 const visitor = {role:"visitor", jwToken:null, rules: ["visitor"], resources:[]}
 const dictKeyInclude = (dic1, dic2) => Object.keys(dic1).every(v => Object.keys(dic2).includes(v))
@@ -60,7 +48,6 @@ function createUser(user) {
     }
 }
 
-
 export let user
 if(typeof window !== "undefined") {
     user = createUser(JSON.parse(localStorage.getItem("user")) || visitor);
@@ -69,11 +56,13 @@ if(typeof window !== "undefined") {
 }
 
 export const displayLogin = writable(false)
+
 export const headers = derived(user,  $user => {Authorization: `JWT ${$user.jwToken}`})
+
+
 // logger
 const inital_logger_list = [{level: "error",message: "erreur grave", ressource: "authentification", status:401},
         {level: "info",message: "document telechargé", ressource: "upload", status:200}]
-
 // custom store for the logger, every 10 seconds lost first element (the oldest)
 function createLogger() {
 	const { subscribe, set, update } = writable([], () => {
@@ -81,7 +70,6 @@ function createLogger() {
 		update(n => n.slice(1, n.length))
 	}, 10000);	return () => console.log('no more subscribers');
 });
-
 	return {
 		subscribe,
 		concat: (x) => update(n => n.concat(x)),

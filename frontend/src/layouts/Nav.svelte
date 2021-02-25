@@ -1,9 +1,9 @@
 <script>
-	import { userData } from '../common/user-data.store';
+	import { userData } from '../components/user-data.store';
 	import { user } from '../components/stores';
-	import { createOpenCloseStore } from '../common/store.utils';
-	import { cssProps } from '../common/css-props.action';
-	import { userTheme } from '../common/theme.store';
+	import { createOpenCloseStore } from '../components/store.utils';
+	import { cssProps } from '../components/css-props.action';
+	import { userTheme } from '../components/theme.store';
 
 	export let segment;
 

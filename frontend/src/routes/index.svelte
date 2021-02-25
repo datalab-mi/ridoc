@@ -74,8 +74,8 @@
 <script>
 import { onMount, onDestroy } from 'svelte';
 import { user, displayLogin } from '../components/stores.js';
-import { cssProps } from '../common/css-props.action';
-import { userTheme } from '../common/theme.store';
+import { cssProps } from '../components/css-props.action';
+import { userTheme } from '../components/theme.store';
 import marked from 'marked'
 let description = "";
 let notice = "";

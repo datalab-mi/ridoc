@@ -1,8 +1,8 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import { cssProps } from '../common/css-props.action';
-	import { createOpenCloseStore } from '../common/store.utils';
-	import { userTheme } from '../common/theme.store';
+	import { cssProps } from '../components/css-props.action';
+	import { createOpenCloseStore } from '../components/store.utils';
+	import { userTheme } from '../components/theme.store';
 	import { user } from '../components/stores';
 	import Logger from '../components/Logger.svelte';
 	import LoginForm from '../components/login/LoginForm.svelte';

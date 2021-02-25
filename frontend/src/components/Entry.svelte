@@ -1,5 +1,5 @@
 <script>
-    import { userData } from '../common/user-data.store';
+    import { userData } from '../components/user-data.store';
     import { USER_API, get, text_area_resize } from '../components/utils.js';
     import Tags from "svelte-tags-input";
 

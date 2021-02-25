@@ -1,5 +1,5 @@
 <script>
-	import { clickOutside } from '../../common/click-outside.action';
+	import { clickOutside } from '../../components/click-outside.action';
 	import { displayLogin, list_logger, user } from '../stores.js';
 
   let email = "";
