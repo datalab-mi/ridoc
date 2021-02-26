@@ -1,7 +1,6 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
 	import { cssProps } from '../components/css-props.action';
-	import { createOpenCloseStore } from '../components/store.utils';
 	import { userTheme } from '../components/theme.store';
 	import { user } from '../components/stores';
 	import Logger from '../components/Logger.svelte';
@@ -12,8 +11,6 @@
 
 	export let segment;
 
-	const login = createOpenCloseStore();
-
 	let rootNode;
 	let mainNode;
 
@@ -23,10 +20,11 @@
 
 	$: rootNode && cssProps(rootNode, $userTheme.root);
 
+
 </script>
 
-{#if $displayLogin || $login}
-	<LoginForm state={login} />
+{#if $displayLogin }
+	<LoginForm />
 {/if}
 
 
@@ -34,7 +32,7 @@
 	<Nav {segment} {login} />
 {/if}
 -->
-<Nav {segment} {login} />
+<Nav {segment} />
 <main>
 	<div class="max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-6 lg:px-8">
 		<slot />

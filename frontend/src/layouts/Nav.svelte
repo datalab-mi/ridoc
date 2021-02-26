@@ -1,17 +1,18 @@
 <script>
-	import { userData } from '../components/user-data.store';
+	import { envJson } from '../components/user-data.store';
 	import { user } from '../components/stores';
 	import { createOpenCloseStore } from '../components/store.utils';
 	import { cssProps } from '../components/css-props.action';
 	import { userTheme } from '../components/theme.store';
+	import { displayLogin } from '../components/stores.js';
 
 	export let segment;
 
-	/** store créé par createOpenCloseStore */
-	export let login;
-
 	const nav = createOpenCloseStore();
 
+	function authClicked() {
+		$displayLogin = !$displayLogin
+	}
 	const allLinks = [
 		{ text: 'recherche',  href: 'search',     role: 'user'  },
 		{ text: 'glossaire',  href: 'glossary',   role: 'admin' },
@@ -24,8 +25,8 @@
 	let links = [];
 
 	$: {
-		logo = $userData && $userData.logo
-			? 'user/' + $userData.logo
+		logo = $envJson && $envJson.logo
+			? 'user/' + $envJson.logo
 			: undefined;
 		links = allLinks.filter(link => $user.resources.includes(link.href) || link.role === $user.role);
 	}
@@ -68,7 +69,7 @@
 			</div>
 			<div class="flex-1">
 				<div class="flex flex-col">
-					<div class="hidden sm:flex ml-2 font-bold text-2xl">{$userData.navTitle}</div>
+					<div class="hidden sm:flex ml-2 font-bold text-2xl">{$envJson.navTitle}</div>
 					<div class="flex items-center justify-between h-10">
 						<div class="flex items-center">
 							{#if links.length}
@@ -104,7 +105,7 @@
 								<!-- Profile dropdown -->
 								<div class="ml-3 relative">
 									<div>
-										<button on:click={login.toggle} class="max-w-xs rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" id="user-menu" aria-haspopup="true">
+										<button on:click={authClicked} class="max-w-xs rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" id="user-menu" aria-haspopup="true">
 											<svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5 5a5 5 0 0 1 10 0v2A5 5 0 0 1 5 7V5zM0 16.68A19.9 19.9 0 0 1 10 14c3.64 0 7.06.97 10 2.68V20H0v-3.32z"/></svg>
 										</button>
 									</div>

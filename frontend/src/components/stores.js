@@ -8,15 +8,16 @@ async function testToken(user, set) {
   const response = await fetch(`/api/authorized_resource`, {
     headers: new Headers({'Authorization'  : `Bearer ${user.jwToken}`})
     });
+  console.log(response)
   if (response.ok) {
     set(user)
     list_logger.concat({level: "success", message:  `Connecté en tant que ${user.role}`, ressource: "login"})
   }
-  else if (response.status === 422) {
+  else {
     const response = await fetch(`/api/authorized_resource/visitor`)
     const data = await response.json()
     set(data)
-    list_logger.concat({level: "success", message: "Connecté en tant que visiteur", ressource: "login"})
+    //list_logger.concat({level: "success", message: "Connecté en tant que visiteur", ressource: "login"})
   }
 }
 
@@ -44,8 +45,9 @@ function createUser(user) {
       const response = await fetch(`/api/authorized_resource/visitor`)
       const data = await response.json()
       set(data)
-        }
-    }
+    },
+    refresh: () => testToken(JSON.parse(localStorage.getItem("user")) || visitor, set)
+  }
 }
 
 export let user

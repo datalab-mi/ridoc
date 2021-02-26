@@ -1,5 +1,5 @@
 <script>
-    import { userData } from '../components/user-data.store';
+    import { envJson } from '../components/user-data.store';
     import { USER_API, get, text_area_resize } from '../components/utils.js';
     import Tags from "svelte-tags-input";
 
@@ -28,7 +28,7 @@
   $ : {
     if  (type === "keyword") {
       if (!derivedReadonly) {
-        promiseListKeyword = get(`${USER_API}/keywords/${$userData.index_name}/${key}`)
+        promiseListKeyword = get(`${USER_API}/keywords/${$envJson.index_name}/${key}`)
       } else {
         promiseListKeyword = [] // no need of promiseListKeyword
       }
@@ -56,7 +56,7 @@
         if ( found != null) {
           window.open(found,'_blank')
         } else {
-          window.open(`/api/user/files/${$userData.pjDir}/${val}`,'_blank')
+          window.open(`/api/user/files/${$envJson.pjDir}/${val}`,'_blank')
         }
 
     }

@@ -8,12 +8,13 @@
   let isLoading = false;
   let isSuccess = false;
 
-  	/** store créé par createOpenCloseStore */
-	export let state;
-
+  $: {
+		if ($displayLogin) {
+			user.refresh()
+		}
+	}
 	const handleClickOutside = (event) => {
 		$displayLogin = false;
-		state.close();
 		event.detail && event.detail.originalEvent && event.detail.originalEvent.stopPropagation();
 	};
 
@@ -66,7 +67,7 @@
 </script>
 
 <div use:clickOutside on:clickoutside={handleClickOutside} class="form-popup">
-{#if ["user", "admin"].includes($user.role) }
+{#if ["user", "admin"].includes($user.role)}
 	<div class="success">
 		Vous êtes identifié comme {$user.role}
 	</div>
