@@ -18,6 +18,7 @@
 	export let listStyle = undefined;
 
 	setContext(contextKey, selection);
+	
 </script>
 
 <div class="accordion {containerClass || ''}" style={containerStyle}>

@@ -1,17 +1,5 @@
 import { writable, derived } from 'svelte/store';
 
-// auth: https://www.toptal.com/front-end/svelte-framework-guide
-export const searchList = writable([[]])
-export const promiseSearch = writable(Promise.resolve({ hits: [] }))
-
-export const suggestEntry = writable([]);
-
-export const isReindex = writable(false)
-
-export const list_synonym = writable([])
-export const list_files = writable([])
-
-
 // authentification
 const visitor = {role:"visitor", jwToken:null, rules: ["visitor"], resources:[]}
 const dictKeyInclude = (dic1, dic2) => Object.keys(dic1).every(v => Object.keys(dic2).includes(v))
@@ -20,15 +8,16 @@ async function testToken(user, set) {
   const response = await fetch(`/api/authorized_resource`, {
     headers: new Headers({'Authorization'  : `Bearer ${user.jwToken}`})
     });
+  console.log(response)
   if (response.ok) {
     set(user)
     list_logger.concat({level: "success", message:  `Connecté en tant que ${user.role}`, ressource: "login"})
   }
-  else if (response.status === 422) {
+  else {
     const response = await fetch(`/api/authorized_resource/visitor`)
     const data = await response.json()
     set(data)
-    list_logger.concat({level: "success", message: "Connecté en tant que visiteur", ressource: "login"})
+    //list_logger.concat({level: "success", message: "Connecté en tant que visiteur", ressource: "login"})
   }
 }
 
@@ -56,10 +45,10 @@ function createUser(user) {
       const response = await fetch(`/api/authorized_resource/visitor`)
       const data = await response.json()
       set(data)
-        }
-    }
+    },
+    refresh: () => testToken(JSON.parse(localStorage.getItem("user")) || visitor, set)
+  }
 }
-
 
 export let user
 if(typeof window !== "undefined") {
@@ -69,11 +58,13 @@ if(typeof window !== "undefined") {
 }
 
 export const displayLogin = writable(false)
+
 export const headers = derived(user,  $user => {Authorization: `JWT ${$user.jwToken}`})
+
+
 // logger
 const inital_logger_list = [{level: "error",message: "erreur grave", ressource: "authentification", status:401},
         {level: "info",message: "document telechargé", ressource: "upload", status:200}]
-
 // custom store for the logger, every 10 seconds lost first element (the oldest)
 function createLogger() {
 	const { subscribe, set, update } = writable([], () => {
@@ -81,7 +72,6 @@ function createLogger() {
 		update(n => n.slice(1, n.length))
 	}, 10000);	return () => console.log('no more subscribers');
 });
-
 	return {
 		subscribe,
 		concat: (x) => update(n => n.concat(x)),
