@@ -1,17 +1,17 @@
 <script>
-	import { envJson } from '../components/user-data.store';
-	import { cssProps } from '../components/css-props.action';
-	import { userTheme } from '../components/theme.store';
+	import { userData } from '../common/user-data.store';
+	import { cssProps } from '../common/css-props.action';
+	import { userTheme } from '../common/theme.store';
 
 	const appVersion = 'APP_VERSION';
 </script>
 
 <footer use:cssProps={$userTheme.footer}>
 	<span>
-		&copy; {new Date().getFullYear()} DNUM - {($envJson.index_name || '').toUpperCase()}.
+		&copy; {new Date().getFullYear()} DNUM - {($userData.index_name || '').toUpperCase()}.
 		Powered by <a href="https://sapper.svelte.dev" target="_blank">Sapper</a>.
-		Nous écrire <a href="mailto://{$envJson.contact || ''}">✉️</a>.
-		<a href={$envJson.repository}>Dépot : v{appVersion}</a>
+		Nous écrire <a href="mailto://{$userData.contact || ''}">✉️</a>.
+		<a href={$userData.repository}>Dépot : v{appVersion}</a>
 	</span>
 </footer>
 

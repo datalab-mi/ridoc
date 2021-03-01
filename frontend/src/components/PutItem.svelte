@@ -1,7 +1,7 @@
 <script>
 
 import { list_logger } from './stores.js';
-import { envJson } from '../components/user-data.store';
+import { userData } from '../common/user-data.store';
 import { index, upload } from './utils.js'
 
 export let meta;
@@ -28,7 +28,7 @@ console.log(`Save ${filename}`)
     }
     console.log('fin')
     list_logger.concat({level: "success", message: msg, ressource: filename, status: status, ressource: "putItem"})
-    return index($envJson.index_name, filename, 'PUT')
+    return index($userData.index_name, filename, 'PUT')
   })
   .then(status => {
     console.log('début')

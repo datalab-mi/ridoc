@@ -5,7 +5,7 @@
 </svelte:head>
 <div class="background">
 
-<div class="preview" use:cssProps={$userTheme.index}>
+<div class="preview text-justify" use:cssProps={$userTheme.index}>
 <div>
 {#if ($user.resources.includes("description") && description.length > 0)}
 	{@html marked(description)}
@@ -20,12 +20,12 @@
 <hr>
 <div class="flex flex-wrap justify-evenly">
 {#if ($user.resources.includes("search"))}
-	<button  onclick="location.href='search'" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded  inline-flex items-center itemJsons-center">
+	<button  onclick="location.href='search'" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded  inline-flex items-center itemConfigs-center">
 		<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/></svg>
 		<span>Rechercher</span>
 	</button>
 {/if}
-	<button  on:click={authClicked}  class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded  inline-flex  items-center itemJsons-center">
+	<button  on:click={authClicked}  class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded  inline-flex  items-center itemConfigs-center">
 		<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5 5a5 5 0 0 1 10 0v2A5 5 0 0 1 5 7V5zM0 16.68A19.9 19.9 0 0 1 10 14c3.64 0 7.06.97 10 2.68V20H0v-3.32z"/></svg>
 		<span>Se connecter</span>
 	</button>
@@ -39,9 +39,7 @@
 		margin: 0px auto 0px auto;
 		max-width: 50rem;
 	}
-	div.preview :global(p) {
-		text-align: justify;
-	}
+
 	/* a paragraph proceeded by another paragraph will have a top margin */
 	div.preview :global(p + p) {
 	    margin-top: 8px;
@@ -76,8 +74,8 @@
 <script>
 import { onMount, onDestroy } from 'svelte';
 import { user, displayLogin } from '../components/stores.js';
-import { cssProps } from '../components/css-props.action';
-import { userTheme } from '../components/theme.store';
+import { cssProps } from '../common/css-props.action';
+import { userTheme } from '../common/theme.store';
 import marked from 'marked'
 let description = "";
 let notice = "";
