@@ -1,14 +1,7 @@
 <script>
 
-	import { list_logger, user  } from '../stores.js';
+	import { list_synonym, list_logger, user  } from '../stores.js';
 	import { synonym  } from '../utils.js';
-
-	import { contextKey } from './synonym.js';
-	import { writable } from 'svelte/store';
-	import { getContext } from 'svelte';
-
-	/** store pour la valeur de sélection */
-	let list_synonym = getContext(contextKey) || writable(null);
 
 	export let filename ;
 	export let item ;

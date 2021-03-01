@@ -1,16 +1,9 @@
 <script>
-	import { list_logger, user  } from '../stores.js';
+	import { list_synonym, list_logger, user  } from '../stores.js';
 	import { synonym  } from '../utils.js';
 	import SynonymRow from './SynonymRow.svelte';
 	import VirtualList from '../VirtualList.svelte';
   import { onDestroy } from 'svelte'
-
-	import { contextKey } from './synonym.js';
-	import { setContext } from 'svelte';
-	import { writable } from 'svelte/store';
-
-	export let list_synonym = writable([]);
-	setContext(contextKey, list_synonym);
 
 	export let filename;
 	export let meta;

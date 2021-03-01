@@ -1,5 +1,5 @@
 <script>
-	import { cssProps } from '../components/css-props.action';
+	import { cssProps } from '../common/css-props.action';
 
 	export let id;
 	export let componentCssProps = undefined
