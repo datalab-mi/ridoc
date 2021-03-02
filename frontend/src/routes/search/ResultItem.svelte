@@ -1,12 +1,12 @@
 <script>
-	import { userTheme } from '../common/theme.store';
-	import { userData } from '../common/user-data.store';
-	import BaseItem from './BaseItem.svelte';
-	import Entry from './Entry.svelte';
-	import PutItem from './PutItem.svelte';
-	import { itemConfig } from './search/item-config.store';
-	import { list_logger, user } from './stores.js';
-	import { httpClient, index, upload } from './utils.js';
+	import { userTheme } from '../../components/theme.store';
+	import { envJson } from '../../components/user-data.store';
+	import BaseItem from '../../components/BaseItem.svelte';
+	import Entry from '../../components/Entry.svelte';
+	import PutItem from '../../components/PutItem.svelte';
+	import { itemJson } from '../../components/user-data.store';
+	import { list_logger, user } from '../../components/stores.js';
+	import { httpClient, index, upload } from '../../components/utils.js';
 
 	export let _id;
 	export let _source;
@@ -15,6 +15,7 @@
 
 	const http = httpClient();
 	const required = true;
+
 	let display = true;
 	let readonly = true;
 	let send = false;
@@ -26,7 +27,7 @@
 	$: file = { name: filename }
 
 	let url;
-	$: url = `/api/user/files/${$userData.dstDir}/${filename}`
+	$: url = `/api/user/files/${$envJson.dstDir}/${filename}`
 	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
 	let meta;
 	/**
@@ -57,9 +58,8 @@
  	}
 	//$: meta = readonly ? createMeta(inputs, _source, highlight) : createMeta(inputs, _source)
 	// !!! doesn't work, need to do this ugly workaround
-	const meta1 = createMeta($itemConfig.inputs, _source, highlight)
-	const meta2 = createMeta($itemConfig.inputs, _source)
-	console.log(meta1)
+	const meta1 = createMeta($itemJson.inputs, _source, highlight)
+	const meta2 = createMeta($itemJson.inputs, _source)
 	$: meta = readonly ? meta1 : meta2
 
 	function handleDelete() {
@@ -67,7 +67,7 @@
 		upload(meta, file, 'DELETE')
 			.then(()   => list_logger.concat({ level: "success", message: "Document supprimé avec succès! ", ressource: "upload" }))
 			.catch(err => list_logger.concat({ level: "error",   message: err, ressource: "upload" }));
-		index($userData.index_name, filename, 'DELETE')
+		index($envJson.index_name, filename, 'DELETE')
 			.then(()   => list_logger.concat({ level: "success", message: "Document désindexé avec succès! ", ressource: "upload" }))
 			.catch(err => list_logger.concat({ level: "error",   message: err, ressource: "upload" }));
 	}

@@ -5,12 +5,12 @@
 <script>
 	import { elasticInOut, expoInOut } from 'svelte/easing';
 	import { writable } from 'svelte/store';
-	import Accordion from '../common/accordion/Accordion.svelte';
-	import AccordionItem from '../common/accordion/AccordionItem.svelte';
+	import Accordion from '../components/accordion/Accordion.svelte';
+	import AccordionItem from '../components/accordion/AccordionItem.svelte';
 
 	export let selection1 = writable(null);
 	export let selection2 = writable(null);
-	
+
 	/** preuve qu'on peut modifier un contenu "slot" mais ce n'est pas trivial */
 	const toggleImage = (event) => {
 		const expanded = event.detail.expanded;

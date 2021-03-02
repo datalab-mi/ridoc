@@ -1,8 +1,8 @@
 <script>
 	import AutoComplete from 'simple-svelte-autocomplete';
 	import { onMount, onDestroy } from 'svelte';
-	import { userData } from '../common/user-data.store';
-	import { httpClient, USER_API } from './utils.js';
+	import { envJson } from '../../components/user-data.store';
+	import { httpClient, USER_API } from '../../components/utils.js';
 
 	export let innerHtml = '';
 	export let style = '';
@@ -22,7 +22,7 @@
 	let onSuggestionSelected;
 
 	onMount(() => {
-		onSuggestionInput = (event) => (value = event.target.value); console.log('suggest')
+		onSuggestionInput = (event) => (value = event.target.value);
 		onSuggestionSelected = (selected) => (value = selected[valueFieldName]);
 
 		const nestedInput = document.getElementById(inputId);
@@ -56,7 +56,7 @@
 			const res = await http.fetchJson(`${USER_API}/suggest`, {
 					method: 'POST',
 					body: JSON.stringify({
-						index_name: $userData.index_name,
+						index_name: $envJson.index_name,
 						content: inputText,
 						fields: fields
 					}),

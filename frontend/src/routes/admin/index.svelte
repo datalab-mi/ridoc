@@ -3,46 +3,45 @@
 </svelte:head>
 
 <script>
-	import { onMount } from 'svelte';
-	import Reindex from '../components/Reindex.svelte';
-	import Threshold from '../components/Threshold.svelte';
-	import NewItem from '../components/NewItem.svelte';
-	import File from '../components/file-browser/File.svelte';
-	import { userData } from '../common/user-data.store';
-	import Accordion from '../common/accordion/Accordion.svelte';
-	import AccordionItem from '../common/accordion/AccordionItem.svelte';
+	import Reindex from './Reindex.svelte';
+	import Threshold from './Threshold.svelte';
+	import NewItem from './NewItem.svelte';
+	import File from '../../components/file-browser/File.svelte';
+	import { envJson } from '../../components/user-data.store';
+	import Accordion from '../../components/accordion/Accordion.svelte';
+	import AccordionItem from '../../components/accordion/AccordionItem.svelte';
 	import { writable } from 'svelte/store';
 
 	let meta = [
-						{
-							key: 'name',
-							type: 'text',
-							placeholder: 'Recherchez un document...',
-							value: '',
-							innerHtml: '',
-							size: '4/6'
-						},
-						{
-							key: 'size',
-							type: 'int',
-							placeholder: 'Taille (kB)',
-							value: '',
-							innerHtml: '',
-							size: '1/6'
-						},
-						{
-							key: 'lastModified',
-							type: 'int',
-							placeholder: 'Modifié',
-							value: '',
-							innerHtml: '',
-							size: '1/6'
-						}
-					]
+		{
+			key: 'name',
+			type: 'text',
+			placeholder: 'Recherchez un document...',
+			value: '',
+			innerHtml: '',
+			size: '4/6'
+		},
+		{
+			key: 'size',
+			type: 'int',
+			placeholder: 'Taille (kB)',
+			value: '',
+			innerHtml: '',
+			size: '1/6'
+		},
+		{
+			key: 'lastModified',
+			type: 'int',
+			placeholder: 'Modifié',
+			value: '',
+			innerHtml: '',
+			size: '1/6'
+		}
+		]
 
 </script>
 
-<div class="preview text-justify">
+<div class="preview">
 
 <Accordion selection={writable(1)}>
 
@@ -79,22 +78,22 @@ Quand la liste des synonymes ou que la manière d'analyser les documents changen
 </AccordionItem>
 
 
-{#if ($userData.dstDir !== undefined)}
+{#if ($envJson.dstDir !== undefined)}
 	<AccordionItem itemValue={4}>
 	<h1 slot="title">Gestion des documents<hr></h1>
 	<div slot="content">
-	<File baseDir={$userData.dstDir} {meta} readonly={true}/>
+	<File baseDir={$envJson.dstDir} {meta} readonly={true}/>
 	</div>
 	</AccordionItem>
 
 {/if}
 
-{#if ($userData.pjDir !== undefined)}
+{#if ($envJson.pjDir !== undefined)}
 	<AccordionItem itemValue={5}>
 	<h1 slot="title">Gestion des pièces-jointes<hr></h1>
 	<div slot="content">
 	<p>Vous pouvez ajouter, modifier ou supprimer des pièces-jointes </p>
-	<File baseDir={$userData.pjDir} {meta}/>
+	<File baseDir={$envJson.pjDir} {meta}/>
 	</div>
 	</AccordionItem>
 
@@ -110,14 +109,17 @@ Quand la liste des synonymes ou que la manière d'analyser les documents changen
 		margin: 0px auto 0px auto;
 		max-width: 50rem;
 	}
+	div.preview p {
+		text-align: justify;
+	}
 	h1 {
-			font-size: 2rem;
-			margin-bottom: 1rem;
-			margin-top: 1rem;
+		font-size: 2rem;
+		margin-bottom: 1rem;
+		margin-top: 1rem;
 	}
 	h2 {
-	    font-size: 1.5rem;
-	    padding-left: 20px;
+    font-size: 1.5rem;
+    padding-left: 20px;
 	}
 	hr {
 	  display: block;

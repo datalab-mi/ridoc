@@ -1,7 +1,7 @@
 <script>
 	import Tags from "svelte-tags-input";
-	import { userData } from '../common/user-data.store';
-	import { USER_API, get } from "./utils.js";
+	import { envJson } from '../../components/user-data.store';
+	import { USER_API, get } from "../../components/utils.js";
 	import { onMount } from "svelte";
 
 	export let style = '';
@@ -13,7 +13,7 @@
 	let promiseListKeyword;
 
 	onMount(() => {
-		promiseListKeyword = get(`${USER_API}/keywords/${$userData.index_name}/${fields}`);
+		promiseListKeyword = get(`${USER_API}/keywords/${$envJson.index_name}/${fields}`);
 	});
 
 	function handleTags(event) {

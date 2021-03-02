@@ -2,7 +2,7 @@
   export let innerHtml = ""
   export let style = ""
   export let placeholder = ""
-  export let value = ""
+  export let value;
   export let type = "text"
 
   const handleInput = e => {

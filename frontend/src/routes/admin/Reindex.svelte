@@ -1,14 +1,15 @@
 <script>
-import { isReindex, list_logger } from './stores.js';
-import { userData } from '../common/user-data.store';
-import {reIndex} from './utils.js'
-import VirtualList from './VirtualList.svelte';
+import { isReindex } from './stores.js';
+import { list_logger } from '../../components/stores.js';
+import { envJson } from '../../components/user-data.store';
+import { reIndex } from '../../components/utils.js'
+import VirtualList from '../../components/VirtualList.svelte';
 
 let promise = new Promise(() => {});
 
 	function handleIndex() {
     $isReindex = true
-		promise = reIndex($userData.index_name)
+		promise = reIndex($envJson.index_name)
 		promise
 		.then(res => {
 			$isReindex = false
@@ -19,8 +20,6 @@ let promise = new Promise(() => {});
 	  })
 	}
 </script>
-
-
 
 	<div>
     <button on:click={handleIndex} class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
