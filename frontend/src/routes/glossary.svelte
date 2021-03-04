@@ -1,5 +1,5 @@
 <svelte:head>
-	<title>Rechercher</title>
+	<title>Acronymes</title>
 </svelte:head>
 
 <script>

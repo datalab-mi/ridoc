@@ -1,5 +1,5 @@
 <svelte:head>
-	<title>Moteur de recherche • Dnum</title>
+	<title>Accueil</title>
 
 	<meta name="Description" content="Moteur de recherche">
 </svelte:head>
