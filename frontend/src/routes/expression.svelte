@@ -1,5 +1,5 @@
 <svelte:head>
-	<title>Rechercher</title>
+	<title>Expressions</title>
 </svelte:head>
 
 <script>
