@@ -25,10 +25,6 @@
 		<span>Rechercher</span>
 	</button>
 {/if}
-	<button  on:click={authClicked}  class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded  inline-flex  items-center itemJsons-center">
-		<svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5 5a5 5 0 0 1 10 0v2A5 5 0 0 1 5 7V5zM0 16.68A19.9 19.9 0 0 1 10 14c3.64 0 7.06.97 10 2.68V20H0v-3.32z"/></svg>
-		<span>Se connecter</span>
-	</button>
 </div>
 </div>
 </div>
@@ -44,7 +40,7 @@
 	}
 	/* a paragraph proceeded by another paragraph will have a top margin */
 	div.preview :global(p + p) {
-	    margin-top: 8px;
+	    margin-top: 12px;
 	}
 
 	div.preview :global(h1) {
@@ -75,16 +71,14 @@
 
 <script>
 import { onMount, onDestroy } from 'svelte';
-import { user, displayLogin } from '../components/stores.js';
+import { user } from '../components/stores.js';
 import { cssProps } from '../components/css-props.action';
 import { userTheme } from '../components/theme.store';
 import marked from 'marked'
 let description = "";
 let notice = "";
 let mainNode;
-function authClicked() {
-	$displayLogin = !$displayLogin
-}
+
 onMount(async () => {
 	mainNode = document.getElementsByTagName("main")[0]
 
