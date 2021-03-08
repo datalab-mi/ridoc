@@ -135,6 +135,9 @@ logstash: network #create-nginx-index
 logstash-exec:
 	$(DC) -f ${DC_FILE}-logstash.yml exec logstash bash
 
+logstash-stop:
+	${DC} -f ${DC_FILE}-logstash.yml down
+
 # backend
 
 # development mode
