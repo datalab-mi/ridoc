@@ -12,13 +12,14 @@
 	export let _source;
 	export let _score;
 	export let highlight = {}
+	export let canBeChange = true;
 
 	const http = httpClient();
 	const required = true;
 
 	let display = true;
-	let readonly = true;
 	let send = false;
+	let readonly = true;
 
 	let filename;
 	$: filename = _id.replace(/\+/g, ' ')
@@ -121,12 +122,11 @@
 				<span>CONSULTER</span>
 			</button>
 
-			{#if $user.role === 'admin'}
+			{#if $user.role === 'admin' && canBeChange}
 				<button on:click={handleDelete} {...btnAttrs}>
 					<svg {...svgAttrs}><path d="M6 2l2-2h4l2 2h4v2H2V2h4zM3 6h14l-1 14H4L3 6zm5 2v10h1V8H8zm3 0v10h1V8h-1z"/></svg>
 					<span>SUPPRIMER</span>
 				</button>
-
 				{#if readonly && send}
 					<button on:click={handleSave} {...btnAttrs}>
 						<svg {...svgAttrs}><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>

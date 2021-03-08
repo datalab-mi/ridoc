@@ -9,11 +9,14 @@
 	let threshold;
 	let resultMessage;
 	let message;
+	let canBeChange;
+	$: canBeChange =  $itemJson.inputs.some((entry) => entry.metadata)
+
 	$: message = $envJson.message ||  "Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Veuillez contacter l'<b><a href='mailto:{$envJson.contact}?subject=Demande de consultation'> administrateur ✉️</a></b>."
 	//let message = ($envJson.message === undefined) ? dafaultMessage : $envJson.message
 	function add_bar(x) {
 		items = [];
-		threshold = true;
+		threshold = ! (x.hits.some((x) => x._score !== 1)) //test if the request is ranked
 		for (const hits of x.hits) {
 			hits['key'] = (Math.random() * 1e6) | 0; // Choose random key
 			if (hits._score < x.r_threshold && threshold) {
@@ -68,7 +71,7 @@
 					<p>{@html message}</p>
 				</section>
 			{:else}
-				<ResultItem  {... ( ({ _id, _source, _score, highlight }) => ({ _id, _source, _score, highlight }) )(item) } />
+				<ResultItem  {... ( ({ _id, _source, _score, highlight }) => ({ _id, _source, _score, highlight, canBeChange }) )(item) } />
 			{/if}
 		{/each}
 		</div>

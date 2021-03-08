@@ -8,7 +8,7 @@ import { userData } from './store.utils';
 export const envJson = userData("env.json")
 
 // Define result items display
-export const itemJson = userData("item.json")
+export const itemJson = userData("item.json", {inputs: []})
 
 // Define search bar display
 export const searchJson = userData("search.json", [])
