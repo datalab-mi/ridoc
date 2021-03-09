@@ -35,11 +35,11 @@ def access_headers(app, role):
 @pytest.fixture
 def search_data():
     return dict(index_name = INDEX_NAME,
-    must = [{"multi_match":{"fields":["titre","content"],"query":"foret"}}],
+    must = [{"multi_match":{"fields":["title","content"],"query":"foret"}}],
     filter= [{"match":{"author":"GRANJEANT"}},
                         {"range":{"date":{"gte": "2015-06-06"}}},
                         {"range":{"date":{"lte": "2017-06-06"}}}],
-    highlight = ["titre","content","author","date","date"])
+    highlight = ["title","content","author","date","date"])
 
 @pytest.fixture
 def es():

@@ -2,8 +2,8 @@
   [
     {
     "bool": "must",
-    "query": {"query_string": {"fields":["titre", "content"], "query":"$value"}},
-    "fields":["titre", "content"],
+    "query": {"query_string": {"fields":["title", "content"], "query":"$value"}},
+    "fields":["title", "content"],
     "value": "",
     "type": "search",
     "placeholder": "Recherche par mots clefs",

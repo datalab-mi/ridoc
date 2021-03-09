@@ -179,6 +179,11 @@
           "analyzer" : "phonetic_analyser",
           "search_analyzer" : "phonetic_analyser"
         },
+        "title": {
+            "type": "text" ,
+            "analyzer" : "my_analyzer",
+            "search_analyzer" : "my_search_analyzer"
+        },
         "date": {
           "type": "date",
           "format": "yyyy-MM-dd"

@@ -162,7 +162,6 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
     if highlight:
         for field in highlight:
             body['highlight']['fields'].update({field: {}})
-    #import pdb; pdb.set_trace()
 
     print(body)
 
@@ -223,6 +222,7 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
           Bande = True
     except:
         pass
+    #import pdb; pdb.set_trace()
 
     return {'hits': D['hits']['hits'],
             'length': length_of_request , 'band': Bande,

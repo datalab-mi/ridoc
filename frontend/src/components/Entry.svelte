@@ -66,7 +66,11 @@
 <div class="entry">
 {#if (key == "title") || (key == "titre")}
   <h2 class="mb-2">
+    {#if highlight && isHighlight}
+        <p class="entry-title"> &laquo; {@html value} &raquo; </p>
+    {:else}
     <textarea class="entry-title" type="text" bind:value={value} {placeholder} readonly={derivedReadonly} />
+    {/if}
   </h2>
 
 {:else if type == "date"}

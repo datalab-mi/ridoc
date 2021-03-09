@@ -9,7 +9,7 @@
       "value": "",
       "innerHtml": "<b>Titre :</b>",
       "highlight":  true,
-      "metadata": false,
+      "metadata": true,
       "canBeEmpty": true
     },
     {
