@@ -162,7 +162,6 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
     if highlight:
         for field in highlight:
             body['highlight']['fields'].update({field: {}})
-    #import pdb; pdb.set_trace()
 
     print(body)
 
@@ -223,6 +222,7 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
           Bande = True
     except:
         pass
+    #import pdb; pdb.set_trace()
 
     return {'hits': D['hits']['hits'],
             'length': length_of_request , 'band': Bande,
@@ -503,7 +503,6 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
                     data[key] = list(set(data.get(key, []) + val))
                 if type(val) == str:
                     data[key] = val
-
     # clean date field
     if "date" in data:
         data["date"] = re.sub(r'[^\d\/-]','',data["date"]) # remove all caractere ! /, - or digit
@@ -525,8 +524,8 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
                                     }
                                 }
                     }
-            #import pdb; pdb.set_trace()
-            es.update(index=index_name,doc_type='_doc',id=str(filename),body=body)
+            res_update = es.update(index=index_name, id=str(filename),body=body)
+
     return res
 
 def delete_file(filename, index_name):

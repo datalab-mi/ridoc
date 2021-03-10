@@ -29,8 +29,9 @@
 
 	let url;
 	$: url = `/api/user/files/${$envJson.dstDir}/${filename}`
-	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
+
 	let meta;
+	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
 	/**
 	 * Copie et adapte les métadonnées.
 	 * note : met à jour 'display'
@@ -43,13 +44,15 @@
  			const copy = { ...item };
  			// replace value to the result value contained in source or in highlight key
  			// if present and if needed
+
+			copy.value = copy.key in source ? source[copy.key] : copy.value
+
  			if (copy.highlight && highlight && (copy.key in highlight)) {
- 				copy.value = highlight[copy.key].join(' [...] ')
- 				copy.isHighlight = true
+ 				copy.highlight = highlight[copy.key].join(' [...] ')
  			} else {
- 				copy.value = copy.key in source ? source[copy.key] : copy.value
- 				copy.isHighlight = false
+ 				copy.highlight = ""
  			}
+
  			// test if item should be displayed if empty
  			if (copy.canBeEmpty !== undefined && !copy.canBeEmpty && isEmpty(copy.value)) {
  				display = false
@@ -57,11 +60,12 @@
  			return copy;
  		});
  	}
+
 	//$: meta = readonly ? createMeta(inputs, _source, highlight) : createMeta(inputs, _source)
 	// !!! doesn't work, need to do this ugly workaround
-	const meta1 = createMeta($itemJson.inputs, _source, highlight)
-	const meta2 = createMeta($itemJson.inputs, _source)
-	$: meta = readonly ? meta1 : meta2
+	meta = createMeta($itemJson.inputs, _source, highlight)
+	//const meta2 = createMeta($itemJson.inputs, _source)
+	//$: meta = readonly ? meta1 : meta2
 
 	function handleDelete() {
 		console.log(`Delete ${filename}`)
@@ -71,7 +75,9 @@
 		index($envJson.index_name, filename, 'DELETE')
 			.then(()   => list_logger.concat({ level: "success", message: "Document désindexé avec succès! ", ressource: "upload" }))
 			.catch(err => list_logger.concat({ level: "error",   message: err, ressource: "upload" }));
+		display = false
 	}
+
 
 	function handleSave() {
 		send = !send
@@ -102,17 +108,11 @@
 	<BaseItem id={_id} componentCssProps={$userTheme.search && $userTheme.search.results}>
 
 		<div slot="fields" class="flex-col space-y-1">
-		{#if readonly}
-			{#each meta1 as { value, key, type, placeholder, innerHtml, highlight, metadata, isHighlight, rows, color} (key)}
-				{#if !isEmpty(value)}
-					<Entry {readonly} {required} {value} {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {rows} {color} />
+		{#each meta as { value, key, type, placeholder, innerHtml, highlight, metadata, rows, color} (key)}
+				{#if !isEmpty(value) || (!readonly && metadata) }
+					<Entry {readonly} {required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {rows} {color} />
 				{/if}
-			{/each}
-		{:else}
-			{#each meta2 as { value, key, type, placeholder, innerHtml, highlight, metadata, isHighlight, rows, color} (key)}
-				<Entry {readonly} {required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {rows} {color} />
-			{/each}
-		{/if}
+		{/each}
 		</div>
 
 		<div slot="buttons">
@@ -132,7 +132,7 @@
 						<svg {...svgAttrs}><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>
 						<span>MODIFIER</span>
 					</button>
-					<PutItem meta={meta2} file={file} />
+					<PutItem meta={meta} file={file} />
 				{:else if readonly || send}
 					<button on:click={() => readonly = !readonly} {...btnAttrs}>
 						<svg {...svgAttrs}><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>

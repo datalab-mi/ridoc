@@ -10,7 +10,6 @@
     export let innerHtml
     export let highlight
     export let metadata
-    export let isHighlight
 
     export let readonly = false;
     export let required = true
@@ -33,10 +32,8 @@
         promiseListKeyword = [] // no need of promiseListKeyword
       }
     }
-
   }
-
-
+  
     function onDelete(val){
       value = value.filter(item => item !== val)
     }
@@ -66,7 +63,11 @@
 <div class="entry">
 {#if (key == "title") || (key == "titre")}
   <h2 class="mb-2">
-    <textarea class="entry-title" type="text" bind:value={value} {placeholder} readonly={derivedReadonly} />
+    {#if highlight && derivedReadonly }
+      <p class="entry-title"> &laquo; {@html highlight} &raquo; </p>
+    {:else}
+      <textarea class="entry-title" type="text" bind:value={value} {placeholder} readonly={derivedReadonly} />
+    {/if}
   </h2>
 
 {:else if type == "date"}
@@ -104,7 +105,7 @@
       <ul>
         {#each value as val}
             <li>
-              {#if highlight && isHighlight}
+              {#if highlight && derivedReadonly}
                   <p> &laquo; {@html val} &raquo; </p>
               {:else}
                 {#if type == "text"}
@@ -134,8 +135,8 @@
     {/if}
 
   {:else}
-    {#if highlight && isHighlight}
-        <p> &laquo; {@html value} &raquo; </p>
+    {#if highlight && derivedReadonly}
+        <p> &laquo; {@html highlight} &raquo; </p>
     {:else}
       {#if type == "text"}
         <input type="text" bind:value={value} {placeholder} readonly={derivedReadonly} />
