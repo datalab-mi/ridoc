@@ -18,7 +18,8 @@
       "value": "",
       "innerHtml": "<b>Question :</b>",
       "highlight": true,
-      "metadata": false
+      "metadata": false,
+      "canBeEmpty": false
 
     },
     {
@@ -29,7 +30,8 @@
       "innerHtml": "<b>Réponse :</b>",
       "highlight": true,
       "metadata": false,
-      "rows": 4
+      "rows": 4,
+      "canBeEmpty": false
     },
     {
       "key": "date",
@@ -47,7 +49,7 @@
       "value": "",
       "innerHtml": "<b>Pièces jointes :</b>",
       "highlight": true,
-      "metadata": false
+      "metadata": true
     },
     {
       "key": "mots cles",
