@@ -95,11 +95,9 @@ def upload_file(filename: str):
         500: Server abort
     """
     path_file = Path(app.config['USER_DATA']) / app.config['DST_DIR'] / filename
-    path_meta = Path(app.config['USER_DATA']) / app.config['META_DIR'] / filename
-    path_json = Path(app.config['USER_DATA']) / app.config['JSON_DIR'] / filename
 
-    path_meta = path_meta.with_suffix('').with_suffix('.json') # replace extension
-    path_json = path_json.with_suffix('').with_suffix('.json') # replace extension
+    path_meta =  Path(app.config['USER_DATA']) / app.config['META_DIR'] / (path_file.stem + '.json')
+    path_json =  Path(app.config['USER_DATA']) / app.config['JSON_DIR'] / (path_file.stem + '.json')
 
     if request.method == 'DELETE':
         if path_file.exists():

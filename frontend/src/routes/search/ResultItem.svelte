@@ -48,11 +48,9 @@
 			copy.value = copy.key in source ? source[copy.key] : copy.value
 
  			if (copy.highlight && highlight && (copy.key in highlight)) {
- 				copy.valueReadonly = highlight[copy.key].join(' [...] ')
- 				copy.isHighlight = true
+ 				copy.highlight = highlight[copy.key].join(' [...] ')
  			} else {
- 				copy.isHighlight = false
-				copy.valueReadonly = copy.value
+ 				copy.highlight = ""
  			}
 
  			// test if item should be displayed if empty
@@ -62,6 +60,7 @@
  			return copy;
  		});
  	}
+
 	//$: meta = readonly ? createMeta(inputs, _source, highlight) : createMeta(inputs, _source)
 	// !!! doesn't work, need to do this ugly workaround
 	meta = createMeta($itemJson.inputs, _source, highlight)
@@ -76,7 +75,9 @@
 		index($envJson.index_name, filename, 'DELETE')
 			.then(()   => list_logger.concat({ level: "success", message: "Document désindexé avec succès! ", ressource: "upload" }))
 			.catch(err => list_logger.concat({ level: "error",   message: err, ressource: "upload" }));
+		display = false
 	}
+
 
 	function handleSave() {
 		send = !send
@@ -107,17 +108,11 @@
 	<BaseItem id={_id} componentCssProps={$userTheme.search && $userTheme.search.results}>
 
 		<div slot="fields" class="flex-col space-y-1">
-		{#if readonly}
-			{#each meta as { valueReadonly, key, type, placeholder, innerHtml, highlight, metadata, isHighlight, rows, color} (key)}
-				{#if !isEmpty(valueReadonly)}
-					<Entry {readonly} {required} value={valueReadonly} {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {rows} {color} />
+		{#each meta as { value, key, type, placeholder, innerHtml, highlight, metadata, rows, color} (key)}
+				{#if !isEmpty(value) || (!readonly && metadata) }
+					<Entry {readonly} {required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {rows} {color} />
 				{/if}
-			{/each}
-		{:else}
-			{#each meta as { value, key, type, placeholder, innerHtml, highlight, metadata, isHighlight, rows, color} (key)}
-				<Entry {readonly} {required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {isHighlight} {rows} {color} />
-			{/each}
-		{/if}
+		{/each}
 		</div>
 
 		<div slot="buttons">
