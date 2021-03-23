@@ -83,7 +83,7 @@ def odt2json(path: str, sections: list = []) -> dict:
         if is_array:
             data[current_section] = []
             for el in section_content:
-                data[current_section] += [el] #re.split(';|,| – | - ',el)
+                data[current_section] += re.split(';|,| – | - ', el) #[el]
         else :
             data[current_section] = ' '.join(section_content)
 
