@@ -199,6 +199,25 @@ function httpClient() {
   		}
   	}
 
+const flatten = (array, depth) => {
+  // If no depth is specified, default to 1
+  if (depth === undefined) {
+    depth = 1;
+  }
+  // Recursively reduce sub-arrays to the specified depth
+  const flat = (arr, depth) => {
+    // If depth is 0, return the array as-is
+    if (depth < 1) {
+      return arr.slice();
+    }
+    // Otherwise, concatenate into the parent array
+    return arr.reduce(function (acc, val) {
+      return acc.concat(Array.isArray(val) ? flat(val, depth - 1) : val);
+    }, []);
+  };
+  return flat(array, depth);
+}
+
 const format2ES = (item, query_list, index_name) => {
     //query_list = query_list.flat(2)
 		let query_dic = {index_name: index_name};
@@ -218,11 +237,10 @@ const format2ES = (item, query_list, index_name) => {
 			}
 		}
 		if (highlight_fields.length >0){
-			query_dic["highlight"] = highlight_fields.flat()
+			query_dic["highlight"] = flatten(highlight_fields, 1)
 		}
 		return query_dic
   }
-
 
 async function search(body) {
 	const res = await fetch(`${USER_API}/search`, {
@@ -281,4 +299,4 @@ async function synonym(method, row, filename,key=0) {
   }
 }
 
-export { index, upload, get, httpClient, synonym, files, format2ES, search, text_area_resize, reIndex };
+export { index, upload, get, httpClient, synonym, files, flatten, format2ES, search, text_area_resize, reIndex };
