@@ -7,7 +7,7 @@
 	import { envJson } from '../../components/user-data.store';
 	import { promiseSearch } from './stores.js';
 	import { itemJson, searchJson } from '../../components/user-data.store';
-	import { format2ES, search } from '../../components/utils.js';
+	import { flatten, format2ES, search } from '../../components/utils.js';
 	import SearchBar from './SearchBar.svelte';
 	import ResultList from './ResultList.svelte';
 
@@ -15,7 +15,7 @@
 	onMount(async () => {
 		//initial search
 		if ($envJson.initialSearch) {
-			body =  format2ES($itemJson, $searchJson.flat(2), $envJson.index_name)
+			body =  format2ES($itemJson, flatten($searchJson, 2), $envJson.index_name)
 			$promiseSearch = search(body)
 		}
 	});

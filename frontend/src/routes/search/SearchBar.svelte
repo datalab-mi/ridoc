@@ -8,11 +8,11 @@
 	import SearchKeywordInput from './SearchKeywordInput.svelte';
 	import SearchSuggestInput from './SearchSuggestInput.svelte';
 	import { promiseSearch } from './stores.js';
-	import { format2ES, search } from '../../components/utils.js';
+	import { flatten, format2ES, search } from '../../components/utils.js';
 
 	let body
 	function handleSearch() {
-		body = format2ES($itemJson, $searchJson.flat(2).filter(x => x.type !== "button"), $envJson.index_name)
+		body = format2ES($itemJson, flatten($searchJson, 2).filter(x => x.type !== "button"), $envJson.index_name)
 		$promiseSearch = search(body)
 	}
 </script>
