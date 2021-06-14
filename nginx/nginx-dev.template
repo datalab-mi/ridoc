@@ -25,6 +25,6 @@ http {
     keepalive_timeout  65;
 
     #gzip  on;
-    client_max_body_size 3M;
+    client_max_body_size 12M;
     include /etc/nginx/conf.d/*.conf;
 }

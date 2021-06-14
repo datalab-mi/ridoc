@@ -49,7 +49,7 @@ http {
     #tcp_nopush     on;
 
     keepalive_timeout  65;
-    client_max_body_size 3M;
+    client_max_body_size 12M;
 
     #gzip  on;
 
