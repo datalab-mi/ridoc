@@ -5,7 +5,8 @@ FROM node:12.2.0-alpine as base
 
 WORKDIR /app
 COPY . .
-RUN npm install
+RUN npm config set strict-ssl false #Do not check certificate, proxy fault
+RUN npm install 
 
 
 # tailwindcss
