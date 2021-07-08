@@ -66,8 +66,8 @@
 		<slot />
 		<Logger />
 	</div>
-	
-</main>	
+
+</main>
 
 <Footer />
 
@@ -75,8 +75,8 @@
 	.button{
 		background-color: var(--primary);
 		float:right;
-		
+
 	}
-	
-	
+
+
 </style>
