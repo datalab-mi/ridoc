@@ -17,7 +17,7 @@
 	}
 </script>
 
-<div class='flex flex-col place-items-center bg-blue-700' on:keyup={e => e.key === 'Enter' && handleSearch()}>
+<div id="search" class=' flex flex-col place-items-center ' style={$envJson.primary} on:keyup={e => e.key === 'Enter' && handleSearch()} >
 	<div class="flex flex-col w-1/3">
 <div>
 	<div class='text-3xl text-white left-0 my-8'><b class="border-b-4 pb-4"> Rechercher</b> un rapport  <span class="uppercase">{$envJson.index_name}</span></div>
