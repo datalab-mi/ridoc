@@ -77,9 +77,9 @@
 </label>
   {#if required}
   
-  <input  type="date" bind:value={value} {placeholder} readonly={derivedReadonly} required  />
+  <input  type="date" bind:value={value} {placeholder} readonly={derivedReadonly} required class='text-gray-600'  />
   {:else}
-  <input type="date"  bind:value={value} {placeholder} readonly={derivedReadonly} />
+  <input type="date"  bind:value={value} {placeholder} readonly={derivedReadonly} class='text-gray-600'/>
   {/if}
 
 
@@ -100,6 +100,7 @@
             onlyUnique={true}
             autoComplete={autoComplete}
             minChars={1}
+            
             />
         </div>
         {/await}
@@ -201,18 +202,21 @@
 		@apply my-1;
 		@apply p-1;
 		resize: none;
-		vertical-align: middle;	}
+		vertical-align: middle;
+    	}
   
 
 	input:not([type='date']),
 	textarea {
 		@apply w-full;
     @apply my-0;
+    
 	}
 
   ul input:not([type='date']),
 	ul textarea {
 		@apply w-5/6;
+    
 	}
 
 

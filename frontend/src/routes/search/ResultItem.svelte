@@ -107,7 +107,7 @@
 {#if display}
 	<BaseItem id={_id} >
 
-		<div slot="fields" class="flex-col space-y-1">
+		<div slot="fields" class="flex-col space-y-0">
 		{#each meta as { value, key, type, placeholder, innerHtml, highlight, metadata, rows, color} (key)}
 				{#if !isEmpty(value) || (!readonly && metadata) }
 					<Entry {readonly} {required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {rows} {color} />
@@ -176,6 +176,10 @@
 		@apply mx-0;
 		
 		
+		
 	}
 	
+	button:hover {
+		@apply underline
+	}
 </style>
