@@ -60,9 +60,9 @@
   }
 </script>
 
-<div class="entry">
+<div class="entry ">
 {#if (key == "title") || (key == "titre")}
-  <h2 class="mb-2">
+  <h2 class="text-2xl ">
     {#if highlight && derivedReadonly }
       <p class="entry-title"> &laquo; {@html highlight} &raquo; </p>
     {:else}
@@ -70,23 +70,26 @@
     {/if}
   </h2>
 
+
 {:else if type == "date"}
-  <label>
-	{@html innerHtml}
+  <label class="align-middle items text-gray-600">
+  {@html innerHtml}
+</label>
   {#if required}
-    <input type="date" bind:value={value} {placeholder} readonly={derivedReadonly} required />
+  
+  <input  type="date" bind:value={value} {placeholder} readonly={derivedReadonly} required  />
   {:else}
-    <input type="date" bind:value={value} {placeholder} readonly={derivedReadonly} />
+  <input type="date"  bind:value={value} {placeholder} readonly={derivedReadonly} />
   {/if}
-  </label>
+
 
 {:else}
-  <label> {@html innerHtml} </label>
+  
   {#if value instanceof Array}
     {#if type === "keyword"}
       {#await promiseListKeyword}
       {:then autoComplete}
-        <div class="my-custom-class" style= "--color: {color}">
+         - <div class="my-custom-class" style= "--color: {color}">
           <Tags
         		tags={value}
             on:tags={handleTags}
@@ -133,7 +136,7 @@
       {/if}
       </ul>
     {/if}
-
+      
   {:else}
     {#if highlight && derivedReadonly}
         <p> &laquo; {@html highlight} &raquo; </p>
@@ -156,10 +159,12 @@
 	.my-custom-class :global(.svelte-tags-input-tag) {
 		background: var(--color) !important;
 		cursor: default !important;
+    
 	}
 	.my-custom-class :global(.svelte-tags-input-layout) {
 		border-style: none !important;
 		cursor: default !important;
+    
 	}
 	.my-custom-class :global(.svelte-tags-input-layout.sti-layout-disable) {
 		background-color: transparent !important;
@@ -167,6 +172,7 @@
 	.my-custom-class :global(.svelte-tags-input) {
 		background: transparent !important;
 		cursor: default !important;
+    
 	}
 	.my-custom-class :global(.svelte-tags-input:disabled) {
 		background-color: transparent !important;
@@ -186,6 +192,7 @@
 	.entry-title {
 		font-weight: bold;
 		margin: 0;
+    text-decoration: underline;
 	}
 
 	input,
@@ -194,12 +201,13 @@
 		@apply my-1;
 		@apply p-1;
 		resize: none;
-		vertical-align: top;
-	}
+		vertical-align: middle;	}
+  
 
 	input:not([type='date']),
 	textarea {
 		@apply w-full;
+    @apply my-0;
 	}
 
   ul input:not([type='date']),
@@ -207,10 +215,7 @@
 		@apply w-5/6;
 	}
 
-	input[type='date'] {
-		@apply flex;
-		@apply flex-initial;
-	}
+
 
 
 	input:read-only,

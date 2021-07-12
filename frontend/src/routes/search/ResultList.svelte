@@ -55,7 +55,7 @@
 			});
 	}
 </script>
-
+<div class="px-48 " >
 {#await $promiseSearch}
 	<p>...Attente de la requête</p>
 {:then result}
@@ -67,11 +67,11 @@
 		<div class="result-list">
 		{#each items as item (item.key)}
 			{#if  item._id === "bar"}
-				<section class="bar rounded-sm p-2 sm:p-4">
+				<section class="bar">
 					<p>{@html message}</p>
 				</section>
 			{:else}
-				<ResultItem  {... ( ({ _id, _source, _score, highlight }) => ({ _id, _source, _score, highlight, canBeChange }) )(item) } />
+				<ResultItem  {... ( ({ _id, _source, _score, highlight }) => ({ _id, _source, _score, highlight, canBeChange }) )(item) }/>
 			{/if}
 		{/each}
 		</div>
@@ -80,18 +80,7 @@
 	<p>... Récuperation de la configuration</p>
 {/if}
 
-
+</div>
 <style>
-	.result-list {
-		@apply w-full;
-		@apply rounded;
-		border: 1px solid #aaa;
-		min-height: 200px;
-	}
-	.bar {
-		@apply w-full;
-		@apply rounded;
-		border: 1px solid #aaa;
-		background: #ffffb3
-	}
+
 </style>
