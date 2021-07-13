@@ -75,6 +75,15 @@
 			{/if}
 		{/each}
 		</div>
+	{:else}
+		<div class='bg-white p-4 pb-48 shadow'>
+			
+			<img src='./user/noresult.PNG' class="float-right">
+			<h2 class="text-3xl font-bold my-4">Aucun résultat</h2>
+			<p class="float-left text-xl ">Malheureusement aucun résultat n'est associé à votre recherche. Essayer de changer les mots-clés que vous avez utilisé.</p>
+			
+			
+		</div>
 	{/if}
 {:else}
 	<p>... Récuperation de la configuration</p>
@@ -82,5 +91,11 @@
 
 </div>
 <style>
+img{
+	max-width: 20%;
+	margin-top: 0;
+	
+	
+}
 
 </style>
