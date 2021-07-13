@@ -11,14 +11,16 @@
 	import { flatten, format2ES, search } from '../../components/utils.js';
 
 	let body
+	let notes
 	function handleSearch() {
 		body = format2ES($itemJson, flatten($searchJson, 2).filter(x => x.type !== "button"), $envJson.index_name)
 		$promiseSearch = search(body)
 	}
-</script>
 
-<div id="search" class=' flex flex-col place-items-center ' style={$envJson.primary} on:keyup={e => e.key === 'Enter' && handleSearch()} >
-	<div class="flex flex-col w-1/3">
+</script>
+<div style={$envJson.primary} >
+<div id="search" class='search flex flex-col place-items-center ' style="background-image:url('./user/notes.png')" on:keyup={e => e.key === 'Enter' && handleSearch()} >
+	<div class="flex flex-col w-1/3 px-4" style={$envJson.primary} >
 <div>
 	<div class='text-3xl text-white left-0 my-8'><b class="border-b-4 pb-4"> Rechercher</b> un rapport  <span class="uppercase">{$envJson.index_name}</span></div>
 </div>
@@ -47,7 +49,11 @@
 {/if}
 </div>
 </div>
+</div>
 
 <style>
-
+	.search{
+		background-size: 22%;
+		background-repeat: repeat;
+	}
 </style>
