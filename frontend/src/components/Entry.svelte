@@ -62,7 +62,7 @@
 
 <div class="entry ">
 {#if (key == "title") || (key == "titre")}
-  <h2 class="text-2xl ">
+  <h2 class="text-3xl ">
     {#if highlight && derivedReadonly }
       <p class="entry-title"> &laquo; {@html highlight} &raquo; </p>
     {:else}
@@ -89,7 +89,7 @@
     {#if type === "keyword"}
       {#await promiseListKeyword}
       {:then autoComplete}
-         - <div class="my-custom-class" style= "--color: {color}">
+          <div class="my-custom-class" >
           <Tags
         		tags={value}
             on:tags={handleTags}
@@ -158,9 +158,16 @@
 <style>
 	/* override default Tag style */
 	.my-custom-class :global(.svelte-tags-input-tag) {
-		background: var(--color) !important;
-		cursor: default !important;
-    
+		background-color: #F0F0F0 !important;
+    border-radius: 40px;
+    color:#1E1E1E !important;
+    margin-right: 1.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
+    margin-bottom: 1em;
+    font-size: 14px !important;
 	}
 	.my-custom-class :global(.svelte-tags-input-layout) {
 		border-style: none !important;
