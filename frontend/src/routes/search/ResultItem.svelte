@@ -129,22 +129,22 @@
 			</button>
 			{#if canBeChange }
 					{#if readonly && send}
-						<button on:click={handleSave} {...btnAttrs} style={$envJson.primary}>
+						<button on:click={handleSave} {...btnAttrs}>
 							<svg {...svgAttrs}><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>
 							<span>MODIFIER</span>
 						</button>
 						<PutItem meta={meta} file={file} />
 					{:else if readonly || send}
-						<button on:click={() => readonly = !readonly} {...btnAttrs} style={$envJson.primary}>
+						<button on:click={() => readonly = !readonly} {...btnAttrs}>
 							<svg {...svgAttrs}><path d="M12.3 3.7l4 4L4 20H0v-4L12.3 3.7zm1.4-1.4L16 0l4 4-2.3 2.3-4-4z"/></svg>
 							<span>MODIFIER</span>
 						</button>
 					{:else}
-						<button on:click={handleSave} {...btnAttrs} style={$envJson.primary}>
+						<button on:click={handleSave} {...btnAttrs}>
 							<svg {...svgAttrs}><path d="M0 2C0 .9.9 0 2 0h14l4 4v14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm5 0v6h10V2H5zm6 1h3v4h-3V3z"/></svg>
 							<span>SAUVER</span>
 						</button>
-						<button on:click={handleCancel} {...btnAttrs} style={$envJson.primary}>
+						<button on:click={handleCancel} {...btnAttrs}>
 							<svg {...svgAttrs}><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z"/></svg>
 							<span>ANNULER</span>
 						</button>
@@ -174,12 +174,15 @@
 		@apply inline-flex;
 		@apply items-center;
 		@apply mx-0;
+		background-color: var(--primary);
 		
 		
 		
 	}
 	
 	button:hover {
-		@apply underline
+		@apply underline;
+		background-color: var(--primary);
+		
 	}
 </style>
