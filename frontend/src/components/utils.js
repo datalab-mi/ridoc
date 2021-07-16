@@ -143,7 +143,7 @@ function httpClient() {
 	const fetchBlob = async (url, requestInit = defaultInit) => {
 		const res = await fetchRaw(url, requestInit);
 		const blob = await res.blob();
-		downloadFile(blob, extractFilename(res));
+		window.open('/ViewerJS/#..'+url)
 	}
 
 	return { fetch: fetchRaw, fetchJson, fetchBlob };
