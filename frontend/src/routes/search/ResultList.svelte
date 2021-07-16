@@ -104,6 +104,8 @@
 			<option value={tri} class="bg-gray">{tri}</option>
 		{/each}
 	</select>
+</div>
+<div class="resList">
 {#await $promiseSearch}
 	<p>...Attente de la requête</p>
 {:then result}
@@ -126,13 +128,13 @@
 		{/each}
 		</div>
 	{:else}
-		<div class='bg-white p-4 pb-48 shadow mt-12'>
-			
+		<div class='bg-white p-4 pb-48 shadow'>
+
 			<img src='./user/noresult.PNG' class="float-right">
 			<h2 class="text-3xl font-bold my-4">Aucun résultat</h2>
 			<p class="float-left text-xl ">Malheureusement aucun résultat n'est associé à votre recherche. Essayer de changer les mots-clés que vous avez utilisé.</p>
-			
-			
+
+
 		</div>
 	{/if}
 {:else}
@@ -162,4 +164,20 @@ select{
 	box-shadow: none !important;
 }
 
+	.result-list {
+		@apply w-full;
+		@apply rounded;
+		border: 1px solid #aaa;
+		min-height: 200px;
+	}
+	.bar {
+		@apply w-full;
+		@apply rounded;
+		border: 1px solid #aaa;
+		background: #ffffb3
+	}
+	.resList{
+		width: 85%;
+		float:left;
+	}
 </style>

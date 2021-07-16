@@ -28,7 +28,7 @@
 
 	<!-- recherche basique, première ligne du tableau -->
 	<div class="flex flex-row space-x-0 gap-0 justify-between bg-white w-full  my-8 h-10">
-		
+
 		{#each $searchJson[0] as { fields, value, type, placeholder, innerHtml, style, color, suggest }, j}
 			{#if type == "button"}
 				<div class="flex-none my-auto bg-white h-8" >
@@ -44,7 +44,7 @@
 				<SearchInput bind:value {type} {placeholder} {innerHtml} style="" />
 			{/if}
 		{/each}
-		
+
 	</div>
 {/if}
 </div>
@@ -52,12 +52,14 @@
 </div>
 
 <style>
-	.search{
-		background-size: 22%;
-		background-repeat: repeat;
-	}
-	.background{
-		background-color: var(--primary);
+	.search-bar {
+		width: 85%;
+		border: 1px solid #aaa;
+		border-radius: 4px;
+		padding: 1em;
+		margin: 0 0 1em 0;
+		background-color: var(--bg-color);
+		float:left;
 	}
 	.barback{
 		background-color: var(--primary);
