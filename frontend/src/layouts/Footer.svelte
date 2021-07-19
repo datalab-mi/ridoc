@@ -19,14 +19,13 @@
 		<a href={$envJson.repository} class=" my-1 text-left text-black-400 float-left">Version <div class="text-black ">v{appVersion}</div> </a>
 	</span>
 
-
 	<!---liens dans le footer, il faudra dans chaque fichier env.json renseigner les coordonnées des différents réseaux sociaux et sites-->
 	<div class=" mx-0 my-0 p-0 grid grid-cols-3 float-right">
 
 
 		{#if $envJson.contacts}
 		<div class='text-left ml-10 ' >
-			<div class='font-bold  text-blue-400 mb-4' style='color:#5770BE'>Nos engagements</div>
+			<div class='font-bold  text-blue-400 mb-4' style='color:#5770BE'>Nous connaître</div>
 			{#each $envJson.contacts as { href, name }}
 				<a href={href} class='text-blue-800  underline'style='color:#000091'>{name}</a> <br>
 			{/each}
