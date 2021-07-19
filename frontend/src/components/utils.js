@@ -143,7 +143,7 @@ function httpClient() {
 	const fetchBlob = async (url, requestInit = defaultInit) => {
 		const res = await fetchRaw(url, requestInit);
 		const blob = await res.blob();
-		window.open('/ViewerJS/#..'+url)
+		window.open('./ResultPage?url='+url)
 	}
 
 	return { fetch: fetchRaw, fetchJson, fetchBlob };
