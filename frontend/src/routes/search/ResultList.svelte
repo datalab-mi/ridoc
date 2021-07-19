@@ -4,7 +4,6 @@
 	import { list_logger } from '../../components/stores.js';
 	import { promiseSearch } from './stores.js';
 	import { itemJson } from '../../components/user-data.store';
-import EmoRating from '../../components/emoRating/EmoRating.svelte';
 
 	let items = [];
 	let threshold;
@@ -81,7 +80,7 @@ import EmoRating from '../../components/emoRating/EmoRating.svelte';
 	<p>... Récuperation de la configuration</p>
 {/if}
 
-<EmoRating/>
+
 <style>
 	.result-list {
 		@apply w-full;

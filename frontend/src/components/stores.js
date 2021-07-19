@@ -58,6 +58,7 @@ if(typeof window !== "undefined") {
 }
 
 export const displayLogin = writable(false)
+export const displaysurvey = writable(false)
 
 export const headers = derived(user,  $user => {Authorization: `JWT ${$user.jwToken}`})
 

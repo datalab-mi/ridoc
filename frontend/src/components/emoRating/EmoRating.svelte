@@ -19,7 +19,7 @@
                 {
                     "type": "emotionsratings",
                     "name": "emotionsratings-widget",
-                    "title": "Comment décrieriez vous votre expérience sur le site",
+                    "title": "Comment décririez-vous votre expérience sur le site",
                     "choices": ["1", "2", "3", "4", "5"]
                 }
             ]
