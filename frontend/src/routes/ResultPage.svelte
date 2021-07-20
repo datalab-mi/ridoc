@@ -11,19 +11,45 @@
   let titre;
   let date;
   let auteurs;
+  let tags=[''];
   
   httpClient().fetch('./api/user/files/meta/'+filename+'.json')
   .then(response => response.json())
   .then(data => {
-    return titre=data['title'], date=data['date'], auteurs=data['author']
+    try{
+      data['tag'].length;
+     return titre=data['title'], date=data['date'], auteurs=data['author'],tags=data['tag'];}
+     catch {
+      return titre=data['title'], date=data['date'], auteurs=data['author']
+     }
   }); 
 
-
 </script>
-<div class="bg-white mx-32 p-10">
+<div class= "grid grid-cols justify-center">
+<div class="card bg-white place-self-center p-10 grid grid-cols justify-center rounded shadow w-auto">
+  <div class="mb-6">
+    {#if tags.length>1}
+    <div class="tags mb-6">
+      {#each tags as tag }
+    <div class="tag inline px-2 py-1 mr-4 ">{tag}</div>
+    {/each}
+    </div>
+    {/if}
     <h1 class="text-4xl font-bold">{titre}</h1>
-    <h3><bold class="font-bold">Publié le :</bold> {date}</h3>
+    <h3 class="mt-2"><bold class="font-bold">Publié le :</bold> {date}</h3>
     <h3><bold class="font-bold">Auteurs :</bold> {auteurs}</h3>
-
-<iframe src = {link} width='1025' height='578' allowfullscreen webkitallowfullscreen></iframe> 
+  </div>
+<iframe class="place-self-center" src = {link} width='1025' height='578' allowfullscreen webkitallowfullscreen></iframe> 
 </div>
+</div>
+
+<style>
+  .card{
+    max-width: min-content !important;
+  }
+  .tag{
+    max-width: min-content !important;
+    background-color: #F0F0F0;
+    border-radius: 40px;
+  }
+</style>
