@@ -14,9 +14,9 @@
 
 <footer use:cssProps={$userTheme.footer}>
 
-	<span class='float-left grid gap-0 grid-cols-2 max-w-sm '>
-		<img src={logo} class=''>
-		<a href={$envJson.repository} class=" my-1 text-left text-black-400 float-left">Version <div class="text-black ">v{appVersion}</div> </a>
+	<span class=' float-left grid gap-0 grid-col '>
+		<img src={logo} class='w-full'>
+		<a href={$envJson.repository} class=" my-1 text-left text-black-400">Version <div class="text-black ">v{appVersion}</div> </a>
 	</span>
 
 	<!---liens dans le footer, il faudra dans chaque fichier env.json renseigner les coordonnées des différents réseaux sociaux et sites-->
