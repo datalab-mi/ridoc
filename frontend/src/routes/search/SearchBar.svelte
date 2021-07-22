@@ -9,6 +9,8 @@
 	import SearchSuggestInput from './SearchSuggestInput.svelte';
 	import { promiseSearch } from './stores.js';
 	import { flatten, format2ES, search } from '../../components/utils.js';
+	import Aside from "./aside.svelte";
+
 
 	let body
 	function handleSearch() {

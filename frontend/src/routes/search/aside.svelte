@@ -2,7 +2,7 @@
 	import { quintOut } from 'svelte/easing';
 	import { crossfade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
-
+	import { envJson, itemJson, searchJson } from '../../components/user-data.store';
 
 	
 	
@@ -21,6 +21,15 @@
 			};
 		}
 	});
+	
+	function getTags(tags){
+	let selectedtags=tags.filter(tag=>tag.done==true)
+	let activeTags=[]
+	for (let i=0;i<selectedtags.length;i++){
+		activeTags.push(selectedtags[i].description)
+	}
+	return activeTags;
+	}
 
 	function reset(){
 		for(let i=0;i<tags.length;i++){
@@ -28,15 +37,24 @@
 		}
 	}
 	function apply(){
-	//applique tous les param�tres choisis
-	let tagsselected=tags.filter(tag=>tag.done == true);
-	console.log(auteur,datePub,tagsselected);
+	for (let pas=0;pas<$searchJson[1].length;pas++){
+		if ($searchJson[1][pas].type=="search"){
+			$searchJson[1][pas].value=auteur;
+		}
+		else if($searchJson[1][pas].innerHtml=="A partir de : "){
+			$searchJson[1][pas].value=dateFrom;
+		}
+		else if($searchJson[1][pas].innerHtml=="Jusqu'à : "){
+			$searchJson[1][pas].value=dateTo;
+		}
+	}
+	$searchJson[2][0].value=getTags(tags);
 	}
 	function occurence(categorie){
 	//renvoie l'occurence de  la cat�gorie dans la recherche
 	}
 	
-	export let tags = [
+	let tags = [
 		{ id: 1, done: false, description: 'Comptable' },
 		{ id: 2, done: false, description: 'Financier' },
 		{ id: 3, done: false, description: 'Compte' },
@@ -45,9 +63,11 @@
 		{ id: 6, done: false, description: 'Aidant' },
 	];
 
-	let uid = tags.length + 1;
-	export let datePub = Date.now();
-	export let auteur;
+	
+
+	export let dateFrom="";
+	export let dateTo="";
+	export let auteur="";
 	let searchTerm =""
 	$: tagfilt= tags.filter(tag=>tag.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !==-1)
 
@@ -72,7 +92,10 @@
 	<h1>Filtres disponibles</h1>
 	<div class='date my-5'>
 		<h2>Date de publication</h2>
-		<input type=date bind:value={datePub} class="border-2">
+		A partir:
+		<input type=date bind:value={dateFrom} class="border-2 my-1">
+		Jusqu'à:
+		<input type=date bind:value={dateTo} class="border-2">
 	</div>
 	
 	<div class='Auteur my-5'>
@@ -162,7 +185,7 @@
 		margin-right:1em;
 	}
 	
-	input { margin: 0;
+	input { 
 			border-color: var(--primary)}
 	
 
