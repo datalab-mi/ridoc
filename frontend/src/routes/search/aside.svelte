@@ -2,8 +2,7 @@
 	import { quintOut } from 'svelte/easing';
 	import { crossfade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
-	import SearchSuggestInput from './SearchSuggestInput.svelte';
-	
+
 
 	
 	
@@ -24,22 +23,20 @@
 	});
 
 	function reset(){
-		for(let i=0;i<todos.length;i++){
-	 todos[i].done=false;
+		for(let i=0;i<tags.length;i++){
+	 tags[i].done=false;
 		}
 	}
 	function apply(){
 	//applique tous les param�tres choisis
+	let tagsselected=tags.filter(tag=>tag.done == true);
+	console.log(auteur,datePub,tagsselected);
 	}
 	function occurence(categorie){
 	//renvoie l'occurence de  la cat�gorie dans la recherche
-		if (categorie =='OFFI'){
-		return 2;}
-		else{
-		return 4};
 	}
 	
-	let todos = [
+	export let tags = [
 		{ id: 1, done: false, description: 'Comptable' },
 		{ id: 2, done: false, description: 'Financier' },
 		{ id: 3, done: false, description: 'Compte' },
@@ -48,29 +45,25 @@
 		{ id: 6, done: false, description: 'Aidant' },
 	];
 
-	let uid = todos.length + 1;
-	let today = Date.now();
-	let auteurs = [{id:1,text: 'Auteur1'}
-								 ,{id:2,text: 'Auteur2'}
-								 , {id:3,text: 'Auteur3'}
-								 ,{id:4,text: 'Auteur4'}];
-	let selected;
+	let uid = tags.length + 1;
+	export let datePub = Date.now();
+	export let auteur;
 	let searchTerm =""
-	$: todofilt= todos.filter(todo=>todo.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !==-1)
+	$: tagfilt= tags.filter(tag=>tag.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !==-1)
 
 </script>
 
 <div class='board'>
 	<div class='Factif mb-10 border-b-2'>
 		<h1>Filtres actifs</h1>
-		{#each todos.filter(t => t.done) as todo (todo.id)}
+		{#each tags.filter(t => t.done) as tag (tag.id)}
 			<label
-				in:receive="{{key: todo.id}}"
-				out:send="{{key: todo.id}}"
+				in:receive="{{key: tag.id}}"
+				out:send="{{key: tag.id}}"
 				animate:flip
 			>
-				<input type=checkbox bind:checked={todo.done}>
-				{todo.description} 
+				<input type=checkbox bind:checked={tag.done}>
+				{tag.description} 
 			</label>
 		{/each}
 	</div>
@@ -79,26 +72,26 @@
 	<h1>Filtres disponibles</h1>
 	<div class='date my-5'>
 		<h2>Date de publication</h2>
-		<input type=date bind:value={today} class="border-2">
+		<input type=date bind:value={datePub} class="border-2">
 	</div>
 	
 	<div class='Auteur my-5'>
 		<h2>Auteur</h2>
-		<input class="border-2 " placeholder="Nom ou Prénom" />
+		<input class="border-2 " placeholder="Nom ou Prénom" bind:value={auteur} />
 	</div>
 	
 	<div class='categories my-5'>
 		<h2>Catégories</h2>
 		<input bind:value={searchTerm} class="border-2 " placeholder="Rechercher..." />
 
-		{#each todofilt.filter(t => !t.done) as todo (todo.id)}
+		{#each tagfilt.filter(t => !t.done) as tag (tag.id)}
 			<label
-				in:receive="{{key: todo.id}}"
-				out:send="{{key: todo.id}}"
+				in:receive="{{key: tag.id}}"
+				out:send="{{key: tag.id}}"
 				animate:flip
 			>
-				<input type=checkbox bind:checked={todo.done}>
-				{todo.description} ({occurence(todo.description)}); 
+				<input type=checkbox bind:checked={tag.done}>
+				{tag.description} ({occurence(tag.description)}); 
 			</label>
 		{/each}
 	</div>
