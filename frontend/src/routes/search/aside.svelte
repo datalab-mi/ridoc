@@ -36,7 +36,7 @@
 			});
 	}
 
-	function updateTags(tagsbrut){
+	function updateTags(tagsbrut){ //change les occurences selon la recherche
 		if(tagsbrut.length>0){
 		let dico={};
 		let tagsbrut2=tagsbrut.flat();
@@ -48,7 +48,7 @@
 				dico[element]=1;
 			}
 		})
-	for (let k=0;k<tags.length;k++){
+		for (let k=0;k<tags.length;k++){
 			if(tags[k]['description'] in dico){
 				tags[k]['occ']=dico[tags[k]['description']];
 		}
@@ -56,12 +56,10 @@
 				tags[k]['occ']=0;
 			}
 		}
-
-		console.log(tags)
 	}}
 
 	let body;
-	function handleSearch() {
+	function handleSearch() { //lance la recherche selon le fichier item.json
 		body = format2ES($itemJson, flatten($searchJson, 2).filter(x => x.type !== "button"), $envJson.index_name)
 		$promiseSearch = search(body)
 	}
@@ -83,7 +81,7 @@
 		}
 	});
 	
-	export function getTags(tags){
+	export function getTags(tags){ //renvoie la liste des noms de tags selectionnés
 	let selectedtags=tags.filter(tag=>tag.done==true)
 	let activeTags=[]
 	for (let i=0;i<selectedtags.length;i++){
@@ -100,7 +98,7 @@
 	dateFrom='';
 	dateTo='';
 	}
-	export function update(){
+	export function update(){ // update le fichier searchJson avec les champs selectionnés
 	for (let pas=0;pas<$searchJson[1].length;pas++){
 		if ($searchJson[1][pas].type=="search"){
 			$searchJson[1][pas].value=auteur;
