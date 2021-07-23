@@ -9,15 +9,22 @@
 	import SearchSuggestInput from './SearchSuggestInput.svelte';
 	import { promiseSearch } from './stores.js';
 	import { flatten, format2ES, search } from '../../components/utils.js';
-	import Aside from "./aside.svelte";
+	let body;
 
+
+<<<<<<< HEAD
 
 	let body
 	let notes
+=======
+>>>>>>> launch search from aside and search bar, tags update and occurence calcul
 	function handleSearch() {
 		body = format2ES($itemJson, flatten($searchJson, 2).filter(x => x.type !== "button"), $envJson.index_name)
 		$promiseSearch = search(body)
 	}
+</script>
+<div class='search-bar' on:keyup={e => e.key === 'Enter' && handleSearch()}
+	use:cssProps={$userTheme.search && $userTheme.search.criteria}>
 
 </script>
 <div class="background" >
