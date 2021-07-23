@@ -3,7 +3,68 @@
 	import { crossfade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { envJson, itemJson, searchJson } from '../../components/user-data.store';
+	import { promiseSearch} from './stores.js';
+	import { flatten, format2ES, search } from '../../components/utils.js';
+	
+	export let tags = [
+		{'id':1,'description':"Calais",'done':false,'occ':23},
+		{'id':2,'description':"Migrants",'done':false,'occ':3},
+		{'id':3,'description':"migratoires",'done':false,'occ':2},
+		{'id':4,'description':"interne",'done':false,'occ':13},
+		{'id':5,'description':"OFII",'done':false,'occ':63},
+		{'id':6,'description':"contrôle",'done':false,'occ':3},
+	];
 
+	$: {
+		$promiseSearch
+			.then((searchResults) => {
+				let tagsbrut=[];
+				if (searchResults.hits.length>0){
+					for(let i=0;i<searchResults.hits.length;i++){
+					tagsbrut.push(searchResults.hits[i]['_source']['tag'])
+					}
+				}
+			updateTags(tagsbrut);
+			
+			})
+			.catch((err) => {
+				list_logger.concat({
+					level: 'error',
+					message: err,
+					ressource: 'search',
+				});
+			});
+	}
+
+	function updateTags(tagsbrut){
+		if(tagsbrut.length>0){
+		let dico={};
+		let tagsbrut2=tagsbrut.flat();
+		tagsbrut2.forEach(element => {
+			if (element in dico){
+				dico[element]++;
+			}
+			else{
+				dico[element]=1;
+			}
+		})
+	for (let k=0;k<tags.length;k++){
+			if(tags[k]['description'] in dico){
+				tags[k]['occ']=dico[tags[k]['description']];
+		}
+			else{
+				tags[k]['occ']=0;
+			}
+		}
+
+		console.log(tags)
+	}}
+
+	let body;
+	function handleSearch() {
+		body = format2ES($itemJson, flatten($searchJson, 2).filter(x => x.type !== "button"), $envJson.index_name)
+		$promiseSearch = search(body)
+	}
 	
 	
 	const [send, receive] = crossfade({
@@ -22,7 +83,7 @@
 		}
 	});
 	
-	function getTags(tags){
+	export function getTags(tags){
 	let selectedtags=tags.filter(tag=>tag.done==true)
 	let activeTags=[]
 	for (let i=0;i<selectedtags.length;i++){
@@ -35,8 +96,11 @@
 		for(let i=0;i<tags.length;i++){
 	 tags[i].done=false;
 		}
+	auteur='';
+	dateFrom='';
+	dateTo='';
 	}
-	function apply(){
+	export function update(){
 	for (let pas=0;pas<$searchJson[1].length;pas++){
 		if ($searchJson[1][pas].type=="search"){
 			$searchJson[1][pas].value=auteur;
@@ -50,26 +114,12 @@
 	}
 	$searchJson[2][0].value=getTags(tags);
 	}
-	function occurence(categorie){
-	//renvoie l'occurence de  la cat�gorie dans la recherche
-	}
 	
-	let tags = [
-		{ id: 1, done: false, description: 'Comptable' },
-		{ id: 2, done: false, description: 'Financier' },
-		{ id: 3, done: false, description: 'Compte' },
-		{ id: 4, done: false, description: 'OFFI' },
-		{ id: 5, done: false, description: 'Innondations' },
-		{ id: 6, done: false, description: 'Aidant' },
-	];
-
-	
-
 	export let dateFrom="";
 	export let dateTo="";
 	export let auteur="";
 	let searchTerm =""
-	$: tagfilt= tags.filter(tag=>tag.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !==-1)
+	$: tagfilt= tags.filter(tag=>tag.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !==-1 && tag["occ"] !==0)
 
 </script>
 
@@ -82,7 +132,7 @@
 				out:send="{{key: tag.id}}"
 				animate:flip
 			>
-				<input type=checkbox bind:checked={tag.done}>
+				<input type=checkbox bind:checked={tag.done} on:change={update}>
 				{tag.description} 
 			</label>
 		{/each}
@@ -93,14 +143,14 @@
 	<div class='date my-5'>
 		<h2>Date de publication</h2>
 		A partir:
-		<input type=date bind:value={dateFrom} class="border-2 my-1">
+		<input type=date bind:value={dateFrom} class="border-2 my-1" on:change={update}>
 		Jusqu'à:
-		<input type=date bind:value={dateTo} class="border-2">
+		<input type=date bind:value={dateTo} class="border-2" on:change={update}>
 	</div>
 	
 	<div class='Auteur my-5'>
 		<h2>Auteur</h2>
-		<input class="border-2 " placeholder="Nom ou Prénom" bind:value={auteur} />
+		<input class="border-2 " placeholder="Nom ou Prénom" bind:value={auteur} on:change={update} />
 	</div>
 	
 	<div class='categories my-5'>
@@ -113,8 +163,8 @@
 				out:send="{{key: tag.id}}"
 				animate:flip
 			>
-				<input type=checkbox bind:checked={tag.done}>
-				{tag.description} ({occurence(tag.description)}); 
+				<input type=checkbox bind:checked={tag.done} on:change={update}>
+				{tag.description} ({tag.occ}); 
 			</label>
 		{/each}
 	</div>
@@ -126,7 +176,7 @@
 	<button on:click={reset} class='resetbutton py-2 border-2 px-4 rounded'>
 	Réinitialiser
 </button>
-	<button on:click={apply} class='applybutton py-2 px-4 rounded'>
+	<button on:click={handleSearch} class='applybutton py-2 px-4 rounded'>
 	Appliquer
 </button>
 	
