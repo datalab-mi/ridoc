@@ -6,30 +6,24 @@
 	import { promiseSearch} from './stores.js';
 	import { flatten, format2ES, search, httpClient,USER_API} from '../../components/utils.js';
 
-
-	
-	//let alltags=httpClient().fetchJson('api/user/keywords/iga/tag');
-
-	
+	function initialTags(){
+	let inittag = httpClient().fetchJson('api/user/keywords/iga/tag').then(response=>response).then(data=> data).then(tagslist=> {return tagsinit(tagslist)})
+	return inittag;
+}
+const wait=ms=>new Promise(resolve => setTimeout(resolve, ms));
 	function tagsinit(tagslist){
-		fetchTags();
 		let tags=[]
 		for (let i=0;i<tagslist.length;i++){
 			tags.push({'id':i+1,'description':tagslist[i],'done':false,'occ':1})
 		}
 		return tags
+		
 	}
 	
-	
-
-	export let tags = [
-		{'id':1,'description':"Calais",'done':false,'occ':23},
-		{'id':2,'description':"Migrants",'done':false,'occ':3},
-		{'id':3,'description':"migratoires",'done':false,'occ':2},
-		{'id':4,'description':"interne",'done':false,'occ':13},
-		{'id':5,'description':"OFII",'done':false,'occ':63},
-		{'id':6,'description':"contrôle",'done':false,'occ':3},
-	];
+	let tags1 =initialTags();
+	let tags=[]
+	tags1.then(function(result){return tags=result});
+	wait(4*1000).then(()=> console.log(tags))
 	
 
 	$: {
@@ -150,7 +144,6 @@
 			</label>
 		{/each}
 	</div>
-	
 
 	<h1>Filtres disponibles</h1>
 	<div class='date my-5'>
