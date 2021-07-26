@@ -4,8 +4,24 @@
 	import { flip } from 'svelte/animate';
 	import { envJson, itemJson, searchJson } from '../../components/user-data.store';
 	import { promiseSearch} from './stores.js';
-	import { flatten, format2ES, search } from '../../components/utils.js';
+	import { flatten, format2ES, search, httpClient,USER_API} from '../../components/utils.js';
+
+
 	
+	//let alltags=httpClient().fetchJson('api/user/keywords/iga/tag');
+
+	
+	function tagsinit(tagslist){
+		fetchTags();
+		let tags=[]
+		for (let i=0;i<tagslist.length;i++){
+			tags.push({'id':i+1,'description':tagslist[i],'done':false,'occ':1})
+		}
+		return tags
+	}
+	
+	
+
 	export let tags = [
 		{'id':1,'description':"Calais",'done':false,'occ':23},
 		{'id':2,'description':"Migrants",'done':false,'occ':3},
@@ -14,6 +30,7 @@
 		{'id':5,'description':"OFII",'done':false,'occ':63},
 		{'id':6,'description':"contrôle",'done':false,'occ':3},
 	];
+	
 
 	$: {
 		$promiseSearch
@@ -25,7 +42,6 @@
 					}
 				}
 			updateTags(tagsbrut);
-			
 			})
 			.catch((err) => {
 				list_logger.concat({
@@ -91,12 +107,13 @@
 	}
 
 	function reset(){
-		for(let i=0;i<tags.length;i++){
+	for(let i=0;i<tags.length;i++){
 	 tags[i].done=false;
 		}
 	auteur='';
 	dateFrom='';
 	dateTo='';
+	update()
 	}
 	export function update(){ // update le fichier searchJson avec les champs selectionnés
 	for (let pas=0;pas<$searchJson[1].length;pas++){
@@ -118,9 +135,7 @@
 	export let auteur="";
 	let searchTerm =""
 	$: tagfilt= tags.filter(tag=>tag.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !==-1 && tag["occ"] !==0)
-
 </script>
-
 <div class='board'>
 	<div class='Factif mb-10 border-b-2'>
 		<h1>Filtres actifs</h1>
