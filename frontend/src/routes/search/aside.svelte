@@ -4,11 +4,16 @@
 	import { flip } from 'svelte/animate';
 	import { envJson, itemJson, searchJson } from '../../components/user-data.store';
 	import { promiseSearch} from './stores.js';
-	import { flatten, format2ES, search, httpClient,USER_API} from '../../components/utils.js';
-
-
+	import { flatten, format2ES, search, httpClient} from '../../components/utils.js';
+	
+	let tags1
+	let tags=[]
+	function init(){
+	tags1 =initialTags()
+	tags1.then(function(result){return tags=result});
+	}
 	function initialTags(){
-	let inittag = httpClient().fetchJson('api/user/keywords/iga/tag').then(response=>response).then(data=> data).then(tagslist=> {return tagsinit(tagslist)})
+	let inittag = httpClient().fetchJson('api/user/keywords/'+$envJson['index_name']+'/tag').then(response=>response).then(data=> data).then(tagslist=> {return tagsinit(tagslist)})
 	return inittag;
 }
 
@@ -20,12 +25,7 @@
 		return tags
 		
 	}
-	
-	let tags1 =initialTags()
-	let tags=[]
-	tags1.then(function(result){return tags=result});
-	
-	
+	setTimeout(init,100)//necessaire le temps de charger le nom de l'index
 
 	$: {
 		$promiseSearch
@@ -39,7 +39,7 @@
 
 					}
 				}
-				console.log(tagsbrut)
+			
 			updateTags(tagsbrut);
 			})
 			.catch((err) => {
@@ -106,7 +106,7 @@
 		}
 	});
 	
-	export function getTags(tags){ //renvoie la liste des noms de tags selectionnés
+	function getTags(tags){ //renvoie la liste des noms de tags selectionnés
 	let selectedtags=tags.filter(tag=>tag.done==true)
 	let activeTags=[]
 	for (let i=0;i<selectedtags.length;i++){
@@ -124,7 +124,7 @@
 	dateTo='';
 	update()
 	}
-	export function update(){ // update le fichier searchJson avec les champs selectionnés
+	function update(){ // update le fichier searchJson avec les champs selectionnés
 	for (let pas=0;pas<$searchJson[1].length;pas++){
 		if ($searchJson[1][pas].type=="search"){
 			$searchJson[1][pas].value=auteur;
@@ -139,9 +139,9 @@
 	$searchJson[2][0].value=getTags(tags);
 	}
 	
-	export let dateFrom="";
-	export let dateTo="";
-	export let auteur="";
+	let dateFrom="";
+	let dateTo="";
+	let auteur="";
 	let searchTerm =""
 	$: tagfilt= tags.filter(tag=>tag.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !==-1 && tag["occ"] !==0)
 </script>
