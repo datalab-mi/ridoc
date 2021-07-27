@@ -566,6 +566,18 @@ def get_unique_keywords(index_name: str, field: str) -> list:
     res = es.search(index=index_name, body=body)
     return [x['key'] for x in res['aggregations'][field].get('buckets', [{}])]
 
+def get_file(index_name: str, filename: str, fields : list = []) -> dict:
+    """ Get elasticsearch file
+    Args:
+        document (str): document name
+        index_name (str): The index name
+        fields (str) :Required field
+    Returns:
+        Dict: The ouptut dic
+    """
+    res = es.get(index= index_name, id=filename, _source_includes=fields)
+    return res
+
 def get_tag(index_name: str, filename: str, fields: str) -> list:
     """Get tag as keywords list from an document
     Args:

@@ -10,6 +10,7 @@ from flask import Blueprint, render_template, request, make_response, abort, jso
 from application.authentication import admin_required
 from tools.elastic import index_file as elastic_index_file
 from tools.elastic import delete_file as elastic_delete_file
+
 from tools.elastic import create_index, get_alias, put_alias, delete_alias, exists, get_index_name, replace_blue_green, inject_documents, clean, get_info
 
 from tools.utils import empty_tree
