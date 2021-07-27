@@ -1,21 +1,24 @@
 <script>
   import { stores } from '@sapper/app';
   import { httpClient, index, upload } from '../components/utils.js';
+  import {envJson} from '../components/user-data.store'
 
   const { page } = stores();
   let link="/ViewerJS/#.."+$page.query.url;
 
   let split=$page.query.url.split('/');
-  let filename=split[split.length -1].split('.')[0];
+  let filename=split[split.length -1];
     
   let titre;
   let date;
   let auteurs;
   let tags=[''];
   
-  httpClient().fetch('./api/user/files/meta/'+filename+'.json')
+  function getMeta(){
+  httpClient().fetch('./api/user/'+$envJson['index_name']+'/_doc/'+filename)
   .then(response => response.json())
   .then(data => {
+    console.log(data)
     try{
       data['tag'].length;
      return titre=data['title'], date=data['date'], auteurs=data['author'],tags=data['tag'];}
@@ -23,6 +26,8 @@
       return titre=data['title'], date=data['date'], auteurs=data['author']
      }
   }); 
+  }
+  setTimeout(getMeta,100)
 
 </script>
 <div class= "grid grid-cols justify-center">
