@@ -6,11 +6,12 @@
 	import { promiseSearch} from './stores.js';
 	import { flatten, format2ES, search, httpClient,USER_API} from '../../components/utils.js';
 
+
 	function initialTags(){
 	let inittag = httpClient().fetchJson('api/user/keywords/iga/tag').then(response=>response).then(data=> data).then(tagslist=> {return tagsinit(tagslist)})
 	return inittag;
 }
-const wait=ms=>new Promise(resolve => setTimeout(resolve, ms));
+
 	function tagsinit(tagslist){
 		let tags=[]
 		for (let i=0;i<tagslist.length;i++){
@@ -20,10 +21,10 @@ const wait=ms=>new Promise(resolve => setTimeout(resolve, ms));
 		
 	}
 	
-	let tags1 =initialTags();
+	let tags1 =initialTags()
 	let tags=[]
 	tags1.then(function(result){return tags=result});
-	wait(4*1000).then(()=> console.log(tags))
+	
 	
 
 	$: {
@@ -32,17 +33,17 @@ const wait=ms=>new Promise(resolve => setTimeout(resolve, ms));
 				let tagsbrut=[];
 				if (searchResults.hits.length>0){
 					for(let i=0;i<searchResults.hits.length;i++){
-					tagsbrut.push(searchResults.hits[i]['_source']['tag'])
+						if(searchResults.hits[i]['_source']['tag']!==undefined)
+						{console.log(searchResults.hits[i]['_source']['tag'])
+					tagsbrut.push(searchResults.hits[i]['_source']['tag'])}
+
 					}
 				}
+				console.log(tagsbrut)
 			updateTags(tagsbrut);
 			})
 			.catch((err) => {
-				list_logger.concat({
-					level: 'error',
-					message: err,
-					ressource: 'search',
-				});
+				console.log('erreur')
 			});
 	}
 	function lowerandaccent(list){
@@ -75,7 +76,12 @@ const wait=ms=>new Promise(resolve => setTimeout(resolve, ms));
 				tags[k]['occ']=0;
 			}
 		}
-	}}
+	}
+		else{
+			for (let k=0;k<tags.length;k++){
+				tags[k]['occ']=0;
+		}}
+	}
 
 	let body;
 	function handleSearch() { //lance la recherche selon le fichier item.json
