@@ -45,11 +45,20 @@ const wait=ms=>new Promise(resolve => setTimeout(resolve, ms));
 				});
 			});
 	}
-
+	function lowerandaccent(list){
+		let l=[]
+		for (let i=0;i<list.length;i++){
+			let el=list[i].toLowerCase();
+			el = el.replace(/é|è|ê/g,"e");
+			l.push(el)
+		}
+		return l
+	}
 	function updateTags(tagsbrut){ //change les occurences selon la recherche
 		if(tagsbrut.length>0){
 		let dico={};
-		let tagsbrut2=tagsbrut.flat();
+		let tagsbrut2=lowerandaccent(tagsbrut.flat());
+		console.log(tagsbrut2)
 		tagsbrut2.forEach(element => {
 			if (element in dico){
 				dico[element]++;
@@ -81,7 +90,7 @@ const wait=ms=>new Promise(resolve => setTimeout(resolve, ms));
 			const transform = style.transform === 'none' ? '' : style.transform;
 
 			return {
-				duration: 600,
+				duration: 10,
 				easing: quintOut,
 				css: t => `
 					transform: ${transform} scale(${t});
@@ -162,7 +171,7 @@ const wait=ms=>new Promise(resolve => setTimeout(resolve, ms));
 	<div class='categories my-5'>
 		<h2>Catégories</h2>
 		<input bind:value={searchTerm} class="border-2 " placeholder="Rechercher..." />
-
+		<div class="tags">
 		{#each tagfilt.filter(t => !t.done) as tag (tag.id)}
 			<label
 				in:receive="{{key: tag.id}}"
@@ -173,6 +182,7 @@ const wait=ms=>new Promise(resolve => setTimeout(resolve, ms));
 				{tag.description} ({tag.occ}); 
 			</label>
 		{/each}
+		</div>
 	</div>
 
 
@@ -209,14 +219,14 @@ const wait=ms=>new Promise(resolve => setTimeout(resolve, ms));
 	}
 
 	h2 {
-		font-size: 1.2em;
+		font-size: 16px;
 		font-weight: bold;
 		user-select: none;
 		margin-bottom: 3px;
 
 	}
 	h1{
-		font-size: 1.8em;
+		font-size: 24px;
 		font-weight: bold;
 		user-select: none;
 		padding-bottom: 10px;
@@ -227,7 +237,7 @@ const wait=ms=>new Promise(resolve => setTimeout(resolve, ms));
 		top: 0;
 		left: 0;
 		display: block;
-		font-size: 1em;
+		font-size: 16px;
 		line-height: 1;
 		padding: 0.5em;
 		margin: 0 auto 0.5em auto;
@@ -258,6 +268,9 @@ const wait=ms=>new Promise(resolve => setTimeout(resolve, ms));
 		background-color:var(--primary);
 		color:white;
 	}
-
+	.tags{
+		height: 30vh;
+		overflow-y: scroll;
+	}
 	
 </style>
