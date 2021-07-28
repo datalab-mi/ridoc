@@ -6,38 +6,27 @@
 
         <script src="https://unpkg.com/emotion-ratings@2.0.1/dist/emotion-ratings.js"></script>
         <script src="https://unpkg.com/surveyjs-widgets@1.8.56/surveyjs-widgets.min.js"></script>
+        <link href="https://unpkg.com/survey-knockout@1.8.57/modern.css" type="text/css" rel="stylesheet" />
     </svelte:head>
         
-    <div class="emoRating bg-white w-1/5 rounded shadow p-6 float-right">
+    <div class="emoRating bg-white rounded shadow p-6 float-right">
         <h2 class="">Votre avis nous intéresse</h2>
-        <div id="surveyElement" class='p-3' >
+        <div id="surveyContainer" class='' >
         
         <script>
-   
-        var json = {
-            elements: [
-                {
-                    "type": "emotionsratings",
-                    "name": "emotionsratings-widget",
-                    "title": "Comment décririez-vous votre expérience sur le site",
-                    "choices": ["1", "2", "3", "4", "5"]
-                }
-            ]
-        };
-        survey = new Survey.Model(json);
+Survey.StylesManager.applyTheme("modern");
 
+var surveyJSON = {"pages":[{"name":"page1","elements":[{"type":"rating","name":"Comment décririez-vous votre expèrience sur le site ?","useDisplayValuesInTitle":false,"maxWidth":"450px","startWithNewLine":false,"hideNumber":true,"minRateDescription":"Médiocre","maxRateDescription":"Optimale"}]}]}
 
-        survey.onComplete.add(function (sender) {
-        document
-            .querySelector('#surveyResult')
-            .textContent = "Result JSON:\n" + JSON.stringify(sender.data, null, 3);
-    });
-        survey.render("surveyElement");
+function sendDataToServer(survey) {
+    survey.sendResult('fad344d2-af8d-458b-b7df-874a9d1e8955');
+}
+
+var survey = new Survey.Model(surveyJSON, "surveyContainer");
+survey.onComplete.add(sendDataToServer);
         
         </script>
         </div>
-
-        <div id="surveyResult"></div>
     </div>
 
     <style>
@@ -50,5 +39,8 @@
             float:right;
             background-color: var(--primary);
             border-radius: 2px;
+        }
+        .emorating{
+            width: fit-content;
         }
     </style>
