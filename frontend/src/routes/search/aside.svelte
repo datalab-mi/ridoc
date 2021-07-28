@@ -212,12 +212,12 @@
 
 	.board {
 		@apply shadow;
-		@apply h-full;
 		width:15%;
 		float:left;
 		background-color: white;
 		padding: 10pt;
-		
+		border-color: #E1E1E1;
+		border-width: 1px;
 	}
 
 	.categories, .Factif {
