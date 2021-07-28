@@ -20,7 +20,7 @@
 	function tagsinit(tagslist){
 		let tags=[]
 		for (let i=0;i<tagslist.length;i++){
-			tags.push({'id':i+1,'description':tagslist[i],'done':false,'occ':1})
+			tags.push({'id':i+1,'description':tagslist[i],'done':false,'occ':' '})
 		}
 		return tags
 		
@@ -185,7 +185,7 @@
 				animate:flip
 			>
 				<input type=checkbox bind:checked={tag.done} on:change={update}>
-				{tag.description} ({tag.occ}); 
+				{tag.description} <b class="occ gray-200 ">{tag.occ}</b> 
 			</label>
 		{/each}
 		</div>
@@ -277,6 +277,9 @@
 	.tags{
 		height: 30vh;
 		overflow-y: scroll;
+	}
+	.occ{
+		color: rgb(185, 182, 182) !important;
 	}
 	
 </style>
