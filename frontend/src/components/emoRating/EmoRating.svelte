@@ -35,11 +35,6 @@ survey.onComplete.add(sendDataToServer);
             font-weight: bold;
             text-decoration: underline;
         }
-        sv_nav{
-            float:right;
-            background-color: var(--primary);
-            border-radius: 2px;
-        }
         .emorating{
             width: fit-content;
         }
