@@ -8,15 +8,23 @@
 	
 	let tags1
 	let tags=[]
+	let tag_name
+
 	function init(){
+		
+		for (let element in $itemJson['inputs']){
+			if ($itemJson['inputs'][element]['type']=="keyword"){
+				tag_name=$itemJson['inputs'][element]['key']
+			}
+		}
 		tags1 =initialTags()
 		tags1.then(function(result){return tags=result});
 		}
 	function initialTags(){
-	let inittag = httpClient().fetchJson('api/user/keywords/'+$envJson['index_name']+'/tag').then(response=>response).then(data=> data).then(tagslist=> {return tagsinit(tagslist)})
+	let inittag = httpClient().fetchJson('api/user/keywords/'+$envJson['index_name']+'/'+tag_name).then(response=>response).then(data=> data).then(tagslist=> {return tagsinit(tagslist)})
 	return inittag;
 }
-
+	
 	function tagsinit(tagslist){
 		let tags=[]
 		for (let i=0;i<tagslist.length;i++){
@@ -25,7 +33,7 @@
 		return tags
 		
 	}
-	setTimeout(init,100)//necessaire le temps de charger le nom de l'index
+	setTimeout(init,300)//necessaire le temps de charger le nom de l'index
 
 	$: {
 		$promiseSearch
@@ -33,9 +41,9 @@
 				let tagsbrut=[];
 				if (searchResults.hits.length>0){
 					for(let i=0;i<searchResults.hits.length;i++){
-						if(searchResults.hits[i]['_source']['tag']!==undefined)
-						{console.log(searchResults.hits[i]['_source']['tag'])
-					tagsbrut.push(searchResults.hits[i]['_source']['tag'])}
+						if(searchResults.hits[i]['_source'][tag_name]!==undefined)
+						{console.log(searchResults.hits[i]['_source'][tag_name])
+					tagsbrut.push(searchResults.hits[i]['_source'][tag_name])}
 
 					}
 				}
