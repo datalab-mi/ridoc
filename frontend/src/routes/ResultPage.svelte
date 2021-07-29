@@ -18,13 +18,21 @@
   httpClient().fetch('./api/user/'+$envJson['index_name']+'/_doc/'+filename)
   .then(response => response.json())
   .then(data => {
-    console.log(data)
-    try{
-      data['tag'].length;
-     return titre=data['title'], date=data['date'], auteurs=data['author'],tags=data['tag'];}
-     catch {
-      return titre=data['title'], date=data['date'], auteurs=data['author']
+   for (let key in data){
+     if (key=="titre"||key=="title"){
+       titre=data[key]
      }
+     else if (key=="date"){
+       date=data[key]
+     }
+     else if (key=="author"||key=="auteur"){
+       auteurs=data[key]
+     }
+     else if (key=="tag"||key=="mots cles"){
+       tags =data[key]
+     }
+   }
+   return titre, date, auteurs, tags
   }); 
   }
   setTimeout(getMeta,100)
