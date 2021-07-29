@@ -9,9 +9,9 @@
 	let tags1
 	let tags=[]
 	function init(){
-	tags1 =initialTags()
-	tags1.then(function(result){return tags=result});
-	}
+		tags1 =initialTags()
+		tags1.then(function(result){return tags=result});
+		}
 	function initialTags(){
 	let inittag = httpClient().fetchJson('api/user/keywords/'+$envJson['index_name']+'/tag').then(response=>response).then(data=> data).then(tagslist=> {return tagsinit(tagslist)})
 	return inittag;
