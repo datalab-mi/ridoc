@@ -17,9 +17,9 @@
 Survey.StylesManager.applyTheme("modern");
 
 var surveyJSON = {"pages":[{"name":"page1","elements":[{"type":"rating","name":"Comment décririez-vous votre expèrience sur le site ?","useDisplayValuesInTitle":false,"startWithNewLine":false,"hideNumber":true,"minRateDescription":"Médiocre","maxRateDescription":"Optimale"}]}]}
-
+//ci dessus remplacer type rating par emotionsratings pour avoir des emojis à la place des nombres
 function sendDataToServer(survey) {
-    survey.sendResult('fad344d2-af8d-458b-b7df-874a9d1e8955');
+    survey.sendResult('fad344d2-af8d-458b-b7df-874a9d1e8955');//changer cette foncton pour écrire dans une autre BDD
 }
 
 var survey = new Survey.Model(surveyJSON, "surveyContainer");
