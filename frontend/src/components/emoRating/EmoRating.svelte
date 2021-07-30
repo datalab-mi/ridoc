@@ -16,7 +16,7 @@
         <script>
 Survey.StylesManager.applyTheme("modern");
 
-var surveyJSON = {"pages":[{"name":"page1","elements":[{"type":"rating","name":"Comment décririez-vous votre expèrience sur le site ?","useDisplayValuesInTitle":false,"maxWidth":"450px","startWithNewLine":false,"hideNumber":true,"minRateDescription":"Médiocre","maxRateDescription":"Optimale"}]}]}
+var surveyJSON = {"pages":[{"name":"page1","elements":[{"type":"rating","name":"Comment décririez-vous votre expèrience sur le site ?","useDisplayValuesInTitle":false,"startWithNewLine":false,"hideNumber":true,"minRateDescription":"Médiocre","maxRateDescription":"Optimale"}]}]}
 
 function sendDataToServer(survey) {
     survey.sendResult('fad344d2-af8d-458b-b7df-874a9d1e8955');
