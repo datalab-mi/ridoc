@@ -1,7 +1,7 @@
 <script>
   import { stores } from '@sapper/app';
   import { httpClient, index, upload } from '../components/utils.js';
-  import {envJson} from '../components/user-data.store'
+  import {envJson,itemJson} from '../components/user-data.store'
 
   const { page } = stores();
   let link="/ViewerJS/#.."+$page.query.url;
@@ -9,53 +9,47 @@
   let split=$page.query.url.split('/');
   let filename=split[split.length -1];
     
-  let titre;
-  let date;
-  let auteurs;
-  let tags=[''];
+  let titre=true;
+  let meta;
   
   function getMeta(){
   httpClient().fetch('./api/user/'+$envJson['index_name']+'/_doc/'+filename)
   .then(response => response.json())
   .then(data => {
-   for (let key in data){
-     if (key=="titre"||key=="title"){
-       titre=data[key]
-     }
-     else if (key=="date"){
-       date=data[key]
-     }
-     else if (key=="author"||key=="auteur"){
-       auteurs=data[key]
-     }
-     else if (key=="tag"||key=="mots cles"){
-       tags =data[key]
-     }
-   }
-   return titre, date, auteurs, tags
+
+   return meta=data
   }); 
   }
   setTimeout(getMeta,100)
 
 </script>
+{#if meta !=undefined && $itemJson!=undefined}
+
 <div class= "grid grid-cols justify-center">
 <div class="card bg-white place-self-center p-10 grid grid-cols justify-center rounded shadow w-auto">
   <div class="mb-6">
-    {#if tags.length>1}
-    <div class="tags mb-6">
-      {#each tags as tag }
-    <div class="tag inline px-2 py-1 mr-4 ">{tag}</div>
+    {#each $itemJson['inputs'] as item}
+      {#if item['rows']==undefined}
+        {#if item["type"]=='keyword' && meta[item['key']]!=undefined}
+          {#each meta[item['key']] as tag}
+            <div class="tag mr-4 inline p-2">{tag}</div>
+          {/each}
+        {:else}
+          {#if meta[item['key']]!=undefined}
+            {#if item['key']=='title'||item['key']=='titre'}
+              <div class='titre text-3xl font-bold my-2'>{meta[item['key']]}</div>
+            {:else}
+          <div class="value mb-1">{@html item['innerHtml']} {meta[item['key']]}</div>
+            {/if}
+          {/if}
+        {/if}
+      {/if}
     {/each}
-    </div>
-    {/if}
-    <h1 class="text-4xl font-bold">{titre}</h1>
-    <h3 class="mt-2"><bold class="font-bold">Publié le :</bold> {date}</h3>
-    <h3><bold class="font-bold">Auteurs :</bold> {auteurs}</h3>
   </div>
 <iframe class="place-self-center" src = {link} width='1025' height='578' allowfullscreen webkitallowfullscreen></iframe> 
 </div>
 </div>
-
+{/if}
 <style>
   .card{
     max-width: min-content !important;
