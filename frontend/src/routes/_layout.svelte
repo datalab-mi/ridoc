@@ -9,7 +9,7 @@
 	import { displaysurvey } from '../components/stores.js';
 	import Footer from '../layouts/Footer.svelte';
 	import Nav from '../layouts/Nav.svelte';
-	import EmoRating from '../components/emoRating/EmoRating.svelte'
+	import EmoRating from '../components/emoRating/starrating.svelte'
 	import { clickOutside } from '../components/click-outside.action';
 
 	export let segment;
