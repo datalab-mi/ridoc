@@ -2,6 +2,7 @@
   import { stores } from '@sapper/app';
   import { httpClient, index, upload } from '../components/utils.js';
   import {envJson,itemJson} from '../components/user-data.store'
+  import Ratesearch from '../components/rate.svelte'
 
   const { page } = stores();
   let link="/ViewerJS/#.."+$page.query.url;
@@ -27,7 +28,9 @@
 
 <div class= "grid grid-cols justify-center">
 <div class="card bg-white place-self-center p-10 grid grid-cols justify-center rounded shadow w-auto">
+  
   <div class="mb-6">
+    <Ratesearch class=""/>
     {#each $itemJson['inputs'] as item}
       {#if item['rows']==undefined}
         {#if item["type"]=='keyword' && meta[item['key']]!=undefined}

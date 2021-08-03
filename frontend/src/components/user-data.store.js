@@ -13,6 +13,8 @@ export const itemJson = userData("item.json", {inputs: []})
 // Define search bar display
 export const searchJson = userData("search.json", [])
 
+export const searchRateJson =userData("searchRate.json")
+
 /**
  * Renvoie un store correspondant aux préférences de l'utilisateur.
  */
