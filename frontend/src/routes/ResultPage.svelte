@@ -8,7 +8,7 @@
   let link="/ViewerJS/#.."+$page.query.url;
 
   let split=$page.query.url.split('/');
-  let filename=split[split.length -1];
+  export let filename=split[split.length -1];
     
   let titre=true;
   let meta;
@@ -30,7 +30,7 @@
 <div class="card bg-white place-self-center p-10 grid grid-cols justify-center rounded shadow w-auto">
   
   <div class="mb-6">
-    <Ratesearch class=""/>
+    <Ratesearch class="" {filename}/>
     {#each $itemJson['inputs'] as item}
       {#if item['rows']==undefined}
         {#if item["type"]=='keyword' && meta[item['key']]!=undefined}
