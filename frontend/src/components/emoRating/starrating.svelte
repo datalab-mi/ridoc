@@ -6,8 +6,13 @@
       console.log(rate);
     };
     const afterRate = rate => {
+      if ($rateJson.length<1){
       $rateJson.push(rate)
-      console.log($rateJson)
+      console.log($rateJson) //insérer ici lien vers la BDD
+      }
+      else{
+        window.alert("Vous avez déjà voté")
+      }
     };
   </script>
   
