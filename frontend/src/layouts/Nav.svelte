@@ -66,7 +66,7 @@
 }
 </style>
 
-<nav use:cssProps={$userTheme.nav} class="bg-white">
+<nav use:cssProps={$userTheme.nav} class="bg-white border-2 border-gray">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex ">
 			<div class:hidden={!logo} class="flex-shrink-0">
