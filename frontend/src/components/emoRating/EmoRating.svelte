@@ -1,5 +1,4 @@
-        
-        <svelte:head>
+       <svelte:head>
         <script src="https://unpkg.com/jquery"></script>
         <script src="https://unpkg.com/knockout@3.5.1/build/output/knockout-latest.js" ></script>
         <script src="https://unpkg.com/survey-knockout@1.8.56/survey.ko.min.js"></script>
@@ -14,6 +13,7 @@
         <div id="surveyContainer" class='' >
         
         <script>
+            //Old version avec SurveyJS
 Survey.StylesManager.applyTheme("modern");
 
 var surveyJSON = {"pages":[{"name":"page1","elements":[{"type":"rating","name":"Comment décririez-vous votre expèrience sur le site ?","useDisplayValuesInTitle":false,"startWithNewLine":false,"hideNumber":true,"minRateDescription":"Médiocre","maxRateDescription":"Optimale"}]}]}
