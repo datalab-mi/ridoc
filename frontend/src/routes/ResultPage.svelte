@@ -2,7 +2,7 @@
   import { stores } from '@sapper/app';
   import { httpClient, index, upload } from '../components/utils.js';
   import {envJson,itemJson} from '../components/user-data.store'
-  import Ratesearch from '../components/rate.svelte'
+  import Ratesearch from '../components/ratesearch.svelte'
 
   const { page } = stores();
   let link="/ViewerJS/#.."+$page.query.url;
