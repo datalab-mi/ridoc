@@ -4,12 +4,19 @@
 	import { list_logger } from '../../components/stores.js';
 	import { promiseSearch } from './stores.js';
 	import { itemJson } from '../../components/user-data.store';
+	import {paginate, LightPaginationNav} from "svelte-paginate";
 
+
+	let tris =["Trier par","Date","Titre","Score"];
+	let triselect;
+	let currentPage=1;
+	let pageSize=10;
 	let items = [];
 	let threshold;
 	let resultMessage;
 	let message;
 	let canBeChange;
+	$: paginatedItems=paginate({items,pageSize,currentPage})
 	$: canBeChange =  $itemJson.inputs.some((entry) => entry.metadata)
 
 	$: message = $envJson.message ||  "Le document que vous recherchez a peu de chance de se trouver en dessous de cette bande. Veuillez contacter l'<b><a href='mailto:{$envJson.contact}?subject=Demande de consultation'> administrateur ✉️</a></b>."
@@ -54,18 +61,39 @@
 				});
 			});
 	}
+
+	function trier(){
+		
+		if(triselect=='Date'){
+			
+			console.log("trier par date")
+		}
+		else if(triselect=="Titre"){
+			console.log("trier par titre")
+		}
+		else if (triselect=="Score"){
+			console.log("trier par score")
+		}
+	}
 </script>
 <div class="px-48 " >
+	<select bind:value={triselect} class= "float-right px-6 py-2 " on:change="{trier}">
+		{#each tris as tri }
+			<option value={tri} class="bg-gray">{tri}</option>
+		{/each}
+	</select>
 {#await $promiseSearch}
 	<p>...Attente de la requête</p>
 {:then result}
 	{#if resultMessage}<p class="mb-4">{resultMessage}</p>{/if}
 {/await}
 
+
 {#if Object.keys($itemJson).length > 0}
 	{#if items.length > 0}
 		<div class="result-list">
-		{#each items as item (item.key)}
+		{#each paginatedItems as item (item.key)}
+			
 			{#if  item._id === "bar"}
 				<section class="bar">
 					<p>{@html message}</p>
@@ -76,7 +104,7 @@
 		{/each}
 		</div>
 	{:else}
-		<div class='bg-white p-4 pb-48 shadow'>
+		<div class='bg-white p-4 pb-48 shadow mt-12'>
 			
 			<img src='./user/noresult.PNG' class="float-right">
 			<h2 class="text-3xl font-bold my-4">Aucun résultat</h2>
@@ -90,12 +118,18 @@
 {/if}
 
 </div>
+<LightPaginationNav totalItems="{items.length}" pageSize="{pageSize}" currentPage="{currentPage}" limit="{1}" showStepOptions="{true}" on:setPage="{(e)=> currentPage=e.detail.page}"/>
 <style>
 img{
 	max-width: 20%;
 	margin-top: 0;
 	
 	
+}
+select{
+	background-color: #F0F0F0 ;
+	border-bottom:solid black;
+	margin-bottom: 4px;
 }
 
 </style>
