@@ -91,7 +91,7 @@
 		}
 		else if (triselect=="Score"){
 			items.sort(function(a,b){
-				return a['_score']-b['_score']
+				return b['_score']-a['_score']
 			})
 		}
 		$: paginatedItems=paginate({items,pageSize,currentPage}) //on refait le découpage en page
