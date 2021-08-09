@@ -10,7 +10,7 @@
 	let tris =["Trier par","Date","Titre","Score"];
 	let triselect;
 	let currentPage=1;
-	let pageSize=10;
+	let pageSize=3;
 	let items = [];
 	let threshold;
 	let resultMessage;
@@ -63,17 +63,39 @@
 	}
 
 	function trier(){
-		
+		console.log(items)
 		if(triselect=='Date'){
-			
-			console.log("trier par date")
+			items.sort(function(a,b){
+				if (a['_source']['date']==undefined){
+					return 1
+				}
+				else if (b['_source']['date']==undefined){
+					return -1
+				}
+				else{
+				return (Date.parse(a['_source']['date'])-Date.parse(b['_source']['date']))}
+			})
+
 		}
 		else if(triselect=="Titre"){
-			console.log("trier par titre")
+			items.sort(function(a,b){
+				if (a['_source']['title']==undefined){
+					return 1
+				}
+				else if(b['_source']['title']==undefined){
+					return -1
+				}
+				else{
+				return a['_source']['title'].localeCompare(b['_source']['title']);}
+			})
 		}
 		else if (triselect=="Score"){
-			console.log("trier par score")
+			items.sort(function(a,b){
+				return a['_score']-b['_score']
+			})
 		}
+		$: paginatedItems=paginate({items,pageSize,currentPage}) //on refait le découpage en page
+		currentPage=1; //retour à la page initiale
 	}
 </script>
 <div class="px-48 " >
@@ -118,7 +140,9 @@
 {/if}
 
 </div>
+<div class="nav">
 <LightPaginationNav totalItems="{items.length}" pageSize="{pageSize}" currentPage="{currentPage}" limit="{1}" showStepOptions="{true}" on:setPage="{(e)=> currentPage=e.detail.page}"/>
+</div>
 <style>
 img{
 	max-width: 20%;
@@ -130,6 +154,10 @@ select{
 	background-color: #F0F0F0 ;
 	border-bottom:solid black;
 	margin-bottom: 4px;
+}
+.nav :global(.pagination-nav){
+	background-color:transparent !important;
+	box-shadow: none !important;
 }
 
 </style>
