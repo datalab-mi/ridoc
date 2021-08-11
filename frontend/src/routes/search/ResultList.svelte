@@ -140,9 +140,11 @@
 {/if}
 
 </div>
+{#if items.length>0}
 <div class="nav">
 <LightPaginationNav totalItems="{items.length}" pageSize="{pageSize}" currentPage="{currentPage}" limit="{1}" showStepOptions="{true}" on:setPage="{(e)=> currentPage=e.detail.page}"/>
 </div>
+{/if}
 <style>
 img{
 	max-width: 20%;
