@@ -9,23 +9,12 @@
 	import SearchSuggestInput from './SearchSuggestInput.svelte';
 	import { promiseSearch } from './stores.js';
 	import { flatten, format2ES, search } from '../../components/utils.js';
-	let body;
-
-
-<<<<<<< HEAD
-
 	let body
 	let notes
-=======
->>>>>>> launch search from aside and search bar, tags update and occurence calcul
 	function handleSearch() {
 		body = format2ES($itemJson, flatten($searchJson, 2).filter(x => x.type !== "button"), $envJson.index_name)
 		$promiseSearch = search(body)
 	}
-</script>
-<div class='search-bar' on:keyup={e => e.key === 'Enter' && handleSearch()}
-	use:cssProps={$userTheme.search && $userTheme.search.criteria}>
-
 </script>
 <div class="background" >
 <div id="search" class='search flex flex-col place-items-center ' style="background-image:url('./user/notes.png')" on:keyup={e => e.key === 'Enter' && handleSearch()} >
@@ -61,14 +50,12 @@
 </div>
 
 <style>
-	.search-bar {
-		width: 85%;
-		border: 1px solid #aaa;
-		border-radius: 4px;
-		padding: 1em;
-		margin: 0 0 1em 0;
-		background-color: var(--bg-color);
-		float:left;
+	.search{
+		background-size: 22%;
+		background-repeat: repeat;
+	}
+	.background{
+		background-color: var(--primary);
 	}
 	.barback{
 		background-color: var(--primary);

@@ -180,4 +180,9 @@ select{
 		width: 85%;
 		float:left;
 	}
+	img {
+		max-width: 20%;
+		margin-top: 0;
+	}
+	
 </style>
