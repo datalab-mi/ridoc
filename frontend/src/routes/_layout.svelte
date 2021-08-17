@@ -59,7 +59,8 @@
 	{:else}
 	<div class=" button text-white rounded transform -rotate-90 origin-bottom-right p-2 px-4 " on:click={emoSurvey} >Votre avis nous intéresse</div>
 	{/if}
-	</div>
+</div>
+
 <main>
 	<div class="">
 		<slot />
