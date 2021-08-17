@@ -104,12 +104,12 @@
 		background: #ffffb3
 	}
 	.resList{
-		width: 85%;
-		float:left;
+		margin: auto 20%;
 	}
+
 	img {
-		max-width: 20%;
-		margin-top: 0;
+	max-width: 20%;
+	margin-top: 0;
 	}
-	
+
 </style>
