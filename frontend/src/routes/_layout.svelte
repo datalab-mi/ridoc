@@ -6,7 +6,7 @@
 	import Logger from '../components/Logger.svelte';
 	import LoginForm from '../components/login/LoginForm.svelte';
 	import { displayLogin } from '../components/stores.js';
-	import { displaysurvey } from '../components/stores.js';
+	import { displayComment } from '../components/stores.js';
 	import Footer from '../layouts/Footer.svelte';
 	import Nav from '../layouts/Nav.svelte';
 	import EmoRating from '../components/emoRating/starrating.svelte'
@@ -22,13 +22,13 @@
 	})
 
 	const handleClickOutside = (event) => {
-		$displaysurvey = false;
+		$displayComment = false;
 	};
 
 	$: rootNode && cssProps(rootNode, $userTheme.root);
 
 	function emoSurvey() {
-		$displaysurvey = !$displaysurvey
+		$displayComment = !$displayComment
 		console.log('test')
 	}
 
@@ -54,7 +54,7 @@
 -->
 <Nav {segment} />
 <div class="fixed w-full mt-48 h-min" use:clickOutside on:clickoutside={handleClickOutside}>
-	{#if $displaysurvey}
+	{#if $displayComment}
 	<EmoRating />
 	{:else}
 	<div class=" button text-white rounded transform -rotate-90 origin-bottom-right p-2 px-4 " on:click={emoSurvey} >Votre avis nous intéresse</div>
