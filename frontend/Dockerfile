@@ -6,11 +6,7 @@ FROM node:12.2.0-alpine as base
 WORKDIR /app
 COPY . .
 RUN npm config set strict-ssl false #Do not check certificate, proxy fault
-RUN npm install 
-
-
-# tailwindcss
-RUN npm install tailwindcss postcss-cli svelte-preprocess svelte-paginate --save-dev
+RUN npm install
 
 # For production, see https://github.com/mikenikles/sapper-on-cloud-run/blob/master/Dockerfile
 ################################
