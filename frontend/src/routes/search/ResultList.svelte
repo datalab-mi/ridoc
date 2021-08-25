@@ -55,7 +55,7 @@
 			});
 	}
 </script>
-<div class="resList">
+<div class="resList flex flex-col px-40">
 {#await $promiseSearch}
 	<p>...Attente de la requête</p>
 {:then result}
@@ -76,12 +76,12 @@
 		{/each}
 		</div>
 	{:else}
-		<div class='bg-white p-4 pb-48 shadow'>
-
-			<img src='./user/noresult.PNG' class="float-right">
+		<div class='bg-white p-4  shadow'>
 			<h2 class="text-3xl font-bold my-4">Aucun résultat</h2>
-			<p class="float-left text-xl ">Malheureusement aucun résultat n'est associé à votre recherche. Essayer de changer les mots-clés que vous avez utilisé.</p>
-
+		<div  class="flex flex-row">
+			<img src='./user/noresult.PNG' class="">
+			<p class="text-xl ">Malheureusement aucun résultat n'est associé à votre recherche. Essayer de changer les mots-clés que vous avez utilisé.</p>
+		</div>
 
 		</div>
 	{/if}
@@ -103,11 +103,12 @@
 		background: #ffffb3
 	}
 	.resList{
-		margin: auto 20%;
+		width: 85%;
+		
 	}
 
 	img {
-	max-width: 20%;
+	max-width: 30%;
 	margin-top: 0;
 	}
 

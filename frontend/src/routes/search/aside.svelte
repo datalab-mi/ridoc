@@ -202,7 +202,7 @@
 
 
 
-<div class="validation flex justify-between">
+<div class="validation flex justify-between overflow-x-auto">
 	<button on:click={reset} class='resetbutton py-2 border-2 px-4 rounded'>
 	Réinitialiser
 </button>
@@ -266,7 +266,8 @@
 	}
 	
 	input { 
-			border-color: var(--primary)}
+			border-color: var(--primary);
+			max-width: 80% }
 	
 
 		select{
@@ -288,6 +289,9 @@
 	}
 	.occ{
 		color: rgb(185, 182, 182) !important;
+	}
+	.validation{
+		max-width: 98%;
 	}
 	
 </style>
