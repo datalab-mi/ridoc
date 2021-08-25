@@ -10,7 +10,7 @@ RUN npm install
 
 
 # tailwindcss
-RUN npm install tailwindcss postcss-cli svelte-preprocess --save-dev
+RUN npm install tailwindcss postcss-cli svelte-preprocess svelte-paginate --save-dev
 
 # For production, see https://github.com/mikenikles/sapper-on-cloud-run/blob/master/Dockerfile
 ################################
