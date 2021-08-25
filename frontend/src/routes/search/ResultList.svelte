@@ -167,7 +167,6 @@ select{
 	.result-list {
 		@apply w-full;
 		@apply rounded;
-		border: 1px solid #aaa;
 		min-height: 200px;
 	}
 	.bar {
