@@ -148,8 +148,24 @@
 </div>
 {/if}
 <style>
-img{
-	max-width: 20%;
+	.result-list {
+		@apply w-full;
+		@apply rounded;
+		min-height: 200px;
+	}
+	.bar {
+		@apply w-full;
+		@apply rounded;
+		border: 1px solid #aaa;
+		background: #ffffb3
+	}
+	.resList{
+		width: 85%;
+		
+	}
+
+	img {
+	max-width: 30%;
 	margin-top: 0;
 	
 	
