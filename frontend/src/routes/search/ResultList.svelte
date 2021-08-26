@@ -98,24 +98,25 @@
 		currentPage=1; //retour à la page initiale
 	}
 </script>
-<div class="px-48 " >
+<div class="resList flex flex-col px-40">
+<div class="mx-20 mt-4" >
 	<select bind:value={triselect} class= "float-right px-6 py-2 " on:change="{trier}">
 		{#each tris as tri }
 			<option value={tri} class="bg-gray">{tri}</option>
 		{/each}
 	</select>
-</div>
-<div class="resList flex flex-col px-40">
-{#await $promiseSearch}
-	<p>...Attente de la requête</p>
-{:then result}
-	{#if resultMessage}<p class="mb-4">{resultMessage}</p>{/if}
-{/await}
 
+
+{#await $promiseSearch}
+	<p class='mt-2'>...Attente de la requête</p>
+{:then result}
+	{#if resultMessage}<p class='mt-2'>{resultMessage}</p>{/if}
+{/await}
+</div>
 
 {#if Object.keys($itemJson).length > 0}
 	{#if items.length > 0}
-		<div class="result-list">
+		<div class="result-list mx-20">
 		{#each paginatedItems as item (item.key)}
 			
 			{#if  item._id === "bar"}
@@ -128,11 +129,10 @@
 		{/each}
 		</div>
 	{:else}
-		<div class='bg-white p-4  shadow'>
-			<h2 class="text-3xl font-bold my-4">Aucun résultat</h2>
+		<div class='bg-white p-4 mx-20 shadow mt-4'>
 		<div  class="flex flex-row">
+			<p class="text-xl p-10 "> <b class="text-3xl font-bold my-4">Aucun résultat</b><br> Malheureusement aucun résultat n'est associé à votre recherche. Essayer de changer les mots-clés que vous avez utilisé.</p>
 			<img src='./user/noresult.PNG' class="">
-			<p class="text-xl ">Malheureusement aucun résultat n'est associé à votre recherche. Essayer de changer les mots-clés que vous avez utilisé.</p>
 		</div>
 
 		</div>
@@ -141,15 +141,15 @@
 	<p>... Récuperation de la configuration</p>
 {/if}
 
-</div>
 {#if items.length>0}
-<div class="nav">
+<div class="nav mb-4">
 <LightPaginationNav totalItems="{items.length}" pageSize="{pageSize}" currentPage="{currentPage}" limit="{1}" showStepOptions="{true}" on:setPage="{(e)=> currentPage=e.detail.page}"/>
 </div>
 {/if}
+</div>
+
 <style>
 	.result-list {
-		@apply w-full;
 		@apply rounded;
 		min-height: 200px;
 	}
@@ -180,25 +180,5 @@ select{
 	box-shadow: none !important;
 }
 
-	.result-list {
-		@apply w-full;
-		@apply rounded;
-		min-height: 200px;
-	}
-	.bar {
-		@apply w-full;
-		@apply rounded;
-		border: 1px solid #aaa;
-		background: #ffffb3
-	}
-	.resList{
-		width: 85%;
-		
-	}
-
-	img {
-	max-width: 30%;
-	margin-top: 0;
-	}
 
 </style>
