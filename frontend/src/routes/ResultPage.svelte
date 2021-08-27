@@ -21,7 +21,16 @@
    return meta=data
   }); 
   }
-  setTimeout(getMeta,100)
+  function waitindex(){ //eviter les problèmes de undefined
+    if($envJson['index_name']!=undefined){
+    getMeta()
+  }
+    else{
+      setTimeout(waitindex,100)
+    }
+  }
+  
+  waitindex()
 
 </script>
 {#if meta !=undefined && $itemJson!=undefined}
