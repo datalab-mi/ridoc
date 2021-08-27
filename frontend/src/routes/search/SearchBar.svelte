@@ -9,14 +9,12 @@
 	import SearchSuggestInput from './SearchSuggestInput.svelte';
 	import { promiseSearch } from './stores.js';
 	import { flatten, format2ES, search } from '../../components/utils.js';
-
 	let body
 	let notes
 	function handleSearch() {
 		body = format2ES($itemJson, flatten($searchJson, 2).filter(x => x.type !== "button"), $envJson.index_name)
 		$promiseSearch = search(body)
 	}
-
 </script>
 <div class="background" >
 <div id="search" class='search flex flex-col place-items-center ' style="background-image:url('./user/notes.png')" on:keyup={e => e.key === 'Enter' && handleSearch()} >
@@ -28,7 +26,7 @@
 
 	<!-- recherche basique, première ligne du tableau -->
 	<div class="flex flex-row space-x-0 gap-0 justify-between bg-white w-full  my-8 h-10">
-		
+
 		{#each $searchJson[0] as { fields, value, type, placeholder, innerHtml, style, color, suggest }, j}
 			{#if type == "button"}
 				<div class="flex-none my-auto bg-white h-8" >
@@ -44,7 +42,7 @@
 				<SearchInput bind:value {type} {placeholder} {innerHtml} style="" />
 			{/if}
 		{/each}
-		
+
 	</div>
 {/if}
 </div>
