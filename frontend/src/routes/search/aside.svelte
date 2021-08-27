@@ -33,7 +33,16 @@
 		return tags
 		
 	}
-	setTimeout(init,300)//necessaire le temps de charger le nom de l'index
+
+	function waitindex(){ //avoid undefined index issues
+		if ($envJson['index_name']!=undefined){
+			init()
+		}
+		else{
+			setTimeout(waitindex,100)
+		}
+	}
+	waitindex()
 
 	$: {
 		$promiseSearch
