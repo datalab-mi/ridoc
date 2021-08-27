@@ -9,6 +9,7 @@
 	let tags1
 	let tags=[]
 	let tag_name
+	let tags_ready=false;
 
 	function init(){
 		
@@ -37,6 +38,7 @@
 	function waitindex(){ //avoid undefined index issues
 		if ($envJson['index_name']!=undefined){
 			init()
+			tags_ready=true
 		}
 		else{
 			setTimeout(waitindex,100)
@@ -162,6 +164,7 @@
 	let searchTerm =""
 	$: tagfilt= tags.filter(tag=>tag.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !==-1 && tag["occ"] !==0)
 </script>
+{#if tags_ready}
 <div class='board'>
 	<div class='Factif mb-10 border-b-2'>
 		<h1>Filtres actifs</h1>
@@ -223,7 +226,7 @@
 	</div>
 
 </div>
-
+{/if}
 <style>
 
 
