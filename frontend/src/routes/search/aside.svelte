@@ -9,18 +9,12 @@
 	let tags1
 	let tags=[]
 	let tag_name
-	let tags_ready=false;
 
 	function init(){
-		
-		for (let element in $itemJson['inputs']){
-			if ($itemJson['inputs'][element]['type']=="keyword"){
-				tag_name=$itemJson['inputs'][element]['key']
-			}
-		}
 		tags1 =initialTags()
 		tags1.then(function(result){return tags=result});
 		}
+		
 	function initialTags(){
 	let inittag = httpClient().fetchJson('api/user/keywords/'+$envJson['index_name']+'/'+tag_name).then(response=>response).then(data=> data).then(tagslist=> {return tagsinit(tagslist)})
 	return inittag;
@@ -33,12 +27,19 @@
 		}
 		return tags
 		
+		
 	}
 
 	function waitindex(){ //avoid undefined index issues
-		if ($envJson['index_name']!=undefined){
+		for (let element in $itemJson['inputs']){
+			if ($itemJson['inputs'][element]['type']=="keyword"){
+				tag_name=$itemJson['inputs'][element]['key']
+			}
+		}
+		if ($envJson['index_name']!=undefined && tag_name!=undefined){
 			init()
-			tags_ready=true
+			console.log($itemJson['inputs'])
+			
 		}
 		else{
 			setTimeout(waitindex,100)
@@ -164,7 +165,6 @@
 	let searchTerm =""
 	$: tagfilt= tags.filter(tag=>tag.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !==-1 && tag["occ"] !==0)
 </script>
-{#if tags_ready}
 <div class='board'>
 	<div class='Factif mb-10 border-b-2'>
 		<h1>Filtres actifs</h1>
@@ -226,7 +226,6 @@
 	</div>
 
 </div>
-{/if}
 <style>
 
 
