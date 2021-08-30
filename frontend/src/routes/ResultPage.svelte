@@ -1,25 +1,34 @@
 <script>
   import { stores } from '@sapper/app';
-  import { httpClient, index, upload } from '../components/utils.js';
+  import { httpClient, index, upload, createMeta, isEmpty  } from '../components/utils.js';
   import {envJson,itemJson} from '../components/user-data.store'
   import Ratesearch from '../components/ratesearch.svelte'
+
+  import Entry from '../components/Entry.svelte';
 
   const { page } = stores();
   let link="/ViewerJS/#.."+$page.query.url;
 
   let split=$page.query.url.split('/');
   export let filename=split[split.length -1];
-    
+
   let titre=true;
   let meta;
-  
+  let display;
+  let readonly=true;
+  let required=false;
+  let inputs=[];
+  let _source_includes='';
+
   function getMeta(){
-  httpClient().fetch('./api/user/'+$envJson['index_name']+'/_doc/'+filename)
+  // Filter entries in $itemJson with isDetailed at false
+  inputs = $itemJson.inputs.filter(entry => ((entry.isDetailed !== undefined) && entry.isDetailed) || (entry.isDetailed == undefined))
+  _source_includes = inputs.map(x=>x.key).join()
+  httpClient().fetch('./api/user/'+$envJson['index_name']+'/_doc/'+filename+"?_source_includes="+_source_includes)
   .then(response => response.json())
   .then(data => {
-
-   return meta=data
-  }); 
+    [meta, display] = createMeta(inputs, data, {})
+  });
   }
   function waitindex(){ //eviter les problèmes de undefined
     if($envJson['index_name']!=undefined){
@@ -29,7 +38,7 @@
       setTimeout(waitindex,100)
     }
   }
-  
+
   waitindex()
 
 </script>
@@ -37,28 +46,18 @@
 
 <div class= "grid grid-cols justify-center">
 <div class="card bg-white place-self-center p-10 grid grid-cols justify-center rounded shadow w-auto">
-  
+
   <div class="mb-6">
     <Ratesearch class="" {filename}/>
-    {#each $itemJson['inputs'] as item}
-      {#if item['rows']==undefined}
-        {#if item["type"]=='keyword' && meta[item['key']]!=undefined}
-          {#each meta[item['key']] as tag}
-            <div class="tag mr-4 inline p-2">{tag}</div>
-          {/each}
-        {:else}
-          {#if meta[item['key']]!=undefined}
-            {#if item['key']=='title'||item['key']=='titre'}
-              <div class='titre text-3xl font-bold my-2'>{meta[item['key']]}</div>
-            {:else}
-          <div class="value mb-1">{@html item['innerHtml']} {meta[item['key']]}</div>
-            {/if}
-          {/if}
+
+    {#each meta as { value, key, type, placeholder, innerHtml, highlight, metadata, rows, color} (key)}
+        {#if !isEmpty(value) || (!readonly && metadata) }
+          <Entry {readonly} {required} bind:value {key} {type} {placeholder} {innerHtml} {highlight} {metadata} {rows} {color} />
         {/if}
-      {/if}
     {/each}
+
   </div>
-<iframe class="place-self-center" src = {link} width='1025' height='578' allowfullscreen webkitallowfullscreen></iframe> 
+<iframe class="place-self-center" src = {link} width='1025' height='578' allowfullscreen webkitallowfullscreen></iframe>
 </div>
 </div>
 {/if}

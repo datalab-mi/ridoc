@@ -180,6 +180,7 @@ def index_file(index_name: str, filename: str):
     if not index_name or not filename:
         print('Missing keys')
         return abort(500)
-    source_includes = request.args.get('_source_includes', [])
+    source_includes = request.args.get('_source_includes', '')
+    source_includes = source_includes.split(",")
     res = elastic_get_file(index_name, filename, source_includes)
     return jsonify(res['_source'])

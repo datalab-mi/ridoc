@@ -19,8 +19,8 @@
       "innerHtml": "<b>Question :</b>",
       "highlight": true,
       "metadata": false,
-      "canBeEmpty": false
-
+      "canBeEmpty": false,
+      "isDetailed": false
     },
     {
       "key": "reponse",
@@ -31,7 +31,8 @@
       "highlight": true,
       "metadata": false,
       "rows": 4,
-      "canBeEmpty": false
+      "canBeEmpty": false,
+      "isDetailed": false
     },
     {
       "key": "date",
