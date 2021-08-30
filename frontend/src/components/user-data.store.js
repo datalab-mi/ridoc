@@ -13,10 +13,15 @@ export const itemJson = userData("item.json", {inputs: []})
 // Define search bar display
 export const searchJson = userData("search.json", [])
 
+// Store the rates
 export const rateJson = userData("rate.json", [])
 export const searchRateJson =userData("searchRate.json",{'good':[],'bad':[]})
 
 
 /**
+ * Renvoie un store correspondant aux préférences de l'utilisateur.
+ */
+export const userPreferences = derived(envJson, ($envJson, set) => {
+	set($envJson.preferences || {});
 	return () => console.debug('userPreferences: no more subscribers');
 });
