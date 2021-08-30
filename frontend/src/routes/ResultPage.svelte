@@ -71,4 +71,8 @@
     background-color: #F0F0F0;
     border-radius: 40px;
   }
+<<<<<<< HEAD
 </style>
+=======
+</style>
+>>>>>>> 3090cfb913fd6cdcb1524c35b40574e1f7341fbb
