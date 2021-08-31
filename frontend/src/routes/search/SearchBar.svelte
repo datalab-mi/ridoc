@@ -37,7 +37,7 @@
 			{:else if type === 'keyword' }
 				<SearchKeywordInput bind:value={value} {fields} {placeholder} {color} />
 			{:else if type === 'search' && suggest }
-				<SearchSuggestInput bind:value={value} {placeholder} {innerHtml} {fields} style="w-2/4  " />
+				<SearchSuggestInput bind:value={value} {placeholder} {innerHtml} {fields} style="w-full" />
 			{:else }
 				<SearchInput bind:value {type} {placeholder} {innerHtml} style="" />
 			{/if}
@@ -59,5 +59,6 @@
 	}
 	.barback{
 		background-color: var(--primary);
+		min-width: 55%;
 	}
 </style>

@@ -15,9 +15,9 @@
     };
   </script>
 
-  <div class="Rateblock float-right mt-12 bg-white p-4 max-w-xs">
+  <div class="Rateblock float-right mt-12 bg-white p-4 max-w-xs shadow">
   <div class="titre text-xl"><b class="underline">Votre avis</b> nous intéresse</div>
-  <p class="break-normal">Comment décririez-vous votre expérience sur le site ?</p>
+  <p class="break-normal my-0">Comment décririez-vous votre expérience sur le site ?</p>
   <Rate
     {beforeRate}
     {afterRate}

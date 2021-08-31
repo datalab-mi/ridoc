@@ -7,7 +7,7 @@
 	import {paginate, LightPaginationNav} from "svelte-paginate";
 
 
-	let tris =["Trier par","Date","Titre","Score"];
+	let tris =["Date","Titre","Score"];
 	let triselect;
 	let currentPage=1;
 	let pageSize=3;
@@ -100,9 +100,10 @@
 </script>
 <div class="resList flex flex-col px-40">
 <div class="mx-20 mt-4" >
-	<select bind:value={triselect} class= "float-right px-6 py-2 " on:change="{trier}">
+	<select bind:value={triselect} class= "fr-select float-right px-6 py-2 " on:change="{trier}">
+		<option value="" selec disabled hidden>Trier par</option>
 		{#each tris as tri }
-			<option value={tri} class="bg-gray">{tri}</option>
+			<option value={tri} >{tri}</option>
 		{/each}
 	</select>
 
@@ -172,10 +173,9 @@
 	
 }
 select{
-	background-color: #F0F0F0 ;
-	border-bottom:solid black;
-	margin-bottom: 4px;
+	max-width:15%;
 }
+
 .nav :global(.pagination-nav){
 	background-color:transparent !important;
 	box-shadow: none !important;
