@@ -131,7 +131,7 @@
 	{:else}
 		<div class='bg-white p-4 mx-20 shadow mt-4'>
 		<div  class="flex flex-row">
-			<p class="text-xl p-10 "> <b class="text-3xl font-bold my-4">Aucun résultat</b><br> Malheureusement aucun résultat n'est associé à votre recherche. Essayer de changer les mots-clés que vous avez utilisé.</p>
+			<p class="text-xl p-10 "> <b class="text-3xl font-bold my-4">Aucun résultat</b><br><br>  Malheureusement aucun résultat n'est associé à votre recherche. Essayer de changer les mots-clés que vous avez utilisé.</p>
 			<img src='./user/noresult.PNG' class="">
 		</div>
 
@@ -160,13 +160,14 @@
 		background: #ffffb3
 	}
 	.resList{
-		width: 85%;
+		max-width: 85%;
 		
 	}
 
 	img {
 	max-width: 30%;
 	margin-top: 0;
+	object-fit: contain;
 	
 	
 }
