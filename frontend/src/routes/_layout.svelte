@@ -45,7 +45,7 @@
 {/if}
 -->
 <Nav {segment} />
-<div class="fixed w-full mt-48 h-min" use:clickOutside on:clickoutside={handleClickOutside}>
+<div class="rate fixed right-0 " use:clickOutside on:clickoutside={handleClickOutside}>
 	{#if $displayRate}
 	<EmoRating />
 	{:else}
@@ -70,5 +70,7 @@
 
 	}
 
-
+	.rate{
+		bottom:55%;
+	}
 </style>
