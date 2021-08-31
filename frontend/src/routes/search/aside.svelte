@@ -184,7 +184,7 @@
 	<div class='date my-5'>
 		<h2>Date de publication</h2>
 		A partir:
-		<input type=date bind:value={dateFrom} class="border-2 my-1" on:change={update}>
+		<input type=date bind:value={dateFrom} class="border-2 my-1" on:change={update}> <br>
 		Jusqu'à:
 		<input type=date bind:value={dateTo} class="border-2" on:change={update}>
 	</div>
@@ -231,7 +231,7 @@
 
 	.board {
 		@apply shadow;
-		width:15%;
+		min-width:15%;
 		float:left;
 		background-color: white;
 		padding: 10pt;

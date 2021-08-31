@@ -18,7 +18,7 @@
 </script>
 <div class="background" >
 <div id="search" class='search flex flex-col place-items-center ' style="background-image:url('./user/notes.png')" on:keyup={e => e.key === 'Enter' && handleSearch()} >
-	<div class="barback flex flex-col w-1/3 px-4"  >
+	<div class="barback flex flex-col px-4"  >
 <div>
 	<div class='text-3xl text-white left-0 my-8'><b class="border-b-4 pb-4"> Rechercher</b> un rapport  <span class="uppercase">{$envJson.index_name}</span></div>
 </div>

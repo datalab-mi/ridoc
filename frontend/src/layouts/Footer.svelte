@@ -27,7 +27,7 @@
 		<div class='text-left ml-10 ' >
 			<div class='font-bold  text-blue-400 mb-4' style='color:#5770BE'>Nous connaître</div>
 			{#each $envJson.contacts as { href, name }}
-				<a href={href} class='text-blue-800  underline'style='color:#000091'>{name}</a> <br>
+				<a href={href} class='text-blue-800  'style='color:#000091'>{name}</a> <br>
 			{/each}
 			</div>
 		{/if}
@@ -36,7 +36,7 @@
 		<div class='text-left ml-10 ' >
 			<div class='font-bold  text-blue-400 mb-4' style='color:#5770BE'>Nos engagements</div>
 			{#each $envJson.commitments as { href, name }}
-				<a href={href} class='text-blue-800  underline'style='color:#000091'>{name}</a> <br>
+				<a href={href} class='text-blue-800  'style='color:#000091'>{name}</a> <br>
 			{/each}
 			</div>
 		{/if}
@@ -45,7 +45,7 @@
 		<div class='text-left ml-10 ' >
 			<div class='font-bold  text-blue-400 mb-4' style='color:#5770BE'>Sites connexes</div>
 			{#each $envJson.links as { href, name }}
-				<a href={href} class='text-blue-800  underline'style='color:#000091'>{name}</a> <br>
+				<a href={href} class='text-blue-800  'style='color:#000091'>{name}</a> <br>
 			{/each}
 			</div>
 		{/if}
