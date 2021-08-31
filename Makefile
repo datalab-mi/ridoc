@@ -50,7 +50,8 @@ export FILE_FRONTEND_DIST_APP_VERSION = $(APP)-$(APP_VERSION)-frontend-dist.tar.
 export FILE_FRONTEND_DIST_LATEST_VERSION = $(APP)-latest-frontend-dist.tar.gz
 export FRONTEND_STATIC_USER = ${APP_PATH}/frontend/static/user # user folder in static folder of frontend
 
-export PDFJS_VERSION=2.3.200
+export VIEWERJS_VERSION=0.5.8
+
 export BUILD_DIR = ${APP_PATH}/${APP}-build
 # nginx
 export PORT = 80
