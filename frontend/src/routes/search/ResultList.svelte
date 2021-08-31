@@ -180,6 +180,8 @@ select{
 	background-color:transparent !important;
 	box-shadow: none !important;
 }
-
+.fr-select{
+	min-width: fit-content;
+}
 
 </style>
