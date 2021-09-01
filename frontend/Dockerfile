@@ -14,11 +14,11 @@ RUN npm config set strict-ssl false #Do not check certificate, proxy fault
 RUN npm install
 
 # ViewerJS
-ARG VIEWERJS_VERSION
-RUN wget "https://viewerjs.org/releases/viewerjs-${VIEWERJS_VERSION}.zip"
-RUN mkdir ViewerJS
-RUN unzip viewerjs-${VIEWERJS_VERSION}.zip
-RUN mv viewerjs-${VIEWERJS_VERSION}/* ViewerJS
+#ARG VIEWERJS_VERSION
+#RUN wget "https://viewerjs.org/releases/viewerjs-${VIEWERJS_VERSION}.zip"
+#RUN mkdir ViewerJS
+#RUN unzip viewerjs-${VIEWERJS_VERSION}.zip
+#RUN mv viewerjs-${VIEWERJS_VERSION}/* ViewerJS
 
 # For production, see https://github.com/mikenikles/sapper-on-cloud-run/blob/master/Dockerfile
 ################################

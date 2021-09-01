@@ -75,9 +75,9 @@ async function get(url) {
 
 function httpClient() {
 	const defaultInit = { cache: 'no-cache' };
-
 	const fetchRaw = async (url, requestInit = defaultInit) => {
 		const res = await fetch(url, { headers: buildHeaders(), ...requestInit })
+		console.log({ headers: buildHeaders(), ...requestInit })
 		if (!res.ok) {
 			console.log(`L'appel à "${url}" a échoué`)
 			throw new Error(`L'appel à "${url}" a échoué: ${res.status}`);
@@ -148,6 +148,31 @@ function httpClient() {
 
 	return { fetch: fetchRaw, fetchJson, fetchBlob };
 }
+
+
+  function populateIframe(iframe, url) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url);
+    xhr.onreadystatechange = handler;
+    xhr.responseType = 'blob';
+		console.log("headers :");
+		console.log(buildHeaders())
+    buildHeaders().forEach(function(header) {
+      xhr.setRequestHeader(header[0], header[1]);
+    });
+    xhr.send();
+
+    function handler() {
+      if (this.readyState === this.DONE) {
+        if (this.status === 200) {
+          iframe.src = URL.createObjectURL(this.response);
+        } else {
+          console.error('Request failed', this);
+        }
+      }
+    }
+  }
+
 
 	async function files(method, baseDir,file = {'name': ""}) {
 		let res;
@@ -332,4 +357,4 @@ function isEmpty(value){
 	});
 	return [meta, display]
 }
-export { index, upload, get, httpClient, synonym, files, flatten, format2ES, search, text_area_resize, reIndex, createMeta, isEmpty};
+export { index, upload, get, httpClient, synonym, files, flatten, format2ES, search, text_area_resize, reIndex, createMeta, isEmpty, populateIframe};

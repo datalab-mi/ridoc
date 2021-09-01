@@ -14,9 +14,9 @@ RUN  [ -f "run.sh" ] && chmod +x run.sh
 EXPOSE 80/tcp
 EXPOSE 443/tcp
 
-#RUN apk update\
-#  && apk add ca-certificates wget\
-#  && update-ca-certificates
+RUN apt update\
+  && apt install wget unzip -y  \
+  && update-ca-certificates
 
 # PDFJS VIEWER
 #RUN  wget "https://github.com/mozilla/pdf.js/releases/download/v2.3.200/pdfjs-2.3.200-dist.zip" && \
@@ -25,10 +25,15 @@ EXPOSE 443/tcp
 #     unzip  pdfjs-2.3.200-dist.zip  -d /usr/share/nginx/html/pdfjs  && \
 #     rm -rf pdfjs-2.3.200-dist.zip
 
-RUN apt-get update --allow-releaseinfo-change -y
+# ViewerJS
+ARG VIEWERJS_VERSION
+RUN wget "https://viewerjs.org/releases/viewerjs-${VIEWERJS_VERSION}.zip"
+RUN mkdir  /usr/share/nginx/html/ViewerJS
+RUN unzip viewerjs-${VIEWERJS_VERSION}.zip
+RUN mv viewerjs-${VIEWERJS_VERSION}/*  /usr/share/nginx/html/
 
-RUN apt-get install apache2-utils -y
-#RUN apt-get install vim
+RUN apt-get update --allow-releaseinfo-change -y \
+  && apt-get install apache2-utils -y
 
 ################################
 # Step 2: "development" target #
