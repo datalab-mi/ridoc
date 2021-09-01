@@ -166,7 +166,7 @@
 	$: tagfilt= tags.filter(tag=>tag.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !==-1 && tag["occ"] !==0)
 </script>
 <div class='board'>
-	<div class='Factif mb-5 border-b-2 mx-5 '>
+	<div class='Factif border-b-2 mx-5 '>
 		<h1>Filtres actifs</h1>
 		{#if tags.filter(t => t.done).length>0}
 		{#each tags.filter(t => t.done) as tag (tag.id)}
@@ -186,7 +186,7 @@
 	</div>
 
 	<h1 class="mx-5">Filtres disponibles</h1>
-	<div class='date my-5 mx-5'>
+	<div class='date mb-5 mx-5'>
 		<h2>Date de publication</h2>
 		A partir:
 		<input type=date bind:value={dateFrom} class="border-2 my-1" on:change={update}> <br>
@@ -194,12 +194,12 @@
 		<input type=date bind:value={dateTo} class="border-2" on:change={update}>
 	</div>
 	
-	<div class='Auteur my-5 mx-5'>
+	<div class='Auteur my-3 mx-5'>
 		<h2>Auteur</h2>
 		<input class="border-2 w-full" placeholder="Nom ou Prénom" bind:value={auteur} on:change={update} />
 	</div>
 	
-	<div class='categories my-5 mx-5'>
+	<div class='categories my-3 mx-5'>
 		<h2>Catégories</h2>
 		<input bind:value={searchTerm} class="border-2 w-full" placeholder="Rechercher..." />
 		<div class="tags">
@@ -261,7 +261,6 @@
 		font-size: 24px;
 		font-weight: bold;
 		user-select: none;
-		padding-bottom: 5px;
 		
 	}
 

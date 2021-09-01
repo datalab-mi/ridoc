@@ -7,7 +7,7 @@
   import Entry from '../components/Entry.svelte';
 
   const { page } = stores();
-  let link="/ViewerJS/#.."+$page.query.url;
+  let link="/ViewerJS/?zoom=page-width#.."+$page.query.url;
 
   let split=$page.query.url.split('/');
   export let filename=split[split.length -1];
