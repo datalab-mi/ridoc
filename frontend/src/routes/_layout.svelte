@@ -11,6 +11,7 @@
 	import Nav from '../layouts/Nav.svelte';
 	import EmoRating from '../components/emoRating/starrating.svelte'
 	import { clickOutside } from '../components/click-outside.action';
+	import "../../static/dsfr.css"
 
 	export let segment;
 
