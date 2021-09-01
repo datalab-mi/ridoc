@@ -32,7 +32,7 @@
       //const { page } = stores(); // sveltekit
       const urlParams = new URLSearchParams(window.location.search);
       filename = urlParams.get('filename');
-      link = `/ViewerJS/#../api/user/files/${$envJson.dstDir}/${filename}`
+      link = `/ViewerJS/?zoom=page-width#../api/user/files/${$envJson.dstDir}/${filename}`
       getMeta()
     }
       else{
