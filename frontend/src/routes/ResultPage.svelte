@@ -3,6 +3,7 @@
   import { httpClient, index, upload, createMeta, isEmpty, populateIframe  } from '../components/utils.js';
   import {envJson,itemJson} from '../components/user-data.store'
   import Ratesearch from '../components/ratesearch.svelte'
+  import { user as userStore } from '../components/stores.js';
 
   import Entry from '../components/Entry.svelte';
   import { onMount } from 'svelte';
@@ -17,16 +18,18 @@
   let filename;
   let split;
   let iframe
-
+  let headers
 
   onMount(() => {
+    userStore.subscribe(value => headers=new Headers({ 'Authorization': `Bearer ${value.jwToken}` }));
+    console.log(headers);
     //const { page } = stores(); // sveltekit
     const urlParams = new URLSearchParams(window.location.search);
     const url = urlParams.get('url');
     link="/viewer/#.."+url
     console.log("link")
     console.log(link)
-    populateIframe(iframe, link);
+    populateIframe(iframe, link, headers);
     split=url.split('/');
     filename=split[split.length -1];
 
