@@ -146,7 +146,12 @@ function httpClient() {
 		window.open('./ResultPage?url='+url)
 	}
 
-	return { fetch: fetchRaw, fetchJson, fetchBlob };
+	const fetchAuth = async (url,filename, requestInit = defaultInit) => {
+		const res = await fetchRaw(url, requestInit);
+		const blob = await res.blob();
+		window.open('./ResultPage?filename='+filename)
+	}
+	return { fetch: fetchRaw, fetchJson, fetchBlob,fetchAuth };
 }
 
 	async function files(method, baseDir,file = {'name': ""}) {
