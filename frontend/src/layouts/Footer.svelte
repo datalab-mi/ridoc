@@ -59,6 +59,7 @@
 		font-family: Rubik, sans-serif;
 		@apply text-base  py-4 pl-16 text-center w-full;
 		background-color:white;
+		padding-top:1rem;
 
 
 	}

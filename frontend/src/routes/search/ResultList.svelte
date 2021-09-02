@@ -162,6 +162,7 @@
 	}
 	.resList{
 		max-width: 85%;
+		min-width: fit-content !important;
 		
 	}
 
