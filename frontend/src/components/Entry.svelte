@@ -215,7 +215,7 @@
 
 	input:not([type='date']),
 	textarea {
-		@apply w-full;
+		width: 100% !important;
     @apply my-0;
     
 	}

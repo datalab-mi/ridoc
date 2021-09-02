@@ -34,28 +34,29 @@
 
 <style>
 	[aria-current] {
-		@apply relative;
+		position: relative !important;
 	}
 
 	[aria-current]::after {
-		content: '';
-		height: 3px;
-		background-color:var(--primary);
-		@apply block;
-		@apply absolute;
-		@apply bottom-0;
-		@apply left-0;
-		@apply w-full;
-		@apply font-bold;
+		content: '' !important;
+		height: 3px !important;
+		background-color:var(--primary) !important;
+		display: block !important;
+		position:  absolute !important;
+		width: 100%;
+		bottom: 0px;
+		left: 0px;
+		font-weight: 700 !important;
 		
 	}
 
 	.navlink {
-		@apply px-3;
-		@apply py-2;
-		@apply rounded-md;
-		@apply text-base;
-		@apply font-normal;
+		padding-left: 0.75em;
+		padding-right: 0.75em;
+		padding-top: 0.5em;
+		padding-bottom: 0.5em;
+		border-radius: 0.25rem;
+		font-weight: 400 !important;
 		box-shadow: none;
 	}
 
