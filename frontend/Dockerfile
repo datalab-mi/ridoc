@@ -20,6 +20,11 @@ RUN mkdir ViewerJS
 RUN unzip viewerjs-${VIEWERJS_VERSION}.zip
 RUN mv viewerjs-${VIEWERJS_VERSION}/* ViewerJS
 
+#DSFR (Design de l'Etat)
+RUN npm install @gouvfr/dsfr
+RUN mkdir static/fonts
+RUN mv node_modules/@gouvfr/dsfr/dist/fonts/* static/fonts 
+
 # For production, see https://github.com/mikenikles/sapper-on-cloud-run/blob/master/Dockerfile
 ################################
 # Step 2: "development" target #

@@ -34,28 +34,30 @@
 
 <style>
 	[aria-current] {
-		@apply relative;
+		position: relative !important;
 	}
 
 	[aria-current]::after {
-		content: '';
-		height: 3px;
-		background-color:var(--primary);
-		@apply block;
-		@apply absolute;
-		@apply bottom-0;
-		@apply left-0;
-		@apply w-full;
-		@apply font-bold;
-
+		content: '' !important;
+		height: 3px !important;
+		background-color:var(--primary) !important;
+		display: block !important;
+		position:  absolute !important;
+		width: 100%;
+		bottom: 0px;
+		left: 0px;
+		font-weight: 700 !important;
+		
 	}
 
 	.navlink {
-		@apply px-3;
-		@apply py-2;
-		@apply rounded-md;
-		@apply text-base;
-		@apply font-normal;
+		padding-left: 0.75em;
+		padding-right: 0.75em;
+		padding-top: 0.5em;
+		padding-bottom: 0.5em;
+		border-radius: 0.25rem;
+		font-weight: 400 !important;
+		box-shadow: none;
 	}
 
 	.connect{
@@ -110,8 +112,7 @@
 								<!-- Profile dropdown -->
 								<div class="connect mr-4  p-2 rounded-lg">
 									<div>
-										<button on:click={authClicked} class="text-white" color='white' id="user-menu" aria-haspopup="true">
-											<svg class="h-4 w-4 float-left m-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M5 5a5 5 0 0 1 10 0v2A5 5 0 0 1 5 7V5zM0 16.68A19.9 19.9 0 0 1 10 14c3.64 0 7.06.97 10 2.68V20H0v-3.32z"/></svg>
+										<button on:click={authClicked} class="fr-button fr-fi-account-line text-white" id="user-menu" aria-haspopup="true">
 										Se connecter
 										</button>
 									</div>

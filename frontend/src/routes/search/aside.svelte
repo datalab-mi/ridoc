@@ -166,8 +166,9 @@
 	$: tagfilt= tags.filter(tag=>tag.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !==-1 && tag["occ"] !==0)
 </script>
 <div class='board'>
-	<div class='Factif mb-10 border-b-2'>
+	<div class='Factif border-b-2 mx-5 '>
 		<h1>Filtres actifs</h1>
+		{#if tags.filter(t => t.done).length>0}
 		{#each tags.filter(t => t.done) as tag (tag.id)}
 			<label
 				in:receive="{{key: tag.id}}"
@@ -178,25 +179,29 @@
 				{tag.description} 
 			</label>
 		{/each}
+		{:else}
+		<div class="mb-10">Aucun filtre actif </div>
+		{/if}
+
 	</div>
 
-	<h1>Filtres disponibles</h1>
-	<div class='date my-5'>
+	<h1 class="mx-5">Filtres disponibles</h1>
+	<div class='date mb-5 mx-5'>
 		<h2>Date de publication</h2>
 		A partir:
-		<input type=date bind:value={dateFrom} class="border-2 my-1" on:change={update}>
-		Jusqu'à:
+		<input type=date bind:value={dateFrom} class="border-2 my-1" on:change={update}> <br>
+		Jusqu'à : 
 		<input type=date bind:value={dateTo} class="border-2" on:change={update}>
 	</div>
 	
-	<div class='Auteur my-5'>
+	<div class='Auteur my-3 mx-5'>
 		<h2>Auteur</h2>
-		<input class="border-2 " placeholder="Nom ou Prénom" bind:value={auteur} on:change={update} />
+		<input class="border-2 w-full" placeholder="Nom ou Prénom" bind:value={auteur} on:change={update} />
 	</div>
 	
-	<div class='categories my-5'>
+	<div class='categories my-3 mx-5'>
 		<h2>Catégories</h2>
-		<input bind:value={searchTerm} class="border-2 " placeholder="Rechercher..." />
+		<input bind:value={searchTerm} class="border-2 w-full" placeholder="Rechercher..." />
 		<div class="tags">
 		{#each tagfilt.filter(t => !t.done) as tag (tag.id)}
 			<label
@@ -214,16 +219,18 @@
 
 
 
-<div class="validation flex justify-between overflow-x-auto">
-	<button on:click={reset} class='resetbutton py-2 border-2 px-4 rounded'>
+<ul class="fr-btns-group fr-btns-group--inline">
+	<li>
+	<button on:click={reset} class="fr-btn fr-btn--secondary">
 	Réinitialiser
-</button>
-	<button on:click={handleSearch} class='applybutton py-2 px-4 rounded'>
+	</button></li>
+
+	<li>
+	<button on:click={handleSearch} class='fr-btn'>
 	Appliquer
-</button>
+	</button></li>
+</ul>
 	
-	
-	</div>
 
 </div>
 <style>
@@ -231,7 +238,7 @@
 
 	.board {
 		@apply shadow;
-		width:15%;
+		min-width:15%;
 		float:left;
 		background-color: white;
 		padding: 10pt;
@@ -240,7 +247,7 @@
 	}
 
 	.categories, .Factif {
-		padding: 0 1em 0 0;
+		padding: 0 0 0 0;
 	}
 
 	h2 {
@@ -254,7 +261,6 @@
 		font-size: 24px;
 		font-weight: bold;
 		user-select: none;
-		padding-bottom: 10px;
 		
 	}
 
@@ -277,23 +283,9 @@
 	}
 	
 	input { 
-			border-color: var(--primary);
-			max-width: 80% }
+			border-color: var(--primary); }
 	
-
-		select{
-			border-color: var(--primary);
-;
-		}
 	
-	.resetbutton{
-	color: var(--primary);
-	border-color:var(--primary);
-	}
-	.applybutton{
-		background-color:var(--primary);
-		color:white;
-	}
 	.tags{
 		height: 30vh;
 		overflow-y: scroll;
@@ -301,8 +293,5 @@
 	.occ{
 		color: rgb(185, 182, 182) !important;
 	}
-	.validation{
-		max-width: 98%;
-	}
-	
+
 </style>
