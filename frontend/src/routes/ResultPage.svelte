@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>{filename}</title>
+</svelte:head>
+
 <script>
   import { onMount } from 'svelte';
   import { httpClient, index, upload, createMeta, isEmpty  } from '../components/utils.js';
