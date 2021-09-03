@@ -143,10 +143,15 @@ function httpClient() {
 	const fetchBlob = async (url, requestInit = defaultInit) => {
 		const res = await fetchRaw(url, requestInit);
 		const blob = await res.blob();
-		downloadFile(blob, extractFilename(res));
+		window.open('./ResultPage?url='+url)
 	}
 
-	return { fetch: fetchRaw, fetchJson, fetchBlob };
+	const fetchAuth = async (url,filename, requestInit = defaultInit) => {
+		const res = await fetchRaw(url, requestInit);
+		const blob = await res.blob();
+		window.open('./ResultPage?filename='+filename)
+	}
+	return { fetch: fetchRaw, fetchJson, fetchBlob,fetchAuth };
 }
 
 	async function files(method, baseDir,file = {'name': ""}) {
@@ -299,4 +304,37 @@ async function synonym(method, row, filename,key=0) {
   }
 }
 
-export { index, upload, get, httpClient, synonym, files, flatten, format2ES, search, text_area_resize, reIndex };
+function isEmpty(value){
+	return value == null || value.length === 0;
+}
+/**
+ * Copie et adapte les métadonnées.
+ * note : met à jour 'display'
+ *
+ * @param  items  tableau de métadonnées
+ * @return copie adaptée
+ */
+ const createMeta = (items, source, highlight) => {
+	let display = true;
+	let meta = items.map(item => {
+		const copy = { ...item };
+		// replace value to the result value contained in source or in highlight key
+		// if present and if needed
+
+		copy.value = copy.key in source ? source[copy.key] : copy.value
+
+		if (copy.highlight && highlight && (copy.key in highlight)) {
+			copy.highlight = highlight[copy.key].join(' [...] ')
+		} else {
+			copy.highlight = ""
+		}
+
+		// test if item should be displayed if empty
+		if (copy.canBeEmpty !== undefined && !copy.canBeEmpty && isEmpty(copy.value)) {
+			display = false
+		}
+		return copy;
+	});
+	return [meta, display]
+}
+export { index, upload, get, httpClient, synonym, files, flatten, format2ES, search, text_area_resize, reIndex, createMeta, isEmpty};

@@ -9,6 +9,7 @@ services:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
         no_proxy: ${no_proxy}
+        VIEWERJS_VERSION: ${VIEWERJS_VERSION}
     image: ${APP}-frontend-build:${APP_VERSION}
     container_name: frontend-build
     environment:

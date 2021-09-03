@@ -12,9 +12,9 @@
 	}
 </script>
 
-<footer use:cssProps={$userTheme.footer}>
+<footer use:cssProps={$userTheme.footer} class="border-2 border-gray">
 
-	<span class=' float-left grid gap-0 grid-col '>
+	<span class=' float-left grid gap-0 grid-col  '>
 		<img src={logo} class='w-full'>
 		<a href={$envJson.repository} class=" my-1 text-left text-black-400">Version <div class="text-black ">v{appVersion}</div> </a>
 	</span>
@@ -59,6 +59,7 @@
 		font-family: Rubik, sans-serif;
 		@apply text-base  py-4 pl-16 text-center w-full;
 		background-color:white;
+
 
 	}
 </style>

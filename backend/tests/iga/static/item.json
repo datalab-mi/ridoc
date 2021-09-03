@@ -33,7 +33,7 @@
       "metadata": true,
       "canBeEmpty": true
     },
-    
+
     {
       "key": "author",
       "type": "textarea",
@@ -54,10 +54,11 @@
       "highlight":  true,
       "metadata": false,
       "rows":4,
-      "canBeEmpty": false
+      "canBeEmpty": false,
+      "isDetailed": false
     }
-    
-    
+
+
   ]
 
 }

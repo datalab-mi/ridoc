@@ -6,7 +6,7 @@
 	import PutItem from '../../components/PutItem.svelte';
 	import { itemJson } from '../../components/user-data.store';
 	import { list_logger, user } from '../../components/stores.js';
-	import { httpClient, index, upload } from '../../components/utils.js';
+	import { httpClient, index, upload, createMeta, isEmpty } from '../../components/utils.js';
 
 	export let _id;
 	export let _source;
@@ -17,7 +17,6 @@
 	const http = httpClient();
 	const required = true;
 
-	let display = true;
 	let send = false;
 	let readonly = true;
 
@@ -31,39 +30,11 @@
 	$: url = `/api/user/files/${$envJson.dstDir}/${filename}`
 
 	let meta;
+	let display;
 	//$: url = `/web/viewer.html?file=%2Fuser%2Fpdf%2F${filename}`
-	/**
-	 * Copie et adapte les métadonnées.
-	 * note : met à jour 'display'
-	 *
-	 * @param  items  tableau de métadonnées
-	 * @return copie adaptée
-	 */
-	 const createMeta = (items, source, highlight) => {
- 		return items.map(item => {
- 			const copy = { ...item };
- 			// replace value to the result value contained in source or in highlight key
- 			// if present and if needed
-
-			copy.value = copy.key in source ? source[copy.key] : copy.value
-
- 			if (copy.highlight && highlight && (copy.key in highlight)) {
- 				copy.highlight = highlight[copy.key].join(' [...] ')
- 			} else {
- 				copy.highlight = ""
- 			}
-
- 			// test if item should be displayed if empty
- 			if (copy.canBeEmpty !== undefined && !copy.canBeEmpty && isEmpty(copy.value)) {
- 				display = false
- 			}
- 			return copy;
- 		});
- 	}
-
 	//$: meta = readonly ? createMeta(inputs, _source, highlight) : createMeta(inputs, _source)
 	// !!! doesn't work, need to do this ugly workaround
-	meta = createMeta($itemJson.inputs, _source, highlight)
+	[meta, display] = createMeta($itemJson.inputs, _source, highlight)
 	//const meta2 = createMeta($itemJson.inputs, _source)
 	//$: meta = readonly ? meta1 : meta2
 
@@ -90,9 +61,7 @@
 		send = false;
 	}
 
-	function isEmpty(value){
-	  return value == null || value.length === 0;
-	}
+
 
 	const btnAttrs = {
 		class: 'hover:bg-gray-400'
@@ -117,7 +86,7 @@
 
 		<div slot="buttons" class="pt-4">
 
-			<button on:click={http.fetchBlob(url)} {...btnAttrs} style={$envJson.primary}>
+			<button on:click={http.fetchAuth(url,filename)} {...btnAttrs} style={$envJson.primary} >
 				<svg {...svgAttrs}><path d="M.2 10a11 11 0 0 1 19.6 0A11 11 0 0 1 .2 10zm9.8 4a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0-2a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
 				<span>CONSULTER</span>
 			</button>
@@ -175,14 +144,14 @@
 		@apply items-center;
 		@apply mx-0;
 		background-color: var(--primary);
-		
-		
-		
+
+
+
 	}
-	
+
 	button:hover {
 		@apply underline;
 		background-color: var(--primary);
-		
+
 	}
 </style>

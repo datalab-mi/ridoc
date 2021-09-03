@@ -10,6 +10,7 @@ from application.authentication import user_required
 from tools.elastic import search as elastic_search
 from tools.elastic import build_query as elastic_build_query
 from tools.elastic import suggest as elastic_suggest
+from tools.elastic import get_file as elastic_get_file
 from tools.elastic import get_unique_keywords
 
 # Blueprint Configuration
@@ -164,3 +165,22 @@ def get_keywords(index_name: str, field: str):
     """
     keyword_list = get_unique_keywords(index_name, field)
     return jsonify(keyword_list)
+
+@user_bp.route("/<index_name>/_doc/<filename>", methods=["GET"])
+@user_required
+def index_file(index_name: str, filename: str):
+    """Get a document in Elastic Search (ES)
+    Args:
+        index_name (str): ES index
+        filename (str): The file name
+        _source_includes (str): optional url argument, Required fields separated
+        with comma
+    """
+
+    if not index_name or not filename:
+        print('Missing keys')
+        return abort(500)
+    source_includes = request.args.get('_source_includes', '')
+    source_includes = source_includes.split(",")
+    res = elastic_get_file(index_name, filename, source_includes)
+    return jsonify(res['_source'])

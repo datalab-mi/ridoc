@@ -1,14 +1,14 @@
 <script>
     import Rate from "./Rate.svelte";
-    import {rateJson} from "../user-data.store";
+    import {searchRateJson} from "../user-data.store";
 
     const beforeRate = rate => {
       console.log(rate);
     };
     const afterRate = rate => {
-      if ($rateJson.length<1){
-      $rateJson.push(rate)
-      console.log($rateJson) // TODO: insérer ici lien vers la BDD
+      if ($searchRateJson.length<1){
+      $searchRateJson.push(rate)
+      console.log($searchRateJson) // TODO: insérer ici lien vers la BDD
       } else {
         window.alert("Vous avez déjà voté")
       }
