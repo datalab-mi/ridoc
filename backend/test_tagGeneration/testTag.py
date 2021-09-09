@@ -59,7 +59,7 @@ keywYake=yakefrench.extract_keywords(text_clean)
 
 
 #KeyBert
-kw_model=KeyBERT(model='paraphrase-multilingual-MiniLM-L12-v2')   
+kw_model=KeyBERT(model='paraphrase-multilingual-MiniLM-L12-v2')
 keywBert=kw_model.extract_keywords(text_clean, stop_words=stopwords, use_mmr=True,diversity=0.4, keyphrase_ngram_range=(1,3))
 
 
