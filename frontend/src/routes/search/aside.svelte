@@ -289,6 +289,7 @@
 	.tags{
 		height: 30vh;
 		overflow-y: scroll;
+		width: 15vw;
 	}
 	.occ{
 		color: rgb(185, 182, 182) !important;

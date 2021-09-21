@@ -191,6 +191,10 @@
         "tag":{
           "type": "keyword",
           "normalizer": "clean_normalizer"
+        },
+        "tag_textrank":{
+          "type": "keyword",
+          "normalizer": "clean_normalizer"
         }
       }
   }
