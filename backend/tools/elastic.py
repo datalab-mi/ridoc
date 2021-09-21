@@ -628,11 +628,6 @@ def get_tag(index_name: str, filename: str, fields: str) -> list:
             else:
                 keywTR.append(element)
                 stem.append(fr.stem(element))
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> implementation textrank in GetTag
     if len(keywTR)>3:
         return keywTR[:3]
     else:
