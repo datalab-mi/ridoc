@@ -14,6 +14,17 @@
       "color": "#F0F0F0"
     },
     {
+      "key": "tag_textrank",
+      "type": "keyword",
+      "placeholder": "Ajoutez un tag",
+      "value": [],
+      "innerHtml": "<b>Tag :</b>",
+      "highlight": false,
+      "metadata": true,
+      "canBeEmpty": true,
+      "color": "#658edb"
+    },
+    {
       "key": "title",
       "type": "textarea",
       "placeholder": "NA",

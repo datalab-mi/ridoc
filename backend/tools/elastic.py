@@ -521,10 +521,21 @@ def index_file(filename: str, index_name: str, user_data: str, dst_path: str,
             res_tag = get_tag(index_name, filename=str(filename), fields=entry['key'])
             body = {
                     "script" : {
+                        "source": "ctx._source.tag_textrank=params.list_tag",
+                        "lang": "painless",
+                        "params" : {
+                            "list_tag" : list(set(data.get("tag_textrank", []) + res_tag))
+                                    }
+                                }
+                    }
+            res_update = es.update(index=index_name, id=str(filename),body=body)
+            res_tag_es = get_tagOld(index_name, filename=str(filename), fields=entry['key'])
+            body = {
+                    "script" : {
                         "source": "ctx._source.tag=params.list_tag",
                         "lang": "painless",
                         "params" : {
-                            "list_tag" : list(set(data.get("tag", []) + res_tag))
+                            "list_tag" : list(set(data.get("tag", []) + res_tag_es))
                                     }
                                 }
                     }
@@ -617,7 +628,7 @@ def get_tag(index_name: str, filename: str, fields: str) -> list:
             else:
                 keywTR.append(element)
                 stem.append(fr.stem(element))
-    
+
     if len(keywTR)>3:
         return keywTR[:3]
     else:
