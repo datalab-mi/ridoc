@@ -33,7 +33,7 @@
       }
     }
   }
-  
+
     function onDelete(val){
       value = value.filter(item => item !== val)
     }
@@ -76,7 +76,7 @@
   {@html innerHtml}
 </label>
   {#if required}
-  
+
   <input  type="date" bind:value={value} {placeholder} readonly={derivedReadonly} required class='text-gray-600'  />
   {:else}
   <input type="date"  bind:value={value} {placeholder} readonly={derivedReadonly} class='text-gray-600'/>
@@ -84,7 +84,7 @@
 
 
 {:else}
-  
+
   {#if value instanceof Array}
     {#if type === "keyword"}
       {#await promiseListKeyword}
@@ -100,7 +100,7 @@
             onlyUnique={true}
             autoComplete={autoComplete}
             minChars={1}
-            
+
             />
         </div>
         {/await}
@@ -137,7 +137,7 @@
       {/if}
       </ul>
     {/if}
-      
+
   {:else}
     {#if highlight && derivedReadonly}
         <p> &laquo; {@html highlight} &raquo; </p>
@@ -158,9 +158,9 @@
 <style>
 	/* override default Tag style */
 	.my-custom-class :global(.svelte-tags-input-tag) {
-		background-color: #F0F0F0 !important;
+		background-color:  #ff8566 !important;
     border-radius: 40px;
-    color:#1E1E1E !important;
+    color:var(--color) !important;
     margin-right: 1.5em;
     padding-left: 1em;
     padding-right: 1em;
@@ -172,7 +172,7 @@
 	.my-custom-class :global(.svelte-tags-input-layout) {
 		border-style: none !important;
 		cursor: default !important;
-    
+
 	}
 	.my-custom-class :global(.svelte-tags-input-layout.sti-layout-disable) {
 		background-color: transparent !important;
@@ -180,7 +180,7 @@
 	.my-custom-class :global(.svelte-tags-input) {
 		background: transparent !important;
 		cursor: default !important;
-    
+
 	}
 	.my-custom-class :global(.svelte-tags-input:disabled) {
 		background-color: transparent !important;
@@ -211,19 +211,19 @@
 		resize: none;
 		vertical-align: middle;
     	}
-  
+
 
 	input:not([type='date']),
 	textarea {
 		width: 100% !important;
     @apply my-0;
-    
+
 	}
 
   ul input:not([type='date']),
 	ul textarea {
 		@apply w-5/6;
-    
+
 	}
 
 
