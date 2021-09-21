@@ -89,7 +89,7 @@
     {#if type === "keyword"}
       {#await promiseListKeyword}
       {:then autoComplete}
-          <div class="my-custom-class" >
+          <div class="my-custom-class" style="--color: {color}" >
           <Tags
         		tags={value}
             on:tags={handleTags}
@@ -158,9 +158,9 @@
 <style>
 	/* override default Tag style */
 	.my-custom-class :global(.svelte-tags-input-tag) {
-		background-color:  #ff8566 !important;
+		background-color:  var(--color) !important;
     border-radius: 40px;
-    color:var(--color) !important;
+    color:#1E1E1E !important;
     margin-right: 1.5em;
     padding-left: 1em;
     padding-right: 1em;
