@@ -2,6 +2,9 @@
 	import { quintOut } from 'svelte/easing';
 	import { crossfade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
+	import { onMount } from "svelte";
+	import { USER_API, get } from "../../components/utils.js";
+
 	import { envJson, itemJson, searchJson } from '../../components/user-data.store';
 	import { promiseSearch} from './stores.js';
 	import { flatten, format2ES, search, httpClient} from '../../components/utils.js';
@@ -12,8 +15,12 @@
 	import AccordionItem from '../../components/accordion/AccordionItem.svelte';
 
 	let tags1
-	let tags=[]
-	let tag_name
+	let tags = []
+	let keyTag
+
+ 	let styleInput = "border-2 w-full"
+	let promiseListKeyword;
+
 
 	function init(){
 		tags1 =initialTags()
@@ -21,7 +28,7 @@
 		}
 
 	function initialTags(){
-	let inittag = httpClient().fetchJson('api/user/keywords/'+$envJson['index_name']+'/'+tag_name).then(response=>response).then(data=> data).then(tagslist=> {return tagsinit(tagslist)})
+	let inittag = httpClient().fetchJson('api/user/keywords/'+$envJson['index_name']+'/'+keyTag).then(response=>response).then(tagslist=> {return tagsinit(tagslist)})
 	return inittag;
 }
 
@@ -37,11 +44,11 @@
 
 	function waitindex(){ //avoid undefined index issues
 		for (let element in $itemJson['inputs']){
-			if ($itemJson['inputs'][element]['type']=="keyword"){
-				tag_name=$itemJson['inputs'][element]['key']
+			if ($itemJson['inputs'][element]['type'] === "keyword"){
+				keyTag = $itemJson['inputs'][element]['key']
 			}
 		}
-		if ($envJson['index_name']!=undefined && tag_name!=undefined){
+		if ($envJson['index_name']!=undefined && keyTag!=undefined){
 			init()
 			console.log($itemJson['inputs'])
 
@@ -58,9 +65,9 @@
 				let tagsbrut=[];
 				if (searchResults.hits.length>0){
 					for(let i=0;i<searchResults.hits.length;i++){
-						if(searchResults.hits[i]['_source'][tag_name]!==undefined)
-						{console.log(searchResults.hits[i]['_source'][tag_name])
-					tagsbrut.push(searchResults.hits[i]['_source'][tag_name])}
+						if(searchResults.hits[i]['_source'][keyTag]!==undefined)
+						{console.log(searchResults.hits[i]['_source'][keyTag])
+					tagsbrut.push(searchResults.hits[i]['_source'][keyTag])}
 
 					}
 				}
@@ -149,19 +156,13 @@
 	dateTo='';
 	update()
 	}
-	function update(){ // update le fichier searchJson avec les champs selectionnés
-	for (let pas=0;pas<$searchJson[1].length;pas++){
-		if ($searchJson[1][pas].type=="search"){
-			$searchJson[1][pas].value=auteur;
-		}
-		else if($searchJson[1][pas].innerHtml=="A partir de : "){
-			$searchJson[1][pas].value=dateFrom;
-		}
-		else if($searchJson[1][pas].innerHtml=="Jusqu'à : "){
-			$searchJson[1][pas].value=dateTo;
-		}
-	}
-	$searchJson[2][0].value=getTags(tags);
+
+	function update(){ // update le fichier searchJson avec les champs keeyword selectionnés
+		$searchJson[1].forEach(function(part, index) {
+			if (part.type === 'keyword') {
+				this[index].value = getTags(tags);
+			}
+		}, $searchJson[1]); // use arr as this
 	}
 
 	let dateFrom="";
@@ -170,6 +171,7 @@
 	let searchTerm =""
 	$: tagfilt= tags.filter(tag=>tag.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !==-1 && tag["occ"] !==0)
 </script>
+
 <div class='board'>
 	<div class='Factif border-b-2 mx-5 '>
 		<h1>Filtres actifs</h1>
@@ -194,20 +196,33 @@
 
 	<!-- recherche avancée dans le 2eme element de la liste de searchJson  -->
 	{#if $searchJson !== 'undefined' && $searchJson.length > 1 }
-		<Accordion containerClass="mt-4">
+		<Accordion containerClass={"mt-4 mx-5"}>
 		{#each $searchJson[1] as { fields, value, type, placeholder, innerHtml, style, color, suggest }, j}
-			<AccordionItem buttonStyle="padding-left: 0">
+			<AccordionItem>
 				<div slot="title">
 					<h2>{innerHtml}</h2>
 				</div>
-				<div slot="content" class="flex-col space-y-4">
-							<div class="flex flex-col sm:flex-row space-x-0 sm:space-x-3 space-y-2 sm:space-y-0">
+				<div slot="content" class="flex-col ">
+							<div class="flex flex-col">
 										{#if type === 'keyword' }
-											<SearchKeywordInput bind:value={value} {fields} {placeholder} {color} {style} />
+										<div>
+											<input type="search" bind:value={searchTerm} class="border-2 w-full" placeholder="Rechercher..." />
+											<div class="tags">
+											{#each tagfilt.filter(t => !t.done) as tag (tag.id)}
+												<label
+													in:receive="{{key: tag.id}}"
+													out:send="{{key: tag.id}}"
+													animate:flip>
+													<input type=checkbox bind:checked={tag.done} on:change={update}>
+													{tag.description} <b class="occ gray-200 ">{tag.occ}</b>
+												</label>
+											{/each}
+											</div>
+										</div>
 										{:else if type === 'search' && suggest }
-											<SearchSuggestInput bind:value={value} {placeholder} {style} />
+											<SearchSuggestInput bind:value={value} {placeholder} {style} {styleInput} />
 										{:else }
-											<SearchInput bind:value={value} {type} {placeholder} {style} />
+											<SearchInput bind:value={value} {type} {placeholder} {style} {styleInput}  />
 										{/if}
 							</div>
 				</div>
@@ -215,37 +230,6 @@
 			{/each}
 		</Accordion>
 	{/if}
-
-	<div class='date mb-5 mx-5'>
-		<h2>Date de publication</h2>
-		A partir:
-		<input type=date bind:value={dateFrom} class="border-2 my-1" on:change={update}> <br>
-		Jusqu'à :
-		<input type=date bind:value={dateTo} class="border-2" on:change={update}>
-	</div>
-
-	<div class='Auteur my-3 mx-5'>
-		<h2>Auteur</h2>
-		<input class="border-2 w-full" placeholder="Nom ou Prénom" bind:value={auteur} on:change={update} />
-	</div>
-
-	<div class='categories my-3 mx-5'>
-		<h2>Catégories</h2>
-		<input bind:value={searchTerm} class="border-2 w-full" placeholder="Rechercher..." />
-		<div class="tags">
-		{#each tagfilt.filter(t => !t.done) as tag (tag.id)}
-			<label
-				in:receive="{{key: tag.id}}"
-				out:send="{{key: tag.id}}"
-				animate:flip
-			>
-				<input type=checkbox bind:checked={tag.done} on:change={update}>
-				{tag.description} <b class="occ gray-200 ">{tag.occ}</b>
-			</label>
-		{/each}
-		</div>
-	</div>
-
 
 
 
@@ -263,6 +247,7 @@
 
 
 </div>
+
 <style>
 
 
@@ -313,7 +298,8 @@
 	}
 
 	input {
-			border-color: var(--primary); }
+			border-color: var(--primary);
+		}
 
 
 	.tags{

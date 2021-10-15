@@ -9,7 +9,7 @@
 	export let placeholder = '';
 	export let value = '';
 	export let fields = '';
-
+	export let styleInput = "bg-white focus:outline-none py-4 block w-full";
 	const http = httpClient();
 
 	const inputId = "suggest-" + Math.floor(Math.random() * 1000);
@@ -79,7 +79,7 @@
 		<AutoComplete
 			{placeholder}
 			{inputId}
-			inputClassName="bg-white focus:outline-none py-4 block w-full "
+			inputClassName={styleInput}
 			{searchFunction}
 			{keywordsFunction}
 			{labelFieldName}

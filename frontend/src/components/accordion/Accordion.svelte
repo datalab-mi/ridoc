@@ -18,7 +18,7 @@
 	export let listStyle = undefined;
 
 	setContext(contextKey, selection);
-	
+
 </script>
 
 <div class="accordion {containerClass || ''}" style={containerStyle}>
@@ -30,10 +30,11 @@
 </div>
 
 <style>
+
+	/*
 	.accordion {
 		@apply mx-auto;
 	}
-	/*
 	ul {
 		@apply border-t;
 		@apply border-l;
@@ -43,4 +44,8 @@
 		@apply border-b;
 	}
 	*/
+	ul, li {
+    list-style-type: none;
+		padding-left: 0;
+	}
 </style>

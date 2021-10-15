@@ -110,4 +110,7 @@
 		@apply border-b;
 	}
 	*/
+	li {
+    list-style-type: none;
+	}
 </style>
