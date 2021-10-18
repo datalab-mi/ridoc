@@ -37,17 +37,15 @@
     "innerHtml": "Jusqu'à : ",
     "style": "w-3/4 p-2",
     "highlight": false
-    }
-  ],
-  [
+    },
     {
     "bool": "filter",
     "query": {"terms": {"mots cles": "$value"}},
     "fields": "mots cles",
     "value": [],
     "type": "keyword",
-    "placeholder": "Recherche par tags",
-    "innerHtml": "",
+    "placeholder": "Entrez un mot-clef",
+    "innerHtml": "Recherche par tags :",
     "style": "w-5/6 p-2",
     "highlight": false,
     "color": "#000066"

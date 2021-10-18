@@ -14,46 +14,41 @@
 	import Accordion from '../../components/accordion/Accordion.svelte';
 	import AccordionItem from '../../components/accordion/AccordionItem.svelte';
 
-	let tags1
-	let tags = []
-	let keyTag
+	let tags = {}
 
+	let keywordList = []
  	let styleInput = "border-2 w-full"
 	let promiseListKeyword;
-
+	let tagfilt
+	let searchTerm = {};
 
 	function init(){
-		tags1 =initialTags()
-		tags1.then(function(result){return tags=result});
+		// get keyword field in the aside
+		$searchJson[1].forEach(function(part, index) {
+			if (part.type === 'keyword') {
+				const field = this[index].fields
+				keywordList.push(field)
+				tags[field] = []
+			}
+		}, $searchJson[1]); // use arr as this
+
+		keywordList.forEach( field => {
+			promiseListKeyword = get(`${USER_API}/keywords/${$envJson.index_name}/${field}`);
+			promiseListKeyword.then(listKeyword => {
+				listKeyword.forEach((x, i) => {
+					tags[field].push({'id' : i + 1, 'description' : x, 'done' : false, 'occ' : 1 })
+				})
+			})
+		})
+
+		keywordList.forEach(x => searchTerm[x] = '')
 		}
 
-	function initialTags(){
-	let inittag = httpClient().fetchJson('api/user/keywords/'+$envJson['index_name']+'/'+keyTag).then(response=>response).then(tagslist=> {return tagsinit(tagslist)})
-	return inittag;
-}
-
-	function tagsinit(tagslist){
-		let tags=[]
-		for (let i=0;i<tagslist.length;i++){
-			tags.push({'id':i+1,'description':tagslist[i],'done':false,'occ':' '})
-		}
-		return tags
-
-
-	}
 
 	function waitindex(){ //avoid undefined index issues
-		for (let element in $itemJson['inputs']){
-			if ($itemJson['inputs'][element]['type'] === "keyword"){
-				keyTag = $itemJson['inputs'][element]['key']
-			}
-		}
-		if ($envJson['index_name']!=undefined && keyTag!=undefined){
+		if (($envJson['index_name'] !== undefined) && ($searchJson.length > 0)) {
 			init()
-			console.log($itemJson['inputs'])
-
-		}
-		else{
+		} else {
 			setTimeout(waitindex,100)
 		}
 	}
@@ -62,57 +57,51 @@
 	$: {
 		$promiseSearch
 			.then((searchResults) => {
-				let tagsbrut=[];
-				if (searchResults.hits.length>0){
-					for(let i=0;i<searchResults.hits.length;i++){
-						if(searchResults.hits[i]['_source'][keyTag]!==undefined)
-						{console.log(searchResults.hits[i]['_source'][keyTag])
-					tagsbrut.push(searchResults.hits[i]['_source'][keyTag])}
-
+				keywordList.forEach( keyTag => {
+					let tagsbrut = [];
+					if (searchResults.hits.length > 0){
+						searchResults.hits.forEach( hits => {
+							if (hits['_source'][keyTag] !== undefined) {
+								tagsbrut.push(hits['_source'][keyTag])
+							}
+						})
 					}
-				}
-
-			updateTags(tagsbrut);
+				updateTags(tagsbrut, keyTag);
+				})
 			})
 			.catch((err) => {
-				console.log('erreur')
+				console.log(err)
 			});
 	}
 	function lowerandaccent(list){
-		let l=[]
-		for (let i=0;i<list.length;i++){
-			let el=list[i].toLowerCase();
-			el = el.replace(/é|è|ê/g,"e");
-			l.push(el)
-		}
-		return l
+		return list.map(e => e.toLowerCase().replace(/é|è|ê/g,"e"))
 	}
-	function updateTags(tagsbrut){ //change les occurences selon la recherche
-		if(tagsbrut.length>0){
-		let dico={};
-		let tagsbrut2=lowerandaccent(tagsbrut.flat());
-		console.log(tagsbrut2)
-		tagsbrut2.forEach(element => {
-			if (element in dico){
-				dico[element]++;
+
+	function updateTags(tagsbrut, keyTag){ //change les occurences selon la recherche
+		//console.log(tagsbrut);
+		if (tagsbrut.length > 0) {
+			let dico={};
+			let tagsbrut2 = lowerandaccent(tagsbrut.flat());
+			//console.log(tagsbrut2)
+			tagsbrut2.forEach(element => {
+				if (element in dico) {
+					dico[element]++;
+				} else {
+					dico[element] = 1;
+				}
+			})
+			for (let k=0; k<tags[keyTag].length; k++) {
+				if(tags[keyTag][k]['description'] in dico) {
+					tags[keyTag][k]['occ'] = dico[tags[keyTag][k]['description']];
+				} else {
+					tags[keyTag][k]['occ'] = 0;
+				}
 			}
-			else{
-				dico[element]=1;
+		} else {
+			for (let k=0;k<tags[keyTag].length;k++){
+				tags[keyTag][k]['occ'] = 0;
 			}
-		})
-		for (let k=0;k<tags.length;k++){
-			if(tags[k]['description'] in dico){
-				tags[k]['occ']=dico[tags[k]['description']];
 		}
-			else{
-				tags[k]['occ']=0;
-			}
-		}
-	}
-		else{
-			for (let k=0;k<tags.length;k++){
-				tags[k]['occ']=0;
-		}}
 	}
 
 	let body;
@@ -138,57 +127,78 @@
 		}
 	});
 
-	function getTags(tags){ //renvoie la liste des noms de tags selectionnés
-	let selectedtags=tags.filter(tag=>tag.done==true)
-	let activeTags=[]
-	for (let i=0;i<selectedtags.length;i++){
-		activeTags.push(selectedtags[i].description)
-	}
-	return activeTags;
-	}
-
-	function reset(){
-	for(let i=0;i<tags.length;i++){
-	 tags[i].done=false;
+	function getKeywords(field) { //renvoie la liste des noms de tags selectionnés
+		let selectedtags = tags[field].filter(tag => tag.done)// === true)
+		let activeTags = []
+		for (let i = 0; i < selectedtags.length; i++){
+			activeTags.push(selectedtags[i].description)
 		}
-	auteur='';
-	dateFrom='';
-	dateTo='';
-	update()
+		return activeTags;
 	}
 
-	function update(){ // update le fichier searchJson avec les champs keeyword selectionnés
+	function reset() {
+		// Remove selected keywords
+		keywordList.forEach( keyTag => {
+			for (let i=0; i < tags[keyTag].length; i++) {
+			 tags[keyTag][i].done = false;
+				}
+		})
+		// Remove values in $searchJson
+		$searchJson[1].forEach(function(part, index) {
+				this[index].value = "";
+		}, $searchJson[1]); // use arr as this
+		console.log($searchJson[1]);
+		// Reset all inputs
+		var inputs = document.querySelectorAll('input[type=search],input[type=date],input[type=text]');
+		for(var i = 0; i < inputs.length; i++) {
+			inputs[i].value = ""
+		}
+	}
+
+	function update() { // update le fichier searchJson avec les champs keeyword selectionnés
 		$searchJson[1].forEach(function(part, index) {
 			if (part.type === 'keyword') {
-				this[index].value = getTags(tags);
+				const field = this[index].fields
+				this[index].value = getKeywords(field);
 			}
 		}, $searchJson[1]); // use arr as this
 	}
 
-	let dateFrom="";
-	let dateTo="";
-	let auteur="";
-	let searchTerm =""
-	$: tagfilt= tags.filter(tag=>tag.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !==-1 && tag["occ"] !==0)
+
+
+
+	$: {
+		keywordList.forEach(keyTag => {
+			if (keyTag in tags) {
+					tagfilt = tags[keyTag].filter(entry => entry["occ"] !==0 && entry.description.toLowerCase().indexOf(searchTerm[keyTag].toLowerCase()) !== -1)
+			}
+		})
+	}
+
+
 </script>
 
 <div class='board'>
 	<div class='Factif border-b-2 mx-5 '>
 		<h1>Filtres actifs</h1>
-		{#if tags.filter(t => t.done).length>0}
-		{#each tags.filter(t => t.done) as tag (tag.id)}
-			<label
-				in:receive="{{key: tag.id}}"
-				out:send="{{key: tag.id}}"
-				animate:flip
-			>
-				<input type=checkbox bind:checked={tag.done} on:change={update}>
-				{tag.description}
-			</label>
+		{#each keywordList as keyTag}
+			{#if keyTag in tags}
+				{#if tags[keyTag].filter(t => t.done).length>0}
+					{#each tags[keyTag].filter(t => t.done) as tag (tag.id)}
+						<label
+							in:receive="{{key: tag.id + keyTag}}"
+							out:send="{{key: tag.id + keyTag}}"
+							animate:flip>
+							<input type=checkbox bind:checked={tag.done} on:change={update}>
+							{tag.description}
+						</label>
+					{/each}
+				{:else}
+				<div class="mb-10">Aucun filtre actif </div>
+				{/if}
+			{/if}
 		{/each}
-		{:else}
-		<div class="mb-10">Aucun filtre actif </div>
-		{/if}
+
 
 	</div>
 
@@ -202,21 +212,24 @@
 				<div slot="title">
 					<h2>{innerHtml}</h2>
 				</div>
-				<div slot="content" class="flex-col ">
+				<div slot="content" class="flex-col">
 							<div class="flex flex-col">
 										{#if type === 'keyword' }
 										<div>
-											<input type="search" bind:value={searchTerm} class="border-2 w-full" placeholder="Rechercher..." />
+											<input type="search" bind:value={searchTerm.fields} class="border-2 w-full" placeholder={placeholder}/>
 											<div class="tags">
-											{#each tagfilt.filter(t => !t.done) as tag (tag.id)}
+											{#if fields in tags }
+											{#each tags[fields].filter(entry => !entry.done && entry["occ"] !==0 && entry.description.toLowerCase().indexOf(searchTerm[fields].toLowerCase()) !== -1) as tag (tag.id)}
 												<label
-													in:receive="{{key: tag.id}}"
-													out:send="{{key: tag.id}}"
+													in:receive="{{key: tag.id + fields}}"
+													out:send="{{key: tag.id + fields}}"
 													animate:flip>
 													<input type=checkbox bind:checked={tag.done} on:change={update}>
 													{tag.description} <b class="occ gray-200 ">{tag.occ}</b>
 												</label>
 											{/each}
+											{/if}
+
 											</div>
 										</div>
 										{:else if type === 'search' && suggest }

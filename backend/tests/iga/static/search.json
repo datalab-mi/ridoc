@@ -26,7 +26,7 @@
     "value": "",
     "type": "search",
     "placeholder": "Paul Dupond, Anne-Marie",
-    "innerHtml": "Auteur",
+    "innerHtml": "Auteur : ",
     "style": "flex-auto",
     "highlight": true
     },
@@ -55,7 +55,7 @@
     "value": [],
     "type": "keyword",
     "placeholder": "Recherche par tags",
-    "innerHtml": "Catégories",
+    "innerHtml": "Catégories : ",
     "style": "flex-auto",
     "highlight": false,
     "color": "#003300"
