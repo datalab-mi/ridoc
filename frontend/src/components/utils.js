@@ -65,12 +65,13 @@ async function get(url) {
       cache: 'no-cache',
       headers: buildHeaders()
     })
-	if (!res.ok) {
-		console.log(`L'appel à "${url}" a échoué`)
-		throw new Error(`L'appel à "${url}" a échoué: ${res.status}`);
+	if (res.ok) {
+			return  await res.json();
+	} else if  (res.status === 401)  {
+		throw new Error('Veuillez vous réauthentifier');
+	} else {
+		throw new Error('Oups');
 	}
-	console.debug(`L'appel à "${url}" a réussi`)
-	return await res.json();
 }
 
 function httpClient() {

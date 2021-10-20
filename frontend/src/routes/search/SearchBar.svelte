@@ -9,11 +9,16 @@
 	import SearchSuggestInput from './SearchSuggestInput.svelte';
 	import { promiseSearch } from './stores.js';
 	import { flatten, format2ES, search } from '../../components/utils.js';
+	import { list_logger } from '../../components/stores.js';
+
 	let body
 	let notes
 	function handleSearch() {
 		body = format2ES($itemJson, flatten($searchJson, 2).filter(x => x.type !== "button"), $envJson.index_name)
 		$promiseSearch = search(body)
+		$promiseSearch.catch(err => {
+			list_logger.concat({level: "error", message: err, ressource: "search"})
+		})
 	}
 </script>
 <div class="background" >

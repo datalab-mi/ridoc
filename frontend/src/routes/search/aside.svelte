@@ -7,6 +7,7 @@
 
 	import { envJson, itemJson, searchJson } from '../../components/user-data.store';
 	import { promiseSearch} from './stores.js';
+	import { list_logger } from '../../components/stores.js';
 	import { flatten, format2ES, search, httpClient} from '../../components/utils.js';
 	import SearchInput from './SearchInput.svelte';
 	import SearchKeywordInput from './SearchKeywordInput.svelte';
@@ -34,11 +35,15 @@
 
 		keywordList.forEach( field => {
 			promiseListKeyword = get(`${USER_API}/keywords/${$envJson.index_name}/${field}`);
-			promiseListKeyword.then(listKeyword => {
-				listKeyword.forEach((x, i) => {
-					tags[field].push({'id' : i + 1, 'description' : x, 'done' : false, 'occ' : 1 })
+			promiseListKeyword
+				.then(listKeyword => {
+					listKeyword.forEach((x, i) => {
+						tags[field].push({'id' : i + 1, 'description' : x, 'done' : false, 'occ' : 1 })
+					})
 				})
-			})
+				.catch(err => {
+					list_logger.concat({level: "error", message: err, ressource: "keywords"})
+				})
 		})
 
 		keywordList.forEach(x => searchTerm[x] = '')
@@ -181,9 +186,12 @@
 <div class='board'>
 	<div class='Factif border-b-2 mx-5 '>
 		<h1>Filtres actifs</h1>
+		{#if ! Object.values(tags).some(tag => tag.some(t => t.done))}
+			<div class="mb-10">Aucun filtre actif </div>
+		{/if}
 		{#each keywordList as keyTag}
 			{#if keyTag in tags}
-				{#if tags[keyTag].filter(t => t.done).length>0}
+				{#if tags[keyTag].some(t => t.done)}
 					{#each tags[keyTag].filter(t => t.done) as tag (tag.id)}
 						<label
 							in:receive="{{key: tag.id + keyTag}}"
@@ -193,13 +201,9 @@
 							{tag.description}
 						</label>
 					{/each}
-				{:else}
-				<div class="mb-10">Aucun filtre actif </div>
 				{/if}
 			{/if}
 		{/each}
-
-
 	</div>
 
 	<h1 class="mx-5">Filtres disponibles</h1>
@@ -216,7 +220,7 @@
 							<div class="flex flex-col">
 										{#if type === 'keyword' }
 										<div>
-											<input type="search" bind:value={searchTerm.fields} class="border-2 w-full" placeholder={placeholder}/>
+											<input type="search" bind:value={searchTerm[fields]} class="border-2 w-full" placeholder={placeholder}/>
 											<div class="tags">
 											{#if fields in tags }
 											{#each tags[fields].filter(entry => !entry.done && entry["occ"] !==0 && entry.description.toLowerCase().indexOf(searchTerm[fields].toLowerCase()) !== -1) as tag (tag.id)}
@@ -266,7 +270,7 @@
 
 	.board {
 		@apply shadow;
-		min-width:15%;
+		width:20%;
 		float:left;
 		background-color: white;
 		padding: 10pt;
@@ -316,7 +320,7 @@
 
 
 	.tags{
-		height: 30vh;
+		max-height: 30vh;
 		overflow-y: scroll;
 	}
 	.occ{
