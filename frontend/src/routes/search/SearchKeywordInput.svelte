@@ -51,4 +51,5 @@
 		background: #fff !important;
 		cursor: default !important;
 	}
+
 </style>

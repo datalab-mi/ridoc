@@ -26,7 +26,7 @@
     "value": "",
     "type": "search",
     "placeholder": "Paul Dupond, Anne-Marie",
-    "innerHtml": "Nom ou Prénom",
+    "innerHtml": "Auteur : ",
     "style": "flex-auto",
     "highlight": true
     },
@@ -47,9 +47,7 @@
     "innerHtml": "Jusqu'à : ",
     "style": "flex flex-initial",
     "highlight": true
-    }
-  ],
-  [
+  },
     {
     "bool": "filter",
     "query": {"terms": {"tag": "$value"}},
@@ -57,7 +55,7 @@
     "value": [],
     "type": "keyword",
     "placeholder": "Recherche par tags",
-    "innerHtml": "",
+    "innerHtml": "Catégories : ",
     "style": "flex-auto",
     "highlight": false,
     "color": "#003300"

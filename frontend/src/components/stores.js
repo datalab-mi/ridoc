@@ -77,7 +77,7 @@ function createLogger() {
 });
 	return {
 		subscribe,
-		concat: (x) => update(n => n.concat(x)),
+		concat: (x) => update(n => JSON.stringify(n.at(-1)) === JSON.stringify(x) ? n : n.concat(x)),
 		filter: (msg, key) => update(n => n.filter(t => t[key] !== msg)),
     delete: () => update(n => n.slice(1, n.length)),
 		reset: () => set(inital_logger_list)

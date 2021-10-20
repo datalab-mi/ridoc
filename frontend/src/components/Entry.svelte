@@ -240,6 +240,6 @@
 	}
 
 	ul {
-		list-style: disc inside;
+		list-style: disc;
 	}
 </style>
