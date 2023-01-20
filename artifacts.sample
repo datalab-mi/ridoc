@@ -1,0 +1,6 @@
+export DC=docker-compose
+export INDEX_NAME = bld
+export DATA_PATH = /data
+export ENV_FILE = ${APP_PATH}/backend/tests/${INDEX_NAME}/.env-${INDEX_NAME}
+export FRONTEND_STATIC_USER=${APP_PATH}/backend/tests/${INDEX_NAME}/static
+export DC_UP_ARGS=
