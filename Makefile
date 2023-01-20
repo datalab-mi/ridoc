@@ -148,19 +148,19 @@ backend/.env:
 backend-dev: network backend/.env
 	@echo docker-compose up backend for dev
 	#@export ${DC} -f ${DC_FILE}.yml up -d $(DC_UP_ARGS) 2>&1 | grep -v orphan
-	@export EXEC_ENV=development;${DC} -f ${DC_FILE}.yml up -d $(DC_UP_ARGS)
+	@export FLASK_DEBUG=1;${DC} -f ${DC_FILE}.yml up -d $(DC_UP_ARGS)
 
 backend-dev-stop:
-	@export EXEC_ENV=dev; ${DC} -f ${DC_FILE}.yml down #--remove-orphan
+	@export FLASK_DEBUG=1; ${DC} -f ${DC_FILE}.yml down #--remove-orphan
 
 # production mode
 backend-start: backend/.env
 	@echo docker-compose up backend for production ${VERSION}
-	@export EXEC_ENV=prod; ${DC} -f ${DC_FILE}.yml up --build -d 2>&1 | grep -v orphan
+	@export FLASK_DEBUG=0; ${DC} -f ${DC_FILE}.yml up --build -d 2>&1 | grep -v orphan
 
 backend-stop:
 	@echo docker-compose down backend for production ${VERSION}
-	@export EXEC_ENV=prod; ${DC} -f ${DC_FILE}.yml down  --remove-orphan
+	@export FLASK_DEBUG=0; ${DC} -f ${DC_FILE}.yml down  --remove-orphan
 
 backend-exec:
 	$(DC) -f ${DC_FILE}.yml exec backend bash
