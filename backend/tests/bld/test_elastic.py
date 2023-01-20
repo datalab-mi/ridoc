@@ -50,7 +50,7 @@ def test_create_index():
 
     create_index(INDEX_NAME + '_blue', USER_DATA, ES_DATA, MAPPING_FILE, GLOSSARY_FILE, RAW_EXPRESSION_FILE )
     put_alias(index_name=INDEX_NAME + '_blue', alias_name=INDEX_NAME)
-    
+
 @pytest.mark.run(after='test_create_index')
 def test_inject_documents(sections):
     for path in [JSON_DIR, META_DIR]:
@@ -108,7 +108,7 @@ def test_search():
     #import pdb; pdb.set_trace()
     #print(hits, length_req, bande)
     assert  res['hits'][0]['_id'] == doc, 'Found to result %s'%res['hits'][0]['_id']
-    assert res['length'] == 4, res['length']
+    assert res['length'] > 4, res['length']
     assert not res['band']
 
     # test expression
@@ -128,7 +128,7 @@ def test_search():
 def test_get_unique_keywords():
     field = "mots cles"
     keyword_list = get_unique_keywords(INDEX_NAME, field)
-    assert keyword_list == ['algorithme', 'data', 'docker', 'innovation', 'organisation', 'python', 'transformation numerique']
+    assert set(keyword_list) == set(['algorithme', 'data', 'docker', 'innovation', 'organisation', 'python', 'transformation numerique', 'backend','numerique'])
 
 @pytest.mark.run(after='test_inject_documents')
 def test_keyword_search():

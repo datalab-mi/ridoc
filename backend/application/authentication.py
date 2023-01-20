@@ -1,16 +1,20 @@
 import json, os
 from functools import wraps
 from pathlib import Path
-from werkzeug.security import safe_str_cmp
+import hmac
 from flask_jwt_extended import (
-    JWTManager, verify_jwt_in_request, verify_jwt_in_request_optional,
+    JWTManager, verify_jwt_in_request,
     create_access_token,
-    get_jwt_claims,
-    jwt_required, jwt_optional,get_jwt_identity, verify_fresh_jwt_in_request
+    get_jwt,
+    jwt_required, jwt_required,get_jwt_identity
 )
 
 from flask import current_app as app
 from flask import jsonify, request
+
+str_to_bytes = lambda s: s.encode("utf-8") if isinstance(s, str) else s
+safe_str_cmp = lambda a, b: hmac.compare_digest(str_to_bytes(a), str_to_bytes(b))
+
 
 class User(object):
     def __init__(self, id, username, password, role=None):
@@ -76,7 +80,7 @@ def login():
                     resources=resources_table[role]), 200
 
 @app.route('/authorized_resource', methods=['GET'])
-@jwt_optional
+@jwt_required(optional=True)
 def authorized_resource():
     """ If valid token, return role and
     row of matrice role, ie the authorized resources
@@ -105,7 +109,7 @@ def admin_required(fn):
             return fn(*args, **kwargs)
         else:
             verify_jwt_in_request()
-            claim = get_jwt_claims()
+            claim = get_jwt()
             #print("claim role : %s"%claim["role"])
             #print("can access to %s"%rules_table[claim["role"]])
             if "admin" not in rules_table[claim["role"]]:
@@ -123,7 +127,7 @@ def user_required(fn):
             return fn(*args, **kwargs)
         else:
             verify_jwt_in_request()
-            claim = get_jwt_claims()
+            claim = get_jwt()
             #print("claim role : %s"%claim["role"])
             #print("can access to %s"%rules_table)
             if "user" not in rules_table[claim["role"]]:
@@ -132,6 +136,6 @@ def user_required(fn):
                 return fn(*args, **kwargs)
     return wrapper
 
-@jwt.user_claims_loader
+@jwt.additional_claims_loader
 def add_claims_to_access_token(identity):
     return {"role": identity}

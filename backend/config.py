@@ -11,7 +11,7 @@ class Config:
     """Set Flask configuration vars from .env file, from docker-compose"""
 
     # General Config
-    FLASK_ENV = getenv('FLASK_ENV','debug')
+    FLASK_DEBUG = getenv('FLASK_DEBUG','1')
     USER_DATA = getenv('USER_DATA')
     INDEX_NAME = getenv('INDEX_NAME')
     ES_DATA = getenv('ES_DATA')

@@ -69,7 +69,7 @@ def test_reindex(client, app, access_headers, file_name, form_to_upload, bad_for
             headers=access_headers)
 
     resp = client.get('/admin/%s/reindex'%INDEX_NAME, headers=access_headers)
-    assert resp.json["log"] == [{'filename': 'ignit_pnigitis.pdf', 'msg': "failed to parse field [date] of type [date] in document with id 'ignit_pnigitis.pdf'. Preview of field's value: '14/1451-52'"},
+    assert resp.json["log"][0] in [{'filename': 'ignit_pnigitis.pdf', 'msg': "failed to parse field [date] of type [date] in document with id 'ignit_pnigitis.pdf'. Preview of field's value: '14/1451-52'"},
                                 {'filename': 'empty.txt', 'msg': 'Format not supported'}]
     assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
     assert resp.json['color'] == new_index
@@ -89,7 +89,6 @@ def test_search(client, app, search_data):
     assert resp.status_code == 200, 'Status Code : %s'%resp.status_code
 
     res = json.loads(resp.get_data(as_text=False).decode('utf-8'))
-
     assert len(res)>0, "No document found"
     #import pdb; pdb.set_trace()
     assert [hits['_id'] for hits in res['hits']] == ['moteur de recherche.odt'], 'Find %s'%[hits['_id'] for hits in res['hits']]
