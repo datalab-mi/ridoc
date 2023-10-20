@@ -15,6 +15,10 @@ _Dépot boite à outils pour un moteur de recherche._
  - Télécharger les données : `make download-data`
  - Créer le fichier artifacts pour choisir `INDEX_NAME`, `DATA_PATH` et `ENV_FILE`. Par exemple `mv artifacts.sample artifacts`
 
+## Déploiement sur kubernetes 
+  -
+  -
+  
 ## Les micro-services
 
 ### Elasticsearch
