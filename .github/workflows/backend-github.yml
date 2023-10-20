@@ -58,6 +58,15 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.7"
+    - name: Install dependencies
+      working-directory: ${{ env.APPLICATION }}
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f pavimafinance/requirements.txt ]; then pip install -r pavimafinance/requirements.txt; fi
+        if [ -f pavimafinance/requirements.txt ]; then pip install -e pavimafinance; fi
+ 
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
