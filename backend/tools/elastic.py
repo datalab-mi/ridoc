@@ -3,7 +3,7 @@
 
 import elasticsearch
 from elasticsearch import Elasticsearch, NotFoundError
-import os
+import os, sys
 import base64
 import json
 import logging
@@ -41,7 +41,7 @@ def simple_request(index_name, size):
             }
     }
 
-    D = es.search(index=str(INDEX_NAME_prop), size=size, body=request)
+    D = es.search(index=str(index_name), size=size, body=request)
     return D['hits']['hits']
 
 def clean(expression:str, index_name:str, analyzer="clean_analyser"):
@@ -169,7 +169,7 @@ def build_query(must: dict, should: dict, filter: dict, index_name: str,
 
 def search(must: dict, should: dict, filter: dict, index_name: str,
             highlight: list,
-            glossary_file=None, expression_file=None, threshold_file=None):
+            glossary_file=None, expression_file=None, threshold_file=None, size=10e2):
 
     """Perform the ES search
     Args:
@@ -218,7 +218,7 @@ def search(must: dict, should: dict, filter: dict, index_name: str,
         thresholds['r_threshold'] = 0
 
     try: #This try is for the case where no match is found
-        if not T and D['hits']['hits'][0]["_score"]/length_of_request < seuil: #The first filter then the second filter
+        if not T and D['hits']['hits'][0]["_score"]/length_of_request < size: #The first filter then the second filter
           Bande = True
     except:
         pass

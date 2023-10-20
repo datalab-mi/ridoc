@@ -113,7 +113,7 @@ def test_search():
                 threshold_file = threshold_file)
 
     #print(hits, length_req, bande)
-    assert  res['hits'][0]['_id'] == 'BF2016-08-16010-dfci.pdf', 'Found to result %s'%hits[0]['_id']
+    assert  res['hits'][0]['_id'] == 'BF2016-08-16010-dfci.pdf', 'Found to result %s'%res['hits'][0]['_id']
     assert res['length']>= 2, res['length']
     assert not res['band']
     #import pdb; pdb.set_trace()

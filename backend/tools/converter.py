@@ -135,17 +135,3 @@ if __name__ == '__main__':
     doc = "CALLMI_FS_015_Simplifiée - Message terminal déjà utilisé avec une autre carte.odt"
     path = '/data/user/odt/%s'%doc
     data = odt2json(path, sections)
-
-    path = '/app/tests/doc.odt'
-    data = convertisseur_odt_txt(path)
-    save_json(data, 'docOdt.json')
-
-    path = '/app/tests/doc.pdf'
-    txt = convertisseur_pdf_txt(path)
-    name = 'doc name'
-    Titre = 'doc titre'
-    Date = 'doc date'
-    Auteurs = 'doc auteur 1'
-    data = dict(Titre=Titre, Date=Date,Auteurs=Auteurs)
-    data['Corps'] = txt
-    save_json(data, 'doc.json')
