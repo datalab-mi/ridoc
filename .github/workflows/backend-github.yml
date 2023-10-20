@@ -15,8 +15,7 @@ on:
 env:
   REGISTRY: ghcr.io
   APPLICATION: backend
-  IMAGE_NAME: ridoc
-  #${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

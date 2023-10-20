@@ -16,7 +16,8 @@ env:
   REGISTRY: ghcr.io
   APPLICATION: frontend
   VIEWERJS_VERSION: 0.5.8
-  IMAGE_NAME: ridoc
+  IMAGE_NAME: ${{ github.repository }}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
