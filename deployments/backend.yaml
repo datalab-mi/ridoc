@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: backend
+  name: backend
+  namespace: ridoc
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - args:
+        - FLASK_DEBUG=0
+        command:
+        - ./start.sh
+        envFrom:
+        - configMapRef:
+            name: env-${INDEX_NAME}
+
+        image: ghcr.io/datalab-mi/ridoc/backend:latest
+        resources:
+          requests:
+            cpu: "1"
+        imagePullPolicy: Always
+        name: backend
+        ports:
+        - containerPort: 5000
+          name: http
+      imagePullSecrets:
+      - name: ghcr-login-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: ridoc
+spec:
+  ports:
+  - name: http
+    port: 5000
+  selector:
+    app: backend

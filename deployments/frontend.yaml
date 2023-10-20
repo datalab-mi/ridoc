@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+  namespace: pavima
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/pavima-journe/pavima-frontend:latest
+          imagePullPolicy: Always
+          ports:
+          - name: node
+            containerPort: 3000
+      imagePullSecrets:
+      - name: ghcr-login-secret
+      
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: frontend
+  namespace: pavima
+spec:
+  selector:
+    app: frontend
+  ports:
+  - name: node
+    port: 3000
+    targetPort: 3000

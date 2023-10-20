@@ -14,6 +14,9 @@ export DC_BUILD_ARGS = --pull --no-cache
 export DC_UP_ARGS = --build --force-recreate
 export DC_NETWORK_OPT = --opt com.docker.network.driver.mtu=1450
 
+# kubernetes 
+export KUBE_DIR = deployments
+
 # elasticsearch defaut configuration
 export ES_HOST = ${APP}-elasticsearch
 export ES_PORT = 9200
@@ -165,6 +168,27 @@ backend-stop:
 backend-exec:
 	$(DC) -f ${DC_FILE}.yml exec backend bash
 
+## Deploy backend
+# Create env-bakend configmap from .env-index
+deploy-k8s: deploy-k8s-traefik deploy-k8s-elasticsearch deploy-k8s-frontend deploy-k8s-backend
+
+create-namespace:
+	@echo $@
+	(cat ${KUBE_DIR}/namespace.yaml | envsubst | kubectl apply -f -) && touch $@
+
+deploy-k8s-traefik:
+	helm upgrade --install --values ${KUBE_DIR}/traefik/values.yaml traefik traefik/traefik --namespace traefik	
+
+deploy-k8s-configmap: create-namespace
+	kubectl create configmap env-${INDEX_NAME} --from-file=${ENV_FILE} --namespace ridoc -o yaml --dry-run=client | kubectl apply -f -
+
+deploy-traefik:
+	helm upgrade --install --values ${KUBE_DIR}/traefik/values.yaml traefik traefik/traefik --namespace traefik
+deploy-k8s-elasticsearch: deploy-k8s-namespace
+	@echo $@
+	@cat ${KUBE_DIR}/elasticsearch.yaml | envsubst | kubectl apply -f -
+ 
+
 ##############
 #Test backend#
 ##############
@@ -264,7 +288,7 @@ nginx-build: nginx-check-build
 
 
 #############
-# SWIFT 	  #
+# SWIFT     #
 #############
 chmod:
 	chmod +x swift/*.sh

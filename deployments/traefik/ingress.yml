@@ -1,0 +1,62 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: http-redirect-ingressroute
+spec:
+  entryPoints:
+  - websecure
+  routes:
+    - match: Host(`kubernetes.ridoc.ovh`)
+      kind: Rule
+      services:
+        - name: frontend
+          port: node
+          namespace: ridoc
+    - match: Host(`kubernetes.ridoc.ovh`) && PathPrefix(`/api`)
+      kind: Rule
+      services:
+        - name: backend
+          port: http
+          namespace: ridoc
+      middlewares:
+      - name: stripprefix
+
+    - match: Host(`kubernetes.ridoc.ovh`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+      kind: Rule
+      services:
+      - name: api@internal
+        kind: TraefikService
+
+    - match: Host(`kubernetes.ridoc.ovh`) && PathPrefix(`/kibana`)
+      kind: Rule
+      services:
+        - name: kibana
+          namespace: ridoc
+          port: http
+      middlewares:
+      - name: stripprefix
+      - name: kibana
+
+  tls: # Not merged with static configuration
+    certResolver: letsencrypt # You can add this later
+    options:
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: stripprefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /backend
+      - /kibana
+    forceSlash: false
+
+
+apiVersion: traefik.containo.us/v1alpha1
+  kind: Middleware
+  metadata:
+    name: kibana-dashboard-auth
+  spec:
+    basicAuth:
+      secret: traefik-dashboard-auth-secret
