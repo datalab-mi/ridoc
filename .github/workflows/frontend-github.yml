@@ -105,7 +105,7 @@ jobs:
           cache-to: type=gha,mode=max
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            VIEWERJS_VERSION: ${ env.VIEWERJS_VERSION }
+            VIEWERJS_VERSION: ${{ env.VIEWERJS_VERSION }}
             APP_VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
 
   # deploy:
