@@ -8,3 +8,5 @@ Launch test on iga open data [bonnes feuilles](https://www.interieur.gouv.fr/Pub
 
 # launch backend application
 `start.sh`
+
+# Docker image is build with githubaction
