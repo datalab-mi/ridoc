@@ -92,4 +92,4 @@ npm run build
 surge public my-project.surge.sh
 ```
 
-# Docker image is build with githubaction
+# Docker image is build with githubactions
