@@ -15,7 +15,3 @@ def test_pdf2json():
     data = pdf2json(directory)
     assert data == {'content': 'Ceci est un texte pdf'}, data
 
-
-
-if __name__ == '__main__':
-    test_odt2json()
