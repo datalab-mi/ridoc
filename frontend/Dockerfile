@@ -56,9 +56,9 @@ FROM node:12.2.0-alpine as prod
 EXPOSE 3000
 USER node:node
 WORKDIR /app
-COPY --from=build --chown=node:node /app/__sapper__/build ./build
+COPY --from=build --chown=node:node /app/__sapper__/build ./__sapper__/build
 COPY --from=build --chown=node:node /app/static ./static
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=base --chown=node:node /app/ViewerJS ./ViewerJS
 COPY --chown=node:node package.json .
-CMD ["node","build"]
+CMD ["node","__sapper__/build"]

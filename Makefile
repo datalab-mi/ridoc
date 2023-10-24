@@ -242,6 +242,10 @@ frontend-dev:
 	${DC} -f ${DC_FILE}-frontend-dev.yml up -d  $(DC_UP_ARGS)
 	$(DC) -f ${DC_FILE}-frontend-dev.yml exec -d frontend-dev npm run dev:tailwindcss
 
+frontend-run-build:
+	@echo docker-compose run ${APP} frontend dev #--build
+	${DC} -f ${DC_FILE}-frontend-build.yml up -d  $(DC_UP_ARGS)
+
 frontend-exec:
 	$(DC) -f ${DC_FILE}-frontend-dev.yml exec frontend-dev sh
 
