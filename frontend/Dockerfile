@@ -44,6 +44,7 @@ CMD [ "npm", "run","dev" ]
 # Step 3:   "build" target     #
 ################################
 FROM base as build
+RUN npm run build
 CMD ["npm", "run", "build"]
 #CMD ["npx", "sapper", "export"]
 ################################
@@ -57,6 +58,6 @@ USER node:node
 WORKDIR /app
 COPY --from=build --chown=node:node /app/__sapper__/build ./build
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
-COPY --from=build --chown=node:node /app/ViewerJS ./ViewerJS
+COPY --from=base --chown=node:node /app/ViewerJS ./ViewerJS
 COPY --chown=node:node package.json .
 CMD ["node","build"]
