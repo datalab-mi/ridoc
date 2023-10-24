@@ -19,11 +19,6 @@ spec:
       - name: frontend
         image: ghcr.io/datalab-mi/ridoc-frontend:${APP_VERSION}  
         imagePullPolicy: Always
-        args:
-        - run
-        - build
-        command:
-        - npm
         ports:
         - name: node
           containerPort: 3000

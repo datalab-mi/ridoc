@@ -57,6 +57,7 @@ EXPOSE 3000
 USER node:node
 WORKDIR /app
 COPY --from=build --chown=node:node /app/__sapper__/build ./build
+COPY --from=build --chown=node:node /app/static ./static
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=base --chown=node:node /app/ViewerJS ./ViewerJS
 COPY --chown=node:node package.json .
