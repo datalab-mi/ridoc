@@ -46,3 +46,17 @@ CMD [ "npm", "run","dev" ]
 FROM base as build
 CMD ["npm", "run", "build"]
 #CMD ["npx", "sapper", "export"]
+################################
+# Step 4: "production" target  #
+################################
+# This stage only needs the compiled Sapper application
+# and the runtime dependencies.
+FROM node:12.2.0-alpine as prod
+EXPOSE 3000
+USER node:node
+WORKDIR /app
+COPY --from=build --chown=node:node /app/build ./build
+COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/ViewerJS ./ViewerJS
+COPY --chown=node:node package.json .
+CMD ["node","build"]

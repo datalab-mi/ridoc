@@ -46,30 +46,3 @@ helm upgrade --install --values deployments/traefik/values.yaml traefik traefik/
 
 Plus besoin de gérer les certificats https car on utilise ceux du neud kube.
 
---- 
-Suivre la grotte du barbu pour générer une application dns ovh [tuto](https://www.grottedubarbu.fr/traefik-dns-challenge-ovh/)
-
-```
-domain = 
-curl -XPOST -H "X-Ovh-Application: 10b1283c6eda6eb9" -H "Content-type: application/json" \
-https://eu.api.ovh.com/1.0/auth/credential  -d '{
-    "accessRules": [
-        {
-            "method": "POST",
-            "path": "/domain/zone/pavima.ovh/record"
-        },
-        {
-            "method": "POST",
-            "path": "/domain/zone/pavima.ovh/refresh"
-        },
-        {
-            "method": "DELETE",
-            "path": "/domain/zone/pavima.ovh/record/*"
-        }
-    ]
-}'
-```
-```bash
-helm install traefik traefik/traefik
-helm install -f values.yaml traefik traefik/traefik
-```

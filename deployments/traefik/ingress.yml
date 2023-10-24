@@ -6,13 +6,13 @@ spec:
   entryPoints:
   - websecure
   routes:
-    - match: Host(`kubernetes.ridoc.ovh`)
+    - match: Host(`kubernetes.ridoc.fr`)
       kind: Rule
       services:
         - name: frontend
           port: node
           namespace: ridoc
-    - match: Host(`kubernetes.ridoc.ovh`) && PathPrefix(`/api`)
+    - match: Host(`kubernetes.ridoc.fr`) && PathPrefix(`/api`)
       kind: Rule
       services:
         - name: backend
@@ -21,13 +21,13 @@ spec:
       middlewares:
       - name: stripprefix
 
-    - match: Host(`kubernetes.ridoc.ovh`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+    - match: Host(`kubernetes.ridoc.fr`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
       kind: Rule
       services:
       - name: api@internal
         kind: TraefikService
 
-    - match: Host(`kubernetes.ridoc.ovh`) && PathPrefix(`/kibana`)
+    - match: Host(`kubernetes.ridoc.fr`) && PathPrefix(`/kibana`)
       kind: Rule
       services:
         - name: kibana

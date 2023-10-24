@@ -27,7 +27,7 @@ spec:
         - configMapRef:
             name: env-${INDEX_NAME}
 
-        image: ghcr.io/datalab-mi/ridoc/backend:latest
+        image: ghcr.io/datalab-mi/ridoc/backend:${APP_VERSION}
         resources:
           requests:
             cpu: "1"
@@ -36,8 +36,7 @@ spec:
         ports:
         - containerPort: 5000
           name: http
-      imagePullSecrets:
-      - name: ghcr-login-secret
+
 ---
 apiVersion: v1
 kind: Service

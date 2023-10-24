@@ -184,11 +184,15 @@ deploy-k8s-configmap: create-namespace
 
 deploy-traefik:
 	helm upgrade --install --values ${KUBE_DIR}/traefik/values.yaml traefik traefik/traefik --namespace traefik
+
 deploy-k8s-elasticsearch: deploy-k8s-namespace
 	@echo $@
-	@cat ${KUBE_DIR}/elasticsearch.yaml | envsubst | kubectl apply -f -
+	@cat ${KUBE_DIR}/frontend.yaml | envsubst | kubectl apply -f -
  
-
+deploy-k8s-frontend: deploy-k8s-configmap
+	@echo $@
+	@cat ${KUBE_DIR}/frontend.yaml | envsubst | kubectl apply -f -
+ 
 ##############
 #Test backend#
 ##############

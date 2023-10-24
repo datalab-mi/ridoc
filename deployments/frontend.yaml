@@ -4,7 +4,7 @@ metadata:
   name: frontend
   labels:
     app: frontend
-  namespace: pavima
+  namespace: ridoc
 spec:
   replicas: 1
   selector:
@@ -16,22 +16,30 @@ spec:
         app: frontend
     spec:
       containers:
-        - name: frontend
-          image: ghcr.io/pavima-journe/pavima-frontend:latest
-          imagePullPolicy: Always
-          ports:
-          - name: node
-            containerPort: 3000
-      imagePullSecrets:
-      - name: ghcr-login-secret
-      
+      - name: frontend
+        image: ghcr.io/datalab-mi/ridoc-frontend:${APP_VERSION}  
+        imagePullPolicy: Always
+        args:
+        - run
+        - build
+        command:
+        - npm
+        ports:
+        - name: node
+          containerPort: 3000
+        env:
+        - name: APP_VERSION
+          value: ${APP_VERSION}  
+        envFrom:
+        - configMapRef:
+            name: env-${INDEX_NAME}
 ---
 
 kind: Service
 apiVersion: v1
 metadata:
   name: frontend
-  namespace: pavima
+  namespace: ridoc
 spec:
   selector:
     app: frontend
