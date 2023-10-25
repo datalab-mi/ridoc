@@ -9,7 +9,9 @@ ADD elasticsearch.yml /usr/share/elasticsearch/config
 #RUN bin/elasticsearch-plugin install --verbose analysis-icu
 
 # Download from zip
-RUN apt install wget -y
+RUN apt-get update && apt-get install -y \
+    wget \
+ && rm -rf /var/lib/apt/lists/*``
 
 # /analysis-icu
 ARG ES_VERSION
