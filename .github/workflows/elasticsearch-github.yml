@@ -15,7 +15,7 @@ on:
 env:
   REGISTRY: ghcr.io
   APPLICATION: elasticsearch
-  ES_VERSION: 7.17
+  ES_VERSION: 7.17.0
   IMAGE_NAME: ${{ github.repository }}
 
 concurrency:
