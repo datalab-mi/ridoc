@@ -28,6 +28,14 @@ spec:
         envFrom:
         - configMapRef:
             name: env-${INDEX_NAME}
+        volumeMounts:
+        - name: static-user
+          mountPath: "/app/static/user"
+          readOnly: true
+      volumes:
+      - name: static-user
+        configMap:
+          name: static-${INDEX_NAME}
 ---
 
 kind: Service
