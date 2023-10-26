@@ -24,3 +24,13 @@ secret:
 
 protocol: http
 createCert: false
+
+volumeClaimTemplate:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 10Gi
+
+service:
+  enabled: true
+  type: ClusterIP

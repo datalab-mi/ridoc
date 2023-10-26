@@ -34,7 +34,8 @@ ingressClass:
 
 ports:
   web:
-    redirectTo: websecure
+    redirectTo: 
+      port: websecure
     hostPort: 80 
   websecure:
     tls:
