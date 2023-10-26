@@ -1,0 +1,8 @@
+.env
+tests/**/json
+tests/**/meta
+benchmark/**/json
+benchmark/**/meta
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+**/*.py[cod]

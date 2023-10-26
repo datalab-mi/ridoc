@@ -11,3 +11,13 @@ metadata:
   name: traefik
   labels:
     name: traefik
+
+---
+
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: elastic-stack
+  labels:
+    name: elastic-stack
+     

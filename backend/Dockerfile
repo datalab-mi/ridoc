@@ -5,11 +5,7 @@ FROM python:3.8 as dev
 
 WORKDIR /app
 
-COPY requirements.txt .
-COPY ./application .
-COPY ./tools .
-COPY ./setup.py .
-COPY ./start.sh .
+COPY . .
 
 RUN  [ -f "start.sh" ] && chmod +x start.sh
 

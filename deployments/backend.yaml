@@ -19,18 +19,16 @@ spec:
         app: backend
     spec:
       containers:
-      - args:
-        - FLASK_DEBUG=0
-        command:
-        - ./start.sh
+      - command: [ "/bin/bash", "-c", "--" ]
+        args: [ "while true; do sleep 30; done;" ]
         envFrom:
         - configMapRef:
             name: env-${INDEX_NAME}
 
-        image: ghcr.io/datalab-mi/ridoc/backend:${APP_VERSION}
+        image: ghcr.io/datalab-mi/ridoc-backend:${APP_VERSION}
         resources:
           requests:
-            cpu: "1"
+            cpu: "0.1"
         imagePullPolicy: Always
         name: backend
         ports:

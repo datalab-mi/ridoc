@@ -1,0 +1,26 @@
+image: "ghcr.io/datalab-mi/ridoc-elasticsearch"
+imageTag: "feat-kubernetes"
+imagePullPolicy: "IfNotPresent"
+
+replicas: 1
+minimumMasterNodes: 1
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: "1Gi"
+  limits:
+    cpu: "500m"
+    memory: "1Gi"
+
+
+#https://github.com/elastic/helm-charts/issues/1013
+clusterHealthCheckParams: "timeout=10s"
+#"wait_for_status=green&timeout=1s"
+secret:
+  enabled: true
+  password: "elastic"
+   # generated randomly if not defined
+
+protocol: http
+createCert: false

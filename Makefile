@@ -181,19 +181,24 @@ deploy-k8s-traefik:
 	@cat ${KUBE_DIR}/traefik/ingress.yaml | envsubst | kubectl apply -f -
 
 deploy-k8s-configmap: create-namespace
-	kubectl create configmap env-${INDEX_NAME} --from-file=${ENV_FILE} --namespace ridoc -o yaml --dry-run=client | kubectl apply -f -
+	kubectl create configmap env-${INDEX_NAME} --from-env-file=${ENV_FILE} --namespace ridoc -o yaml --dry-run=client | kubectl apply -f -
 	kubectl create configmap static-${INDEX_NAME} --from-file=${FRONTEND_STATIC_USER} --namespace ridoc -o yaml --dry-run=client | kubectl apply -f -
 	
 deploy-traefik:
 	helm upgrade --install --values ${KUBE_DIR}/traefik/values.yaml traefik traefik/traefik --namespace traefik
 
-deploy-k8s-elasticsearch: deploy-k8s-namespace
+deploy-k8s-ekl: create-namespace
 	@echo $@
-	helm upgrade --install es-kb elastic/eck-stack -n elastic-stack --create-namespace
- 
+	helm upgrade --install --values ${KUBE_DIR}/ekl/elasticsearch.yaml elasticsearch elastic/elasticsearch -n elastic-stack
+
 deploy-k8s-frontend: deploy-k8s-configmap
 	@echo $@
 	@cat ${KUBE_DIR}/frontend.yaml | envsubst | kubectl apply -f -
+
+
+deploy-k8s-backend: deploy-k8s-configmap
+	@echo $@
+	@cat ${KUBE_DIR}/backend.yaml | envsubst | kubectl apply -f -
  
 ##############
 #Test backend#
@@ -311,9 +316,9 @@ frontend-download-swift: chmod
 	@echo "Download $(FILE_FRONTEND_DIST_APP_VERSION) from SWIFT to ${APP}-build"
 	swift/download.sh ${BUCKET_NAME} ${APP}-build/$(FILE_FRONTEND_DIST_APP_VERSION) 'curl'
 
-
 download: chmod
 	swift/download.sh $(BUCKET_NAME) $(SRC) 'curl'
+
 upload: chmod
 	swift/upload.sh $(BUCKET_NAME) $(SRC) 'curl'
 
