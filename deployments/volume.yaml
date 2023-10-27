@@ -1,0 +1,38 @@
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: data
+#   namespace: ridoc
+# spec:
+#   capacity:
+#     storage: 30Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   cinder:
+#     # volumeID: <your-cinder-volume-id>
+#     fsType: ext4  # Use the appropriate filesystem
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data
+  namespace: ridoc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: extras
+  namespace: ridoc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

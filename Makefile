@@ -183,20 +183,23 @@ deploy-k8s-traefik:
 deploy-k8s-configmap: create-namespace
 	kubectl create configmap env-${INDEX_NAME} --from-env-file=${ENV_FILE} --namespace ridoc -o yaml --dry-run=client | kubectl apply -f -
 	kubectl create configmap static-${INDEX_NAME} --from-file=${FRONTEND_STATIC_USER} --namespace ridoc -o yaml --dry-run=client | kubectl apply -f -
-	
+
+deploy-k8s-volume: create-namespace
+	@cat ${KUBE_DIR}/volume.yaml | envsubst | kubectl apply -f -
+		
 deploy-traefik:
 	helm upgrade --install --values ${KUBE_DIR}/traefik/values.yaml traefik traefik/traefik --namespace traefik
 
 deploy-k8s-ekl: create-namespace
 	@echo $@
-	helm upgrade --install --values ${KUBE_DIR}/ekl/elasticsearch.yaml elasticsearch elastic/elasticsearch -n elastic-stack
+	helm upgrade --install --values ${KUBE_DIR}/ekl/elasticsearch.yaml elasticsearch elastic/elasticsearch -n ridoc
 
 deploy-k8s-frontend: deploy-k8s-configmap
 	@echo $@
 	@cat ${KUBE_DIR}/frontend.yaml | envsubst | kubectl apply -f -
 
 
-deploy-k8s-backend: deploy-k8s-configmap
+deploy-k8s-backend: deploy-k8s-configmap deploy-k8s-volume
 	@echo $@
 	@cat ${KUBE_DIR}/backend.yaml | envsubst | kubectl apply -f -
  

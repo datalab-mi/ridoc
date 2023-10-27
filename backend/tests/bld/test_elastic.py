@@ -7,7 +7,7 @@ import elasticsearch
 from elasticsearch import Elasticsearch
 from shutil import copyfile
 
-from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file, suggest, get_unique_keywords
+from tools.elastic import es, create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file, suggest, get_unique_keywords
 from tools.converter import pdf2json
 from tools.utils import empty_tree
 
@@ -37,7 +37,7 @@ META_DIR =  os.getenv('META_DIR')
 os.makedirs(ES_DATA, exist_ok=True)
 
 print(os.environ)
-es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
+# es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
 
 def test_create_index():
     # Clear

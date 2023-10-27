@@ -30,6 +30,11 @@ spec:
         - name: ES_HOST
           value: elasticsearch-master.elastic-stack
         image: ghcr.io/datalab-mi/ridoc-backend:${APP_VERSION}
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        - mountPath: /usr/share/elasticsearch/data/extra
+          name: extras
         resources:
           requests:
             cpu: "0.1"
@@ -38,6 +43,13 @@ spec:
         ports:
         - containerPort: 5000
           name: http
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: data
+      - name: extras
+        persistentVolumeClaim:
+          claimName: extras     
 
 ---
 apiVersion: v1

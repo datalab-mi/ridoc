@@ -7,7 +7,7 @@ import elasticsearch
 from elasticsearch import Elasticsearch
 from shutil import copyfile
 
-from tools.elastic import create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file, suggest, get_tag
+from tools.elastic import es, create_index, get_alias, put_alias, delete_alias, get_index_name, replace_blue_green, inject_documents, search, index_file, suggest, get_tag
 from tools.converter import pdf2json
 
 import pytest
@@ -40,7 +40,7 @@ if path_sections.exists():
         sections = json.load(json_file)
 else:
     sections = []
-es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
+# es = Elasticsearch([{'host': 'elasticsearch', 'port': '9200'}])
 
 doc_guyane_eau = "les-bonnes-feuilles-IGA-eau-potable-en-guadeloupe.pdf"
 

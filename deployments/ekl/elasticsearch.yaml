@@ -31,6 +31,28 @@ volumeClaimTemplate:
     requests:
       storage: 10Gi
 
-service:
-  enabled: true
-  type: ClusterIP
+# service:
+#   enabled: true
+#   type: ClusterIP
+
+extraVolumes:
+- name: extras
+  persistentVolumeClaim:
+    claimName: extras
+
+extraVolumeMounts:
+- name: extras
+  mountPath: /usr/share/elasticsearch/data/extra
+  readOnly: true
+
+# extraInitContainers:
+#   - name: init-container
+#     image: busybox
+#     command: ['sh', '-c', 'echo "Initialization complete" > /data/init-complete']
+#     volumeMounts:
+#     - mountPath: /usr/share/elasticsearch/data/extra
+#       name: data
+#   volumes:
+#   - name: data
+#     persistentVolumeClaim:
+#       claimName: data
