@@ -28,7 +28,7 @@ export ES_MEM = 1024m
 export ES_VERSION = 7.6.0
 
 export API_PATH = test
-export ES_PROXY_PATH = /${API_PATH}/api/v0/search
+export ES_PROXY_PATH = /${API_PATH}/backend/v0/search
 
 export NPM_REGISTRY = $(shell echo $$NPM_REGISTRY )
 export NPM_VERBOSE = 1
@@ -189,6 +189,7 @@ deploy-k8s-volume: create-namespace
 		
 deploy-traefik:
 	helm upgrade --install --values ${KUBE_DIR}/traefik/values.yaml traefik traefik/traefik --namespace traefik
+	@cat ${KUBE_DIR}/ingress.yaml | envsubst | kubectl apply -f -
 
 deploy-k8s-ekl: create-namespace
 	@echo $@
@@ -197,7 +198,6 @@ deploy-k8s-ekl: create-namespace
 deploy-k8s-frontend: deploy-k8s-configmap
 	@echo $@
 	@cat ${KUBE_DIR}/frontend.yaml | envsubst | kubectl apply -f -
-
 
 deploy-k8s-backend: deploy-k8s-configmap deploy-k8s-volume
 	@echo $@

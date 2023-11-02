@@ -53,7 +53,7 @@
         if ( found != null) {
           window.open(found,'_blank')
         } else {
-          window.open(`/api/user/files/${$envJson.pjDir}/${val}`,'_blank')
+          window.open(`/backend/user/files/${$envJson.pjDir}/${val}`,'_blank')
         }
 
     }

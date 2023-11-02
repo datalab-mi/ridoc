@@ -1,6 +1,6 @@
 import { user as userStore } from './stores.js';
 
-export const USER_API = '/api/user';
+export const USER_API = '/backend/user';
 
 const currentUser = { token: undefined };
 userStore.subscribe(value => currentUser.token = value.jwToken);
@@ -23,7 +23,7 @@ async function upload(meta, file, method='PUT') {
   //for (var i = 0; i < files.length; i++) {
     //var file = files[i];
 
-  const upload = await fetch(`/api/admin/${filename}`, {
+  const upload = await fetch(`/backend/admin/${filename}`, {
       method: method,
       body: body,
       headers: buildHeaders()
@@ -47,7 +47,7 @@ async function index(index_name, filename, method) {
       statusOK = (s) => (s.ok || s.status == 404)
     }
     // Make the  http request
-    const index = await fetch(`/api/admin/${index_name}/_doc/${filename}`,{
+    const index = await fetch(`/backend/admin/${index_name}/_doc/${filename}`,{
       method: method,
       headers: buildHeaders()
     });
@@ -168,13 +168,13 @@ function httpClient() {
 		} else if (method == 'PUT') {
       const formData = new FormData()
       formData.append('file', file)
-			res = await fetch(`/api/admin/files/${url}`, {
+			res = await fetch(`/backend/admin/files/${url}`, {
 					method: 'PUT',
           body: formData,
           headers: buildHeaders()
       })
 		} else if (method == 'DELETE') {
-			res = await fetch(`/api/admin/files/${url}`, {
+			res = await fetch(`/backend/admin/files/${url}`, {
 					method: 'DELETE',
           headers: buildHeaders()
       })
@@ -191,7 +191,7 @@ function httpClient() {
 	}
 
   async function reIndex(index_name) {
-  		const res = await fetch(`/api/admin/${index_name}/reindex`,{
+  		const res = await fetch(`/backend/admin/${index_name}/reindex`,{
         headers: buildHeaders()
       });
   		if (res.ok) {
@@ -288,7 +288,7 @@ async function synonym(method, row, filename,key=0) {
     res = await fetch(`${USER_API}/synonym?filename=${filename}`,
         {method: 'GET', headers: buildHeaders()});
   } else if (method === 'PUT' || method === 'DELETE') {
-    res = await fetch(`/api/admin/synonym/${key}?filename=${filename}`, {
+    res = await fetch(`/backend/admin/synonym/${key}?filename=${filename}`, {
         method: method,
         body: JSON.stringify(row),
         headers: buildHeaders()

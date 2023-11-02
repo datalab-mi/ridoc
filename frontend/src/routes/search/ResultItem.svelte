@@ -27,7 +27,7 @@
 	$: file = { name: filename }
 
 	let url;
-	$: url = `/api/user/files/${$envJson.dstDir}/${filename}`
+	$: url = `/backend/user/files/${$envJson.dstDir}/${filename}`
 
 	let meta;
 	let display;

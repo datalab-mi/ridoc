@@ -24,7 +24,7 @@
       // Filter entries in $itemJson with isDetailed at false
       inputs = $itemJson.inputs.filter(entry => ((entry.isDetailed !== undefined) && entry.isDetailed) || (entry.isDetailed == undefined))
       _source_includes = inputs.map(x=>x.key).join()
-      httpClient().fetch('./api/user/'+$envJson['index_name']+'/_doc/'+filename+"?_source_includes="+_source_includes)
+      httpClient().fetch('./backend/user/'+$envJson['index_name']+'/_doc/'+filename+"?_source_includes="+_source_includes)
       .then(response => response.json())
       .then(data => {
         [meta, display] = createMeta(inputs, data, {})
@@ -36,7 +36,7 @@
       //const { page } = stores(); // sveltekit
       const urlParams = new URLSearchParams(window.location.search);
       filename = urlParams.get('filename');
-      link = `/ViewerJS/?zoom=page-width#../api/user/files/${$envJson.dstDir}/${filename}`
+      link = `/ViewerJS/?zoom=page-width#../backend/user/files/${$envJson.dstDir}/${filename}`
       getMeta()
     }
       else{

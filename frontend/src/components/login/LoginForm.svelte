@@ -21,7 +21,7 @@
   async function submit({ email, password }) {
     var headers = new Headers();
     headers.append("Content-Type", "application/json");
-    const res = await fetch("/api/auth", {
+    const res = await fetch("/backend/auth", {
       method: "POST",
       body: JSON.stringify({username: email, password: password}),
       headers: headers

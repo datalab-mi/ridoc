@@ -28,7 +28,7 @@ spec:
             name: env-${INDEX_NAME}
         env:
         - name: ES_HOST
-          value: elasticsearch-master.elastic-stack
+          value: elasticsearch-master
         image: ghcr.io/datalab-mi/ridoc-backend:${APP_VERSION}
         volumeMounts:
         - mountPath: /data

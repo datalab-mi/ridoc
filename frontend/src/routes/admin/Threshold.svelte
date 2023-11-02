@@ -5,12 +5,12 @@
 	let promise = get_old_threshold();
 	let thresholds = {};
 	async function get_old_threshold() {
-			thresholds = await get('/api/user/files/threshold.json');
+			thresholds = await get('/backend/user/files/threshold.json');
 			return 200
 		}
 
 	async function handleClick(){
-			const res = await fetch(`/api/admin/threshold`, {
+			const res = await fetch(`/backend/admin/threshold`, {
 					method: 'PUT',
 					body:  JSON.stringify(thresholds),
 					headers: new Headers({"Authorization": ` Bearer ${$user.jwToken}`})

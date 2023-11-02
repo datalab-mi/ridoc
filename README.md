@@ -29,7 +29,7 @@ _Dépot boite à outils pour un moteur de recherche._
  - Fabriquer l'image docker du backend : `make backend-dev`. Cela aura pour effet de lancer l'application **Flask**.
  - Rentrer dans le container : `make backend-exec`.
  - Lancer les tests unitaires, qui va indexer les données tests `pytest tests/iga/test_elastic.py -s`.
- - Tester le back : http://localhost/api/common/healthcheck
+ - Tester le back : http://localhost/backend/common/healthcheck
 
 ### Frontend
   - **Sapper** pour le routage, **Svelte** pour l'UI et **Tailwindcss** pour la mise en forme.

@@ -17,7 +17,7 @@ EXPOSE 5000
 RUN pip install -e .
 
 #LABEL traefik.enable="true"
-#LABEL traefik.http.routers.python.rule="PathPrefix(`/api/v1`)"
+#LABEL traefik.http.routers.python.rule="PathPrefix(`/backend/v1`)"
 #LABEL traefik.http.routers.python.entrypoints="http"
 #LABEL traefik.http.services.python.loadbalancer.server.port="5000"
 

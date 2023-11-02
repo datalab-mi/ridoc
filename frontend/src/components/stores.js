@@ -5,7 +5,7 @@ const visitor = {role:"visitor", jwToken:null, rules: ["visitor"], resources:[]}
 const dictKeyInclude = (dic1, dic2) => Object.keys(dic1).every(v => Object.keys(dic2).includes(v))
 
 async function testToken(user, set) {
-  const response = await fetch(`/api/authorized_resource`, {
+  const response = await fetch(`/backend/authorized_resource`, {
     headers: new Headers({'Authorization'  : `Bearer ${user.jwToken}`})
     });
   console.log(response)
@@ -14,7 +14,7 @@ async function testToken(user, set) {
     list_logger.concat({level: "success", message:  `Connecté en tant que ${user.role}`, ressource: "login"})
   }
   else {
-    const response = await fetch(`/api/authorized_resource/visitor`)
+    const response = await fetch(`/backend/authorized_resource/visitor`)
     const data = await response.json()
     set(data)
     //list_logger.concat({level: "success", message: "Connecté en tant que visiteur", ressource: "login"})
@@ -33,7 +33,7 @@ function createUser(user) {
     },
     clean: async () => {
       localStorage.removeItem('user')
-      const response = await fetch(`/api/authorized_resource/visitor`)
+      const response = await fetch(`/backend/authorized_resource/visitor`)
       const data = await response.json()
       set(data)
       localStorage.setItem('user', JSON.stringify(data))
@@ -42,7 +42,7 @@ function createUser(user) {
       update(user => user.key = value)
     },
     unauthenticate: async () =>  {
-      const response = await fetch(`/api/authorized_resource/visitor`)
+      const response = await fetch(`/backend/authorized_resource/visitor`)
       const data = await response.json()
       set(data)
     },

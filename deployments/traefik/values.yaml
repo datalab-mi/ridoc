@@ -82,17 +82,19 @@ ingressRoute:
   dashboard:
     enabled: true
     # Custom match rule with host domain
-    matchRule: Host(`kubernetes.ridoc.fr`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+    matchRule: Host(`kubernetes.ridoc.fr`) && PathPrefix(`/dashboard`)
     entryPoints: ["websecure"]
     # Add custom middlewares : authentication and redirection
     middlewares:
       - name: traefik-dashboard-auth
+        namespace: traefik
 
 extraObjects:
   - apiVersion: v1
     kind: Secret
     metadata:
       name: traefik-dashboard-auth-secret
+      namespace: traefik
     type: kubernetes.io/basic-auth
     stringData:
       username: admin
@@ -102,6 +104,7 @@ extraObjects:
     kind: Middleware
     metadata:
       name: traefik-dashboard-auth
+      namespace: traefik
     spec:
       basicAuth:
         secret: traefik-dashboard-auth-secret
