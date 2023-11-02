@@ -43,6 +43,11 @@ spec:
         ports:
         - containerPort: 5000
           name: http
+      - name: tika
+        image: logicalspark/docker-tikaserver
+        ports:
+        - containerPort: 9998
+
       volumes:
       - name: data
         persistentVolumeClaim:
