@@ -25,7 +25,7 @@ export ES_INDEX = test
 export ES_DATA = ${APP_PATH}/esdata
 export ES_NODES = 1
 export ES_MEM = 1024m
-export ES_VERSION = 7.6.0
+export ES_VERSION = 7.17.0
 
 export API_PATH = test
 export ES_PROXY_PATH = /${API_PATH}/backend/v0/search
