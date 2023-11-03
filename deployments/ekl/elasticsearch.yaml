@@ -15,7 +15,7 @@ resources:
 
 
 #https://github.com/elastic/helm-charts/issues/1013
-clusterHealthCheckParams: "timeout=10s"
+clusterHealthCheckParams: "timeout=30s"
 #"wait_for_status=green&timeout=1s"
 secret:
   enabled: true
@@ -24,6 +24,12 @@ secret:
 
 protocol: http
 createCert: false
+
+# esConfig:
+#   elasticsearch.yml: |
+#     xpack.security.enabled: true
+#     xpack.security.transport.ssl.enabled: true
+#     xpack.security.http.ssl.enabled: true
 
 volumeClaimTemplate:
   accessModes: ["ReadWriteOnce"]

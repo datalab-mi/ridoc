@@ -98,7 +98,7 @@
 		currentPage=1; //retour à la page initiale
 	}
 </script>
-<div class="resList flex flex-col px-40">
+<div class="resList flex flex-col px-4">
 <div class="mx-20 mt-4" >
 	<select bind:value={triselect} class= "fr-select float-right px-6 py-2 " on:change="{trier}">
 		<option value="" selec disabled hidden>Trier par</option>
@@ -161,7 +161,7 @@
 		background: #ffffb3
 	}
 	.resList{
-		max-width: 85%;
+		max-width: 70rem;
 		min-width: fit-content !important;
 		
 	}
