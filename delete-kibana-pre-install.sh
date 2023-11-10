@@ -8,6 +8,8 @@ kubectl delete configmaps kibana-kibana-helm-scripts -n ridoc
 kubectl delete -n ridoc secrets kibana-kibana-es-token
 kubectl delete pods --field-selector status.phase=Failed -n ridoc
 kubectl delete -n ridoc deployment kibana-kibana
+kubectl delete -n ridoc jobs.batch post-delete-kibana-kibana
+kubectl delete -n ridoc serviceaccounts post-delete-kibana-kibana
 
 for resource in $resource_types; do
     # List resources with the specified name

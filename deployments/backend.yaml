@@ -47,7 +47,7 @@ spec:
         image: logicalspark/docker-tikaserver
         ports:
         - containerPort: 9998
-
+# Mount secrets elasticsearch-master-certs
       volumes:
       - name: data
         persistentVolumeClaim:

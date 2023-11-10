@@ -1,19 +1,49 @@
-elasticsearchHosts: "http://elasticsearch-master:9200"
+elasticsearchHosts: "https://elasticsearch-master:9200"
+elasticsearchCertificateSecret: elasticsearch-master-certs
+elasticsearchCertificateAuthoritiesFile: ca.crt
+elasticsearchCredentialSecret: elasticsearch-master-credentials
+
 imageTag: "7.17.0"
 
 replicas: 1
 
 resources:
   requests:
-    cpu: "300m"
-    memory: "0.1Gi"
+    cpu: "500m"
+    memory: "1Gi"
   limits:
-    cpu: "300m"
-    memory: "0.5Gi"
+    cpu: "500m"
+    memory: "1Gi"
 
+extraEnvs:
+  - name: "NODE_OPTIONS"
+    value: "--max-old-space-size=1800"
+  - name: SERVER_REWRITEBASEPATH
+    value: "true"
+  - name: SERVER_BASEPATH
+    value: "/kibana"
+
+  # - name: "ELASTICSEARCH_USERNAME"
+  #   value: "elastic"
+  # - name: "ELASTICSEARCH_PASSWORD"
+  #   value: "elastic"
+    # valueFrom:
+    #   secretKeyRef: elasticsearch-master-credentials
+    #     name: 
+    #     key: username
+    # valueFrom:
+    #   secretKeyRef: elasticsearch-master-credentials
+    #     name: 
+    #     key: password
 # extraEnvs:
 #   - name: "NODE_OPTIONS"
 #     value: "--max-old-space-size=1800"
-# healthCheckPath: "/api/status"
-# protocol: http
+healthCheckPath: "/kibana/app/kibana"
+protocol: http
 
+readinessProbe:
+  failureThreshold: 5
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  successThreshold: 6
+  timeoutSeconds: 10

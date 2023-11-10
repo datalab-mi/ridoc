@@ -24,7 +24,7 @@ spec:
           containerPort: 3000
         env:
         - name: APP_VERSION
-          value: ${APP_VERSION}  
+          value: "${APP_VERSION}"
         envFrom:
         - configMapRef:
             name: env-${INDEX_NAME}

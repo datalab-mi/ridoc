@@ -21,15 +21,15 @@ spec:
     middlewares:
     - name: stripprefix
       namespace: ridoc
-  # - match: Host(`kubernetes.ridoc.fr`) && PathPrefix(`/kibana`)
-  #   kind: Rule
-  #   services:
-  #     - name: kibana
-  #       namespace: ridoc
-  #       port: http
-  #   middlewares:
-  #   - name: stripprefix
-  #     namespace: kibana
+  - match: Host(`kubernetes.ridoc.fr`) && PathPrefix(`/kibana`)
+    kind: Rule
+    services:
+      - name: kibana-kibana
+        namespace: ridoc
+        port: http
+    # middlewares:
+    # - name: stripprefix
+    #   namespace: ridoc
   tls:
     certResolver: le
 

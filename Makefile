@@ -45,34 +45,32 @@ export BACKEND_PORT=5000
 export BACKEND_HOST = backend
 
 # frontend dir
-export FRONTEND_PORT=3000
-export FRONTEND = ${APP_PATH}/frontend
-export FRONTEND_DEV_HOST = frontend-dev
-export FILE_FRONTEND_APP_VERSION = $(APP)-$(APP_VERSION)-frontend.tar.gz
-export FILE_FRONTEND_DIST_APP_VERSION = $(APP)-$(APP_VERSION)-frontend-dist.tar.gz
-export FILE_FRONTEND_DIST_LATEST_VERSION = $(APP)-latest-frontend-dist.tar.gz
-export FRONTEND_STATIC_USER = ${APP_PATH}/frontend/static/user # user folder in static folder of frontend
-
-export VIEWERJS_VERSION=0.5.8
-
-export BUILD_DIR = ${APP_PATH}/${APP}-build
+export FRONTEND_PORT		=3000
+export FRONTEND 			= ${APP_PATH}/frontend
+export FRONTEND_DEV_HOST 	= frontend-dev
+export FILE_FRONTEND_APP_VERSION 		= $(APP)-$(APP_VERSION)-frontend.tar.gz
+export FILE_FRONTEND_DIST_APP_VERSION 	= $(APP)-$(APP_VERSION)-frontend-dist.tar.gz
+export FILE_FRONTEND_DIST_LATEST_VERSION= $(APP)-latest-frontend-dist.tar.gz
+export FRONTEND_STATIC_USER 			= ${APP_PATH}/frontend/static/user # user folder in static folder of frontend
+export VIEWERJS_VERSION		=0.5.8
+export BUILD_DIR 			= ${APP_PATH}/${APP}-build
 # nginx
 export PORT = 80
-export NGINX = ${APP_PATH}/nginx
-export NGINX_TIMEOUT = 30
-export API_USER_LIMIT_RATE=1r/s
-export API_USER_BURST=20 nodelay
-export API_USER_SCOPE=http_x_forwarded_for
+export NGINX 				= ${APP_PATH}/nginx
+export NGINX_TIMEOUT 		= 30
+export API_USER_LIMIT_RATE	=1r/s
+export API_USER_BURST		=20 nodelay
+export API_USER_SCOPE		=http_x_forwarded_for
 export API_GLOBAL_LIMIT_RATE=20r/s
-export API_GLOBAL_BURST=200 nodelay
+export API_GLOBAL_BURST		=200 nodelay
 # SWIFT
-export BUCKET_NAME=${INDEX_NAME}
+export BUCKET_NAME 			=${INDEX_NAME}
 
 # this is usefull with most python apps in dev mode because if stdout is
 # buffered logs do not shows in realtime
-PYTHONUNBUFFERED=1
+PYTHONUNBUFFERED 			=1
 
-dummy		    := $(shell touch artifacts)
+dummy		    			:= $(shell touch artifacts)
 include ./artifacts
 export
 

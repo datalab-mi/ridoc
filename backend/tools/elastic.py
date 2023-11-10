@@ -25,12 +25,17 @@ import re
 
 
 # On établit une connection
+# test 
+# curl  -k -X GET  -u elastic:elastic "http://elasticsearch-master:9200/_cluster/health?pretty" -vv
+# es = Elasticsearch(['https://elastic:elastic@elasticsearch-master:9200'],use_ssl=False)
+# es.search(index='bld',body={"query":{"match_all":{}}})
+
 es = Elasticsearch([{'host': getenv('ES_HOST', 'elasticsearch'),
                      'port': getenv('ES_PORT', '9200'), 'timeout': 240,
                      'max_retries': 10,
                      'retry_on_timeout': True,
                      }],
-                   http_auth=(getenv('ES_USER', 'elasticsearch'), getenv('ES_PSWD', 'elasticsearch')))
+                   http_auth=(getenv('ES_USER', 'elastic'), getenv('ES_PSWD', 'elastic')))
 
 indices = elasticsearch.client.IndicesClient(es)
 
