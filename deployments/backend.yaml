@@ -29,6 +29,8 @@ spec:
         env:
         - name: ES_HOST
           value: elasticsearch-master
+        - name: TIKA_HOST
+          value: localhost
         - name: "ELASTICSEARCH_USERNAME"
           valueFrom:
             secretKeyRef:

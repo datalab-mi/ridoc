@@ -1,6 +1,7 @@
 """Fichier permettant de convertir les fichiers du .odt, pdf à .json """
 
 import os
+from os import environ, getenv
 import json, collections
 from odf import text, teletype
 from odf.opendocument import load
@@ -101,7 +102,7 @@ def pdf2json(path: str, sections: list = []) -> dict:
         dict: Keys are sections and value the content read
     """
     try:
-        file_data = parser.from_file(path,"http://tika:9998/")
+        file_data = parser.from_file(path,f"http://{os.getenv('TIKA_HOST', 'tika')}:9998/")
         data = file_data['content']
         data = data.replace(u'\xa0', u' ')
         data = data.replace(u'\n' , u' ')
