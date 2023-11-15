@@ -32,6 +32,7 @@ from ssl import create_default_context
 # es.search(index='bld',body={"query":{"match_all":{}}})
 
 try:
+    # SSL certificate
     context = create_default_context(
         cafile="/usr/share/elasticsearch/config/certs/ca.crt")
 except:
