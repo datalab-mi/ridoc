@@ -29,12 +29,25 @@ spec:
         env:
         - name: ES_HOST
           value: elasticsearch-master
+        - name: "ELASTICSEARCH_USERNAME"
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-master-credentials
+              key: username
+        - name: "ELASTICSEARCH_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-master-credentials
+              key: password          
         image: ghcr.io/datalab-mi/ridoc-backend:${APP_VERSION}
         volumeMounts:
         - mountPath: /data
           name: data
         - mountPath: /usr/share/elasticsearch/data/extra
           name: extras
+        - mountPath: /usr/share/elasticsearch/config/certs
+          name: elasticsearch-certs
+          readOnly: true
         resources:
           requests:
             cpu: "0.1"
@@ -47,14 +60,17 @@ spec:
         image: logicalspark/docker-tikaserver
         ports:
         - containerPort: 9998
-# Mount secrets elasticsearch-master-certs
       volumes:
       - name: data
         persistentVolumeClaim:
           claimName: data
       - name: extras
         persistentVolumeClaim:
-          claimName: extras     
+          claimName: extras
+      - name: elasticsearch-certs
+        secret:
+          defaultMode: 420
+          secretName: elasticsearch-master-certs      
 
 ---
 apiVersion: v1

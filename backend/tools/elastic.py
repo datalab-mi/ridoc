@@ -22,23 +22,39 @@ from tools.utils import empty_tree, _finditem
 import json
 import time
 import re
-
+from ssl import create_default_context
 
 # On établit une connection
-# test 
+# test
 # curl  -k -X GET  -u elastic:elastic "http://elasticsearch-master:9200/_cluster/health?pretty" -vv
 # es = Elasticsearch(['https://elastic:elastic@elasticsearch-master:9200'],use_ssl=False)
+# es = Elasticsearch(['https://elastic:elastic@elasticsearch-master:9200'], ssl_context=context)
 # es.search(index='bld',body={"query":{"match_all":{}}})
 
-es = Elasticsearch([{'host': getenv('ES_HOST', 'elasticsearch'),
-                     'port': getenv('ES_PORT', '9200'), 'timeout': 240,
-                     'max_retries': 10,
-                     'retry_on_timeout': True,
-                     }],
-                   http_auth=(getenv('ES_USER', 'elastic'), getenv('ES_PSWD', 'elastic')))
+try:
+    context = create_default_context(
+        cafile="/usr/share/elasticsearch/config/certs/ca.crt")
+except:
+    context = None 
+
+if context:
+    scheme =  "https"
+    ssl_context = context 
+else:
+    scheme =  "http"
+    ssl_context = None    
+
+es = Elasticsearch([{
+                    "scheme": "https",
+                    'host': getenv('ES_HOST', 'elasticsearch'),
+                    'port': getenv('ES_PORT', '9200'), 'timeout': 240,
+                    'max_retries': 10,
+                    'retry_on_timeout': True,
+                    }],
+                ssl_context=context,
+                http_auth=(getenv('ELASTICSEARCH_USERNAME', 'elastic'), getenv('ELASTICSEARCH_PASSWORD', 'elastic')))
 
 indices = elasticsearch.client.IndicesClient(es)
-
 
 def simple_request(index_name, size):
     """Perform ES search on all documents of an index. Equivalent to index/_search
@@ -637,7 +653,7 @@ def get_tag(index_name: str, filename: str, fields: str) -> list:
                for key, val in res['term_vectors'][fields]['terms'].items()}
         content = es.get(index=index_name, id=filename,
                          _source=True, _source_includes=[fields])
-        res = [content['_source'][fields][val["start_offset"]:val["end_offset"]] for key, val in res.items()]
+        res = [content['_source'][fields][val["start_offset"]                                          :val["end_offset"]] for key, val in res.items()]
         return list(set(res))
     else:
         return []
