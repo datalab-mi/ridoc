@@ -32,6 +32,7 @@ export ES_PROXY_PATH = /${API_PATH}/backend/v0/search
 
 export NPM_REGISTRY = $(shell echo $$NPM_REGISTRY )
 export NPM_VERBOSE = 1
+export ELASTICSEARCH_PASSWORD=elastic
 
 # KIBANA
 export KIBANA_HOST = kibana
@@ -192,7 +193,7 @@ deploy-traefik:
 
 deploy-k8s-ekl: create-namespace
 	@echo $@
-	#helm upgrade --install --values ${KUBE_DIR}/ekl/elasticsearch.yaml elasticsearch elastic/elasticsearch -n ridoc
+	@cat ${KUBE_DIR}/ekl/elasticsearch.yaml | envsubst | helm upgrade --install elasticsearch elastic/elasticsearch -n ridoc -f - 
 	@cat ${KUBE_DIR}/ekl/kibana.yaml | envsubst | helm upgrade --install kibana elastic/kibana -n ridoc -f - 
 	#@cat ${KUBE_DIR}/ekl/logstash.yaml | envsubst | helm upgrade --install logstash elastic/logstash -n ridoc -f -
 

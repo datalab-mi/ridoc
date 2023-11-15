@@ -19,7 +19,7 @@ clusterHealthCheckParams: "timeout=30s"
 #"wait_for_status=green&timeout=1s"
 secret:
   enabled: true
-  password: "elastic"
+  password: ${ELASTICSEARCH_PASSWORD}
    # generated randomly if not defined
 
 protocol: https
