@@ -21,16 +21,8 @@ RUN unzip viewerjs-${VIEWERJS_VERSION}.zip
 RUN mv viewerjs-${VIEWERJS_VERSION}/* ViewerJS
 
 #DSFR (Design de l'Etat)
-RUN  mkdir -p static/dsfr \
- &&  cp node_modules/@gouvfr/dsfr/dist/dsfr.module.min.js static/dsfr \
- &&  cp node_modules/@gouvfr/dsfr/dist/dsfr.module.min.js.map static/dsfr \
- &&  cp node_modules/@gouvfr/dsfr/dist/dsfr.nomodule.min.js static/dsfr \
- &&  cp node_modules/@gouvfr/dsfr/dist/dsfr.nomodule.min.js.map static/dsfr \
- &&  cp node_modules/@gouvfr/dsfr/dist/dsfr.min.css static/dsfr \
- &&  cp -r node_modules/@gouvfr/dsfr/dist/utility static/dsfr \
- &&  cp -r node_modules/@gouvfr/dsfr/dist/favicon static/dsfr  \
- &&  cp -r node_modules/@gouvfr/dsfr/dist/icons static/dsfr \
- &&  cp -r node_modules/@gouvfr/dsfr/dist/fonts static/dsfr
+RUN mkdir static/fonts
+RUN mv node_modules/@gouvfr/dsfr/dist/fonts/* static/fonts 
 
 # For production, see https://github.com/mikenikles/sapper-on-cloud-run/blob/master/Dockerfile
 ################################
