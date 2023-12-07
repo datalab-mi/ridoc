@@ -33,6 +33,11 @@
 </script>
 
 <style>
+
+	nav {
+		height: 6rem;
+	}
+
 	[aria-current] {
 		position: relative !important;
 	}
