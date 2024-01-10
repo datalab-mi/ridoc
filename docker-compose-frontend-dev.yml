@@ -11,7 +11,7 @@ services:
         no_proxy: ${no_proxy}
         VIEWERJS_VERSION: ${VIEWERJS_VERSION}
     stdin_open: true
-    image: ${FRONTEND_DEV_HOST}
+    image: ${FRONTEND_DEV_HOST}:${APP_VERSION}
     container_name: ${FRONTEND_DEV_HOST}
     volumes:
       - ${FRONTEND}/src:/app/src

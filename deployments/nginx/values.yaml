@@ -1,0 +1,16 @@
+# controller:
+#   service:
+#     type: NodePort
+#   publishService:
+#     enabled: true
+
+controller:
+  kind: DaemonSet
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
+  daemonset:
+    useHostPort: true
+  service:
+    type: ClusterIP
+rbac:
+  create: true

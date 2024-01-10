@@ -30,8 +30,7 @@ services:
      #- ${DATA_PATH}:/data
     ports:
        - "9200:9200"
-    logging:
-        driver: none
+
 
 networks:
   default:
