@@ -186,16 +186,14 @@ deploy-k8s-configmap: create-namespace
 
 deploy-k8s-volume: create-namespace
 	@cat ${KUBE_DIR}/volume.yaml | envsubst | kubectl apply -f -
-		
-deploy-traefik:
-	helm upgrade --install --values ${KUBE_DIR}/traefik/values.yaml traefik traefik/traefik --namespace traefik
-	@cat ${KUBE_DIR}/ingress.yaml | envsubst | kubectl apply -f -
+		{KUBE_DIR}/ingress.yaml | envsubst | kubectl apply -f -
 
 deploy-k8s-ekl: create-namespace
 	@echo $@
-	@cat ${KUBE_DIR}/ekl/elasticsearch.yaml | envsubst | helm upgrade --install elasticsearch elastic/elasticsearch -n ridoc -f - 
-	@cat ${KUBE_DIR}/ekl/kibana.yaml | envsubst | helm upgrade --install kibana elastic/kibana -n ridoc -f - 
+	#@cat ${KUBE_DIR}/ekl/elasticsearch.yaml | envsubst | helm upgrade --install elasticsearch elastic/elasticsearch -n ridoc -f - 
+	#@cat ${KUBE_DIR}/ekl/kibana.yaml | envsubst | helm upgrade --install kibana elastic/kibana -n ridoc -f - 
 	#@cat ${KUBE_DIR}/ekl/logstash.yaml | envsubst | helm upgrade --install logstash elastic/logstash -n ridoc -f -
+	@cat ${KUBE_DIR}/ekl/filebeat.yaml | envsubst | helm upgrade --install filebeat elastic/filebeat -n ridoc -f -
 
 deploy-k8s-frontend: deploy-k8s-configmap
 	@echo $@
