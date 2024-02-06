@@ -46,7 +46,7 @@ else:
     ssl_context = None    
 
 es = Elasticsearch([{
-                    "scheme": "https",
+                    "scheme": scheme,
                     'host': getenv('ES_HOST', 'elasticsearch'),
                     'port': getenv('ES_PORT', '9200'), 'timeout': 240,
                     'max_retries': 10,
