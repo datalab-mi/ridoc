@@ -56,6 +56,26 @@ deployment:
       volumeMounts:
       - mountPath: /data
         name: traefik-internal
+  # additionalContainers:
+    # - name: stream-accesslog
+    #   args:
+    #   - /bin/sh
+    #   - -c
+    #   - tail -n+1 -F /tmp/traefik/access.log
+    #   image: busybox
+    #   imagePullPolicy: Always
+    #   resources: {}
+    #   terminationMessagePath: /dev/termination-log
+    #   terminationMessagePolicy: File
+    #   volumeMounts:
+    #   - mountPath: /tmp/traefik
+    #     name: traefik-logs
+    #     readOnly: true
+
+  additionalVolumes:
+    - name: traefik-logs
+      hostPath:
+        path: /tmp
 
 
 updateStrategy:
@@ -64,20 +84,33 @@ updateStrategy:
     maxUnavailable: 1
     maxSurge: 0
 
+additionalVolumeMounts:
+  - name: traefik-logs
+    mountPath: /tmp/traefik
+
 logs:
   general:
     # Alternative logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
     level: INFO
+    # format: json
   access:
     # To enable access logs
     enabled: true
+    # format: json
     ## By default, logs are written using the Common Log Format (CLF) on stdout.
     ## To write logs in JSON, use json in the format option.
     ## If the given format is unsupported, the default (CLF) is used instead.
-    # format: json
-    filePath: "/tmp/logs/access.log"
-
-
+    filePath: "/tmp/traefik/access.log"
+    # filters:
+    #   minDuration: "1ms"
+    #   statuscodes: "200_209"
+    # headers:
+    #   defaultmode: drop
+    #   names:
+    #   ## Examples:
+    #   # User-Agent: redact
+    #   # Authorization: drop
+    #   # Content-Type: keep
 ingressRoute:
   dashboard:
     enabled: true
@@ -108,3 +141,14 @@ extraObjects:
     spec:
       basicAuth:
         secret: traefik-dashboard-auth-secret
+
+  # - apiVersion: v1
+  #   kind: PersistentVolumeClaim
+  #   metadata:
+  #     name: traefik-access-log
+  #   spec:
+  #     accessModes:
+  #       - ReadWriteOnce
+  #     resources:
+  #       requests:
+  #         storage: 10Mi

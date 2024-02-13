@@ -1,6 +1,6 @@
 export APP = moteur-de-recherche
 export APP_PATH := $(shell pwd)
-export APP_VERSION	:= 2.6
+export APP_VERSION	:= 2.7
 export DATA_PATH = ${APP_PATH}/backend/tests/iga/data
 #export APP_VERSION	:= $(shell git describe --tags || cat VERSION )
 
@@ -185,7 +185,8 @@ deploy-k8s-configmap: create-namespace
 
 deploy-k8s-volume: create-namespace
 	@cat ${KUBE_DIR}/volume.yaml | envsubst | kubectl apply -f -
-		
+	{KUBE_DIR}/volume.yaml | envsubst | kubectl apply -f -
+
 deploy-k8s-ekl: create-namespace
 	@echo $@
 	#@cat ${KUBE_DIR}/ekl/elasticsearch.yaml | envsubst | helm upgrade --install elasticsearch elastic/elasticsearch -n ridoc -f - 
