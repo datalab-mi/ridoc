@@ -9,9 +9,22 @@
   } from "../components/utils.js";
   import { envJson, itemJson } from "../components/user-data.store";
   import Ratesearch from "../components/ratesearch.svelte";
+  import { user } from "../components/stores.js";
+
+  import * as pdfjsLib from "pdfjs-dist/build/pdf";
+  import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker.mjs";
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+  // import  pdfjs  from 'pdfjs-dist';
+  // const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
+  // import * as pdfjsLib from "pdfjs-dist";
+  // import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker.mjs";
+  // import pdfjsWorker from "../../../../node_modules/pdfjs-dist/build/pdf.worker.entry";
+  // pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+
   import Entry from "../components/Entry.svelte";
-  import { headers } from "../components/stores.js";
   let titre = true;
+  let meta = undefined;
+  let display;
   let readonly = true;
   let required = false;
   let inputs = [];
@@ -19,12 +32,53 @@
   let filename;
   let link;
 
-  let iframe;
+  const displayPdf = (url) => {
+    // Asynchronous download of PDF
+    var loadingTask = pdfjsLib.getDocument({
+      url: url,
+      httpHeaders: { Authorization: `Bearer ${$user.jwToken}` },
+      withCredentials: true,
+    });
+    loadingTask.promise.then(
+      function (pdf) {
+        console.log("PDF loaded");
 
-  let promiseIndex = new Promise(() => {});
+        // Fetch the first page
+        var pageNumber = 1;
+        pdf.getPage(pageNumber).then(function (page) {
+          console.log("Page loaded");
 
-  onMount(async () => {
-    async function getMeta() {
+          var scale = 1.5;
+          var viewport = page.getViewport({ scale: scale });
+
+          // Prepare canvas using PDF page dimensions
+          var canvas = document.getElementById("the-canvas");
+          var context = canvas.getContext("2d");
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          // Render PDF page into canvas context
+          var renderContext = {
+            canvasContext: context,
+            viewport: viewport,
+          };
+          var renderTask = page.render(renderContext);
+          renderTask.promise.then(function () {
+            console.log("Page rendered");
+          });
+        });
+      },
+      function (reason) {
+        // PDF loading error
+        console.error(reason);
+      },
+    );
+  };
+  onMount(() => {
+    // const pdfjs = await import('../node_modules/pdfjs-dist/build/pdf');
+    // const pdfjsWorker = await import('../../node_modules/pdfjs-dist/build/pdf.worker.entry');
+
+    function getMeta() {
       // Filter entries in $itemJson with isDetailed at false
       inputs = $itemJson.inputs.filter(
         (entry) =>
@@ -32,45 +86,36 @@
           entry.isDetailed == undefined,
       );
       _source_includes = inputs.map((x) => x.key).join();
-      const response = await httpClient().fetch(
-        "./backend/user/" +
-          $envJson["index_name"] +
-          "/_doc/" +
-          filename +
-          "?_source_includes=" +
-          _source_includes,
-      );
-
-      const data = await response.json();
-      return createMeta(inputs, data, {});
+      httpClient()
+        .fetch(
+          "./backend/user/" +
+            $envJson["index_name"] +
+            "/_doc/" +
+            filename +
+            "?_source_includes=" +
+            _source_includes,
+        )
+        .then((response) => response.json())
+        .then((data) => {
+          [meta, display] = createMeta(inputs, data, {});
+        });
     }
-
-    async function waitindex() {
+    function waitindex() {
       //eviter les problèmes de undefined
       if ($envJson["index_name"] != undefined) {
         //const { page } = stores(); // sveltekit
         const urlParams = new URLSearchParams(window.location.search);
         filename = urlParams.get("filename");
         link = `/ViewerJS/?zoom=page-width#../backend/user/files/${$envJson.dstDir}/${filename}`;
-        
-        const res = await fetch(link, {
-          method: "GET",
-          headers: $headers
-        });
-        const blob = await res.blob();
-        const urlObject = URL.createObjectURL(blob);
-        iframe.setAttribute("src", urlObject);
-        const [meta, display] = await getMeta();
-        console.log(meta);
-        return meta;
+        const url = `/backend/user/files/${$envJson.dstDir}/${filename}`;
+
+        getMeta();
+        displayPdf(url);
       } else {
-        console.log("wait 100ms")
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        return await waitindex();
+        setTimeout(waitindex, 100);
       }
     }
-
-    promiseIndex = await waitindex();
+    waitindex();
   });
 </script>
 
@@ -78,16 +123,14 @@
   <title>{filename}</title>
 </svelte:head>
 
-<div class="grid grid-cols justify-center">
-  <div
-    class="card bg-white place-self-center p-10 grid grid-cols justify-center rounded shadow w-auto"
-  >
-    <div class="mb-6">
-      <Ratesearch class="" {filename} />
+{#if meta != undefined && $itemJson != undefined && filename != undefined}
+  <div class="grid grid-cols justify-center">
+    <div
+      class="card bg-white place-self-center p-10 grid grid-cols justify-center rounded shadow w-auto"
+    >
+      <div class="mb-6">
+        <Ratesearch class="" {filename} />
 
-      {#await promiseIndex}
-      Attente des meta données
-      {:then meta}
         {#each meta as { value, key, type, placeholder, innerHtml, highlight, metadata, rows, color } (key)}
           {#if !isEmpty(value) || (!readonly && metadata)}
             <Entry
@@ -105,20 +148,20 @@
             />
           {/if}
         {/each}
-      {/await}
-    </div>
+      </div>
+      <!-- <iframe
+        class="place-self-center"
+        src={link}
+        width="1025"
+        height="578"
+        allowfullscreen
+        webkitallowfullscreen
+      ></iframe> -->
 
-    <iframe
-      title="iframe"
-      bind:this={iframe}
-      class="place-self-center"
-      width="1025"
-      height="578"
-      allowfullscreen
-      webkitallowfullscreen
-    ></iframe>
+      <canvas id="the-canvas"></canvas>
+    </div>
   </div>
-</div>
+{/if}
 
 <style>
   .card {
@@ -128,5 +171,10 @@
     max-width: min-content !important;
     background-color: #f0f0f0;
     border-radius: 40px;
+  }
+
+  #the-canvas {
+    border: 1px solid black;
+    direction: ltr;
   }
 </style>

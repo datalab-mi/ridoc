@@ -1,0 +1,70 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backend
+  namespace: ridoc # Namespace must be the same as that of target services below.
+  annotations: 
+    # nginx.ingress.kubernetes.io/ssl-redirect: "false" # Set to true once SSL is set up.
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/enable-access-log: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - kubernetes.ridoc.fr
+    secretName: letsencrypt-prod
+  rules:
+  - host: kubernetes.ridoc.fr
+    http:
+      paths:
+        - path: /backend/(.*)
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: backend
+              port:
+                number: 5000
+        # - path: /
+        #   pathType: Prefix
+        #   backend:
+        #     service:
+        #       name: frontend
+        #       port:
+        #         number: 3000
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend
+  namespace: ridoc # Namespace must be the same as that of target services below.
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/enable-access-log: "false"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "false" # Set to true once SSL is set up.
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - kubernetes.ridoc.fr
+    secretName: letsencrypt-prod
+  rules:
+  - host: kubernetes.ridoc.fr
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: frontend
+              port:
+                number: 3000
+        - path: /kibana
+          pathType: Prefix
+          backend:
+            service:
+              name: kibana-kibana
+              port:
+                number: 5601

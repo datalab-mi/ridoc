@@ -175,18 +175,17 @@ create-namespace:
 	@echo $@
 	(cat ${KUBE_DIR}/namespace.yaml | envsubst | kubectl apply -f -) && touch $@
 
-deploy-k8s-traefik:
-	helm upgrade --install --values ${KUBE_DIR}/traefik/values.yaml traefik traefik/traefik --namespace traefik	
-	@cat ${KUBE_DIR}/traefik/ingress.yaml | envsubst | kubectl apply -f -
+deploy-k8s-nginx:
+	helm upgrade --install --values ${KUBE_DIR}/nginx/values.yaml nginx ingress-nginx/ingress-nginx --namespace nginx	
+	@cat ${KUBE_DIR}/nginx/ingress.yaml | envsubst | kubectl apply -f -
 
 deploy-k8s-configmap: create-namespace
 	kubectl create configmap env-${INDEX_NAME} --from-env-file=${ENV_FILE} --namespace ridoc -o yaml --dry-run=client | kubectl apply -f -
 	kubectl create configmap static-${INDEX_NAME} --from-file=${FRONTEND_STATIC_USER} --namespace ridoc -o yaml --dry-run=client | kubectl apply -f -
-	kubectl create configmap logstash-pipeline --from-file=logstash/pipeline/logstash.conf --namespace ridoc -o yaml --dry-run=client | kubectl apply -f -
 
 deploy-k8s-volume: create-namespace
 	@cat ${KUBE_DIR}/volume.yaml | envsubst | kubectl apply -f -
-		{KUBE_DIR}/ingress.yaml | envsubst | kubectl apply -f -
+	{KUBE_DIR}/volume.yaml | envsubst | kubectl apply -f -
 
 deploy-k8s-ekl: create-namespace
 	@echo $@
