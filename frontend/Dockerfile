@@ -15,10 +15,10 @@ RUN npm install
 
 # ViewerJS
 ARG VIEWERJS_VERSION
-RUN wget "https://viewerjs.org/releases/viewerjs-${VIEWERJS_VERSION}.zip"
-RUN mkdir ViewerJS
-RUN unzip viewerjs-${VIEWERJS_VERSION}.zip
-RUN mv viewerjs-${VIEWERJS_VERSION}/* ViewerJS
+# RUN wget "https://viewerjs.org/releases/viewerjs-${VIEWERJS_VERSION}.zip"
+# RUN mkdir ViewerJS
+# RUN unzip viewerjs-${VIEWERJS_VERSION}.zip
+# RUN mv viewerjs-${VIEWERJS_VERSION}/* ViewerJS
 
 #DSFR (Design de l'Etat)
 RUN  mkdir -p static/dsfr \
@@ -45,7 +45,6 @@ CMD [ "npm", "run","dev" ]
 ################################
 FROM base as build
 RUN npm run build
-CMD ["npm", "run", "build"]
 #CMD ["npx", "sapper", "export"]
 ################################
 # Step 4: "production" target  #
@@ -53,12 +52,14 @@ CMD ["npm", "run", "build"]
 # This stage only needs the compiled Sapper application
 # and the runtime dependencies.
 FROM node:12.2.0-alpine as prod
+CMD ["npm", "run", "build"]
+
 EXPOSE 3000
 USER node:node
 WORKDIR /app
 COPY --from=build --chown=node:node /app/__sapper__/build ./__sapper__/build
 COPY --from=build --chown=node:node /app/static ./static
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
-COPY --from=base --chown=node:node /app/ViewerJS ./ViewerJS
+# COPY --from=base --chown=node:node /app/ViewerJS ./ViewerJS
 COPY --chown=node:node package.json .
 CMD ["node","__sapper__/build"]
