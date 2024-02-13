@@ -15,10 +15,10 @@ RUN npm install
 
 # ViewerJS
 ARG VIEWERJS_VERSION
-RUN wget "https://viewerjs.org/releases/viewerjs-${VIEWERJS_VERSION}.zip"
-RUN mkdir ViewerJS
-RUN unzip viewerjs-${VIEWERJS_VERSION}.zip
-RUN mv viewerjs-${VIEWERJS_VERSION}/* ViewerJS
+# RUN wget "https://viewerjs.org/releases/viewerjs-${VIEWERJS_VERSION}.zip"
+# RUN mkdir ViewerJS
+# RUN unzip viewerjs-${VIEWERJS_VERSION}.zip
+# RUN mv viewerjs-${VIEWERJS_VERSION}/* ViewerJS
 
 #DSFR (Design de l'Etat)
 RUN  mkdir -p static/dsfr \
@@ -59,6 +59,6 @@ WORKDIR /app
 COPY --from=build --chown=node:node /app/__sapper__/build ./__sapper__/build
 COPY --from=build --chown=node:node /app/static ./static
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
-COPY --from=base --chown=node:node /app/ViewerJS ./ViewerJS
+# COPY --from=base --chown=node:node /app/ViewerJS ./ViewerJS
 COPY --chown=node:node package.json .
 CMD ["node","__sapper__/build"]
