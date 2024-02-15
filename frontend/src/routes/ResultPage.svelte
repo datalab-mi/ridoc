@@ -10,18 +10,22 @@
   import { envJson, itemJson } from "../components/user-data.store";
   import Ratesearch from "../components/ratesearch.svelte";
   import { user } from "../components/stores.js";
-
-  import * as pdfjsLib from "pdfjs-dist/build/pdf";
-  import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker.mjs";
-  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-  // import  pdfjs  from 'pdfjs-dist';
-  // const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
-  // import * as pdfjsLib from "pdfjs-dist";
-  // import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker.mjs";
-  // import pdfjsWorker from "../../../../node_modules/pdfjs-dist/build/pdf.worker.entry";
-  // pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-
   import Entry from "../components/Entry.svelte";
+
+  let pdfjsLib, pdfjsWorker;
+  const initializePdfJs = () => {
+		pdfjsLib = window.pdfjsLib;
+	}
+  const initializePdfWorker = () => {
+    pdfjsWorker = window.pdfjsWorker;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+	}
+
+  // Install with npm, pb with terser when minify...
+  // import * as pdfjsLib from "pdfjs-dist/build/pdf";
+  // import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker.mjs";
+  // pdfjsLib.GlobalW../components/Entry.svelte.jsdfjsWorker;
+
   let titre = true;
   let meta = undefined;
   let display;
@@ -121,7 +125,11 @@
 
 <svelte:head>
   <title>{filename}</title>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.7.570/build/pdf.min.js" on:load={initializePdfJs}></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.7.570/build/pdf.worker.min.js" on:load={initializePdfWorker}></script>
+
 </svelte:head>
+
 
 {#if meta != undefined && $itemJson != undefined && filename != undefined}
   <div class="grid grid-cols justify-center">
