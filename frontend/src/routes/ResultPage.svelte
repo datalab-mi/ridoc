@@ -14,12 +14,12 @@
 
   let pdfjsLib, pdfjsWorker;
   const initializePdfJs = () => {
-		pdfjsLib = window.pdfjsLib;
-	}
+    pdfjsLib = window.pdfjsLib;
+  };
   const initializePdfWorker = () => {
     pdfjsWorker = window.pdfjsWorker;
     pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-	}
+  };
 
   // Install with npm, pb with terser when minify...
   // import * as pdfjsLib from "pdfjs-dist/build/pdf";
@@ -125,11 +125,15 @@
 
 <svelte:head>
   <title>{filename}</title>
-  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.7.570/build/pdf.min.js" on:load={initializePdfJs}></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.7.570/build/pdf.worker.min.js" on:load={initializePdfWorker}></script>
-
+  <script
+    src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.7.570/build/pdf.min.js"
+    on:load={initializePdfJs}
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.7.570/build/pdf.worker.min.js"
+    on:load={initializePdfWorker}
+  ></script>
 </svelte:head>
-
 
 {#if meta != undefined && $itemJson != undefined && filename != undefined}
   <div class="grid grid-cols justify-center">
