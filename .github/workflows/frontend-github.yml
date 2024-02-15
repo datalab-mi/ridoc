@@ -5,7 +5,7 @@ name: Deploy frontend container
 
 on:
   push:
-    branches: [ "master","feat/kubernetes", "fix/frontend*", "feat/frontend*" ]
+    branches: [ "master","feat/kubernetes*", "fix/frontend*", "feat/frontend*" ]
     tags:
         - 'v*'
 

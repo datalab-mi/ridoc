@@ -5,7 +5,7 @@ name: Deploy elasticsearch container
 
 on:
   push:
-    branches: [ "master","feat/kubernetes" ,"feat/elastic-*"]
+    branches: [ "master","feat/kubernetes*" ,"feat/elastic-*"]
     tags:
         - 'v*'
 
